@@ -1,8 +1,13 @@
-export default function PlansPage() {
+import { getPlans } from '@/lib/services/plans';
+import PlansClient from '@/components/plans/PlansClient';
+
+export default async function PlansPage() {
+  const plans = await getPlans();
+  const data = JSON.parse(JSON.stringify(plans));
+
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Plans</h1>
-      <p className="text-gray-500">Phase 2 — coming soon.</p>
+      <PlansClient plans={data} />
     </div>
   );
 }

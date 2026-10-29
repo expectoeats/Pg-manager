@@ -7,9 +7,9 @@ import { cn } from '@/lib/utils';
 
 const bottomNavItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/dashboard/residents', label: 'Residents', icon: Users },
-  { href: '/dashboard/rent', label: 'Rent', icon: Receipt },
-  { href: '/dashboard/more', label: 'More', icon: MoreHorizontal },
+  { href: '/residents', label: 'Residents', icon: Users },
+  { href: '/rent', label: 'Rent', icon: Receipt },
+  { href: '/settings', label: 'More', icon: MoreHorizontal },
 ];
 
 export default function BottomNav() {

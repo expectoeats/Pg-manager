@@ -22,17 +22,17 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/dashboard/residents', label: 'Residents', icon: Users },
-  { href: '/dashboard/rooms', label: 'Rooms', icon: DoorOpen },
-  { href: '/dashboard/plans', label: 'Plans', icon: ListCheck },
-  { href: '/dashboard/rent', label: 'Rent', icon: Receipt },
-  { href: '/dashboard/payments', label: 'Payments', icon: CreditCard },
-  { href: '/dashboard/deposits', label: 'Deposits', icon: Wallet },
-  { href: '/dashboard/electricity', label: 'Electricity', icon: Zap },
-  { href: '/dashboard/expenses', label: 'Expenses', icon: ShoppingCart },
-  { href: '/dashboard/reports', label: 'Reports', icon: BarChart2 },
-  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
-  { href: '/dashboard/activity', label: 'Activity Log', icon: Clock },
+  { href: '/residents', label: 'Residents', icon: Users },
+  { href: '/rooms', label: 'Rooms', icon: DoorOpen },
+  { href: '/plans', label: 'Plans', icon: ListCheck },
+  { href: '/rent', label: 'Rent', icon: Receipt },
+  { href: '/payments', label: 'Payments', icon: CreditCard },
+  { href: '/deposits', label: 'Deposits', icon: Wallet },
+  { href: '/electricity', label: 'Electricity', icon: Zap },
+  { href: '/expenses', label: 'Expenses', icon: ShoppingCart },
+  { href: '/reports', label: 'Reports', icon: BarChart2 },
+  { href: '/settings', label: 'Settings', icon: Settings },
+  { href: '/activity-log', label: 'Activity Log', icon: Clock },
 ];
 
 interface SidebarProps {

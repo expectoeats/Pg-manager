@@ -1,8 +1,14 @@
-export default function RoomsPage() {
+import { getRoomsWithBeds } from '@/lib/services/rooms';
+import RoomsClient from '@/components/rooms/RoomsClient';
+
+export default async function RoomsPage() {
+  const roomsWithBeds = await getRoomsWithBeds();
+  // Serialize to plain objects for client component
+  const data = JSON.parse(JSON.stringify(roomsWithBeds));
+
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Rooms</h1>
-      <p className="text-gray-500">Phase 2 — coming soon.</p>
+      <RoomsClient roomsWithBeds={data} />
     </div>
   );
 }

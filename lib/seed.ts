@@ -1,8 +1,25 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import fs from 'fs';
+import path from 'path';
+
+// Manually load .env.local for tsx execution outside Next.js
+const envPath = path.resolve(process.cwd(), '.env.local');
+if (fs.existsSync(envPath)) {
+  const lines = fs.readFileSync(envPath, 'utf-8').split('\n');
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eqIndex = trimmed.indexOf('=');
+    if (eqIndex === -1) continue;
+    const key = trimmed.slice(0, eqIndex).trim();
+    const value = trimmed.slice(eqIndex + 1).trim();
+    if (!process.env[key]) process.env[key] = value;
+  }
+}
 
 const MONGODB_URI =
-  process.env.MONGODB_URI || 'mongodb+srv://your-connection-string';
+  process.env.MONGODB_URI || '';
 
 async function seed() {
   console.log('Connecting to MongoDB...');
