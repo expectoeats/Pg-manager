@@ -88,8 +88,6 @@ export async function givePlanChange(
   // Update resident's currentPlan
   await Resident.findByIdAndUpdate(residentId, { currentPlan: newPlanId });
 
-  const resident = await Resident.findById(residentId).lean();
-
   await ActivityLog.create({
     user: session.user.id,
     action: 'UPDATE',

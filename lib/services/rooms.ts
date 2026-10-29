@@ -96,7 +96,11 @@ export async function updateRoom(roomId: string, data: unknown) {
     return { success: false, error: 'Room number already exists' };
   }
 
-  await Room.findByIdAndUpdate(roomId, { $set: parsed.data });
+  // Strip totalBeds from the update — bed documents are structural and must
+  // not diverge from Room.totalBeds. Bed count cannot be changed after creation.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { totalBeds: _ignored, ...updatePayload } = parsed.data;
+  await Room.findByIdAndUpdate(roomId, { $set: updatePayload });
 
   await ActivityLog.create({
     user: session.user.id,

@@ -156,9 +156,20 @@ export async function checkInResident(data: unknown) {
         amountDue = Math.round((plan.price * daysRemaining) / daysInMonth);
       }
 
-      // Due date: 1st of next month (or settings.rentDueDay of next month)
+      // Due date calculation depends on billing mode:
+      // - calendar mode: use rentDueDay of next month
+      // - joining_cycle mode: use the joining day of the current (first) month
+      //   (the due date repeats on the joining day each month)
       const rentDueDay = settings?.rentDueDay ?? 1;
-      const dueDate = new Date(Date.UTC(year, month, rentDueDay)); // month is 0-indexed in Date constructor but we stored it as 1-indexed, so this correctly goes to next month
+      let dueDate: Date;
+      if (billingMode === 'joining_cycle') {
+        const joiningDay = joiningDateObj.getUTCDate();
+        // Due on the joining day of the same month as the first rent record
+        dueDate = new Date(Date.UTC(year, month - 1, joiningDay));
+      } else {
+        // calendar mode: 1st (or rentDueDay) of the next month
+        dueDate = new Date(Date.UTC(year, month, rentDueDay));
+      }
 
       const [rentRecord] = await RentRecord.create(
         [
