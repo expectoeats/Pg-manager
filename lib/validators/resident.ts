@@ -22,6 +22,7 @@ export const residentSchema = z.object({
   recordFirstPayment: z.boolean().default(false),
   firstPaymentAmount: z.coerce.number().int().min(0).optional(),
   firstPaymentMethod: z.enum(['cash', 'upi', 'bank']).optional(),
+  billingMode: z.enum(['calendar', 'joining_cycle']).optional(),
 });
 
 export type ResidentFormData = z.infer<typeof residentSchema>;

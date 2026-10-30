@@ -57,6 +57,7 @@ export async function checkInResident(data: unknown) {
     recordFirstPayment,
     firstPaymentAmount,
     firstPaymentMethod,
+    billingMode: selectedBillingMode,
   } = parsed.data;
 
   await connectDB();
@@ -87,7 +88,7 @@ export async function checkInResident(data: unknown) {
       // Fetch settings for billing mode
       const settings = await Settings.findOne().session(mongoSession).lean();
       const prorateFirstMonth = settings?.prorateFirstMonth ?? true;
-      const billingMode = settings?.billingMode ?? 'calendar';
+      const billingMode = selectedBillingMode || settings?.billingMode || 'joining_cycle';
 
       // Create resident
       const [resident] = await Resident.create(
@@ -104,6 +105,7 @@ export async function checkInResident(data: unknown) {
             bed: bedId,
             currentPlan: planId,
             joiningDate: new Date(joiningDate),
+            billingMode: billingMode,
             status: 'active',
             notes,
           },

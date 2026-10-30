@@ -685,125 +685,214 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
             {currentStep === 3 && (
               <div className="space-y-5">
 
-                {/* Payment Summary Card */}
-                <div className="rounded-xl border border-[#E5E5EA] bg-white p-5 space-y-4">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 bg-[#007AFF]/10 rounded-xl flex items-center justify-center">
-                      <Wallet className="w-5 h-5 strokeWidth={2} text-[#007AFF]" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[#1C1C1E] text-[17px] tracking-[-0.022em]">Payment Summary</p>
-                      <p className="text-xs text-[#8E8E93]">Amount to collect on joining</p>
-                    </div>
-                  </div>
-
-                  {selectedPlanId ? (
-                    <>
-                      {/* Billing Mode Indicator */}
-                      <div className="flex items-center gap-2 pb-2 border-b border-[#E5E5EA]">
-                        <div className="flex items-center gap-1.5 text-xs font-medium text-[#8E8E93]">
-                          📅 Billing Mode: 
-                          <span className="text-[#007AFF]">
-                            {settings?.billingMode === 'joining_cycle' ? 'Joining Date Cycle' : 'Calendar Month'}
-                          </span>
-                        </div>
+                {/* Billing Mode Selection */}
+                {selectedPlanId && (
+                  <div className="rounded-xl border border-[#E5E5EA] bg-white p-5 space-y-4">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 bg-[#007AFF]/10 rounded-xl flex items-center justify-center">
+                        <Wallet className="w-5 h-5 strokeWidth={2} text-[#007AFF]" />
                       </div>
+                      <div>
+                        <p className="font-semibold text-[#1C1C1E] text-[17px] tracking-[-0.022em]">Choose Billing Method</p>
+                        <p className="text-xs text-[#8E8E93]">Select how you want to calculate rent for this resident</p>
+                      </div>
+                    </div>
 
-                      {/* Billing Breakdown */}
-                      <div className="rounded-xl bg-[#F9F9FB] border border-[#E5E5EA] p-4 space-y-3 text-sm">
-                        <div className="space-y-2.5">
-                          {/* Security Deposit */}
-                          <div className="flex items-center justify-between">
-                            <span className="text-[#8E8E93]">Security deposit (one-time)</span>
-                            <span className="font-medium text-[#1C1C1E]">₹{(watch('depositAmount') || depositDefault).toLocaleString('en-IN')}</span>
+                    {/* Side-by-Side Comparison */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Option A: Calendar Month */}
+                      <button
+                        type="button"
+                        onClick={() => setValue('billingMode', 'calendar')}
+                        className={cn(
+                          'text-left p-5 rounded-xl border-2 transition-all duration-200',
+                          watch('billingMode') === 'calendar' || (!watch('billingMode') && settings?.billingMode === 'calendar')
+                            ? 'border-[#007AFF] bg-[#007AFF]/5 shadow-lg'
+                            : 'border-[#E5E5EA] bg-white hover:border-[#007AFF]/30 hover:bg-[#007AFF]/5'
+                        )}
+                      >
+                        <div className="space-y-3">
+                          {/* Header */}
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h3 className="font-semibold text-[15px] text-[#1C1C1E] tracking-[-0.022em]">
+                                📅 Calendar Month
+                              </h3>
+                              <p className="text-xs text-[#8E8E93] mt-0.5">All residents pay on 1st</p>
+                            </div>
+                            <div className={cn(
+                              'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
+                              watch('billingMode') === 'calendar' || (!watch('billingMode') && settings?.billingMode === 'calendar')
+                                ? 'border-[#007AFF] bg-[#007AFF]'
+                                : 'border-[#8E8E93]'
+                            )}>
+                              {(watch('billingMode') === 'calendar' || (!watch('billingMode') && settings?.billingMode === 'calendar')) && (
+                                <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                              )}
+                            </div>
                           </div>
 
-                          {/* First Month Rent based on billing mode */}
-                          {settings?.billingMode === 'joining_cycle' ? (
-                            // Joining Date Cycle: Show 30 days from joining
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <span className="text-[#8E8E93]">
-                                  {joiningDate && (() => {
-                                    const start = new Date(joiningDate);
-                                    const end = new Date(start);
-                                    end.setDate(end.getDate() + 29);
-                                    return `${start.getDate()} ${start.toLocaleString('default', { month: 'short' })} - ${end.getDate()} ${end.toLocaleString('default', { month: 'short' })}`;
-                                  })()}
-                                </span>
-                                <span className="text-[#8E8E93] text-xs ml-1">(30 days)</span>
+                          {/* Calculation */}
+                          <div className="space-y-2 text-sm">
+                            <div className="text-[#8E8E93]">Collect Today:</div>
+                            <div className="pl-3 space-y-1">
+                              <div className="flex justify-between">
+                                <span className="text-[#8E8E93]">• Deposit</span>
+                                <span className="font-medium text-[#1C1C1E]">₹{(watch('depositAmount') || depositDefault).toLocaleString('en-IN')}</span>
                               </div>
-                              <span className="font-medium text-[#1C1C1E]">₹{totalMonthlyPrice.toLocaleString('en-IN')}</span>
-                            </div>
-                          ) : (
-                            // Calendar Mode: Show partial + advance
-                            <>
-                              {settings.prorateFirstMonth && daysRemaining < 30 && (
+                              {daysRemaining < 30 && (
                                 <>
-                                  <div className="flex items-center justify-between">
-                                    <div>
-                                      <span className="text-[#8E8E93]">Current month </span>
-                                      <span className="text-[#8E8E93] text-xs">({daysRemaining} days)</span>
-                                    </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-[#8E8E93]">• Current ({daysRemaining}d)</span>
                                     <span className="font-medium text-[#1C1C1E]">₹{firstMonthRent.toLocaleString('en-IN')}</span>
                                   </div>
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-[#8E8E93]">Next month (advance)</span>
+                                  <div className="flex justify-between">
+                                    <span className="text-[#8E8E93]">• Next month</span>
                                     <span className="font-medium text-[#1C1C1E]">₹{nextMonthRent.toLocaleString('en-IN')}</span>
                                   </div>
                                 </>
                               )}
-                              {(!settings.prorateFirstMonth || daysRemaining === 30) && (
-                                <div className="flex items-center justify-between">
-                                  <span className="text-[#8E8E93]">First month</span>
-                                  <span className="font-medium text-[#1C1C1E]">₹{firstMonthRent.toLocaleString('en-IN')}</span>
+                              {daysRemaining === 30 && (
+                                <div className="flex justify-between">
+                                  <span className="text-[#8E8E93]">• First month</span>
+                                  <span className="font-medium text-[#1C1C1E]">₹{totalMonthlyPrice.toLocaleString('en-IN')}</span>
                                 </div>
                               )}
-                            </>
-                          )}
-                        </div>
+                            </div>
+                            <div className="pt-2 border-t border-[#E5E5EA] flex justify-between font-semibold">
+                              <span className="text-[#1C1C1E]">Total</span>
+                              <span className="text-[#007AFF]">
+                                ₹{(daysRemaining < 30 
+                                  ? firstMonthRent + nextMonthRent + (watch('depositAmount') || depositDefault)
+                                  : totalMonthlyPrice + (watch('depositAmount') || depositDefault)
+                                ).toLocaleString('en-IN')}
+                              </span>
+                            </div>
+                          </div>
 
-                        {/* Total */}
-                        <div className="flex items-center justify-between pt-3 border-t-2 border-[#1C1C1E]">
-                          <span className="text-[#1C1C1E] font-bold text-base">Total to collect</span>
-                          <span className="font-bold text-[#007AFF] text-xl">
-                            ₹{((settings?.billingMode === 'calendar' && settings.prorateFirstMonth && daysRemaining < 30 
-                              ? firstMonthRent + nextMonthRent 
-                              : firstMonthRent) + (watch('depositAmount') || depositDefault)).toLocaleString('en-IN')}
-                          </span>
-                        </div>
-                      </div>
+                          {/* Next Due */}
+                          <div className="pt-3 border-t border-[#E5E5EA]">
+                            <div className="text-xs text-[#8E8E93]">Next Due:</div>
+                            <div className="text-sm font-medium text-[#1C1C1E] mt-1">
+                              {joiningDate && (() => {
+                                const d = new Date(joiningDate);
+                                const nextMonth = new Date(d.getFullYear(), d.getMonth() + 2, 1);
+                                return `1 ${nextMonth.toLocaleString('default', { month: 'long' })}`;
+                              })()}
+                            </div>
+                            <div className="text-xs text-[#8E8E93] mt-0.5">₹{totalMonthlyPrice.toLocaleString('en-IN')}/month + electricity</div>
+                          </div>
 
-                      {/* Info Box */}
-                      <div className="rounded-xl bg-[#007AFF]/5 border border-[#007AFF]/20 p-3">
-                        <p className="text-xs text-[#007AFF] flex items-start gap-2">
-                          <Info className="w-5 h-5 strokeWidth={2} mt-0.5 flex-shrink-0" />
-                          <span>
-                            {settings?.billingMode === 'joining_cycle' ? (
-                              <>
-                                <strong>Billing Cycle:</strong> From joining date to same date next month (30 days). 
-                                Next payment due on {joiningDate && (() => {
-                                  const next = new Date(joiningDate);
-                                  next.setDate(next.getDate() + 30);
-                                  return `${next.getDate()} ${next.toLocaleString('default', { month: 'long' })}`;
-                                })()}.
-                              </>
-                            ) : (
-                              <>
-                                <strong>Calendar Mode:</strong> Monthly rent ₹{totalMonthlyPrice.toLocaleString('en-IN')} + electricity bill (from 2nd month). 
-                                {settings.prorateFirstMonth && daysRemaining < 30 && ' First month prorated, advance collected for next month.'}
-                              </>
-                            )}
-                          </span>
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="p-4 bg-[#F9F9FB] border border-[#E5E5EA] rounded-xl text-sm text-[#8E8E93]">
-                      Select a room and plan in previous steps to see payment details.
+                          {/* Pros */}
+                          <div className="pt-3 border-t border-[#E5E5EA] space-y-1">
+                            <div className="flex items-center gap-2 text-xs text-[#34C759]">
+                              <Check className="w-4 h-4" strokeWidth={2} /> Easy admin work
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-[#34C759]">
+                              <Check className="w-4 h-4" strokeWidth={2} /> Same due for all
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+
+                      {/* Option B: Joining Date Cycle */}
+                      <button
+                        type="button"
+                        onClick={() => setValue('billingMode', 'joining_cycle')}
+                        className={cn(
+                          'text-left p-5 rounded-xl border-2 transition-all duration-200',
+                          watch('billingMode') === 'joining_cycle' || (!watch('billingMode') && settings?.billingMode === 'joining_cycle')
+                            ? 'border-[#007AFF] bg-[#007AFF]/5 shadow-lg'
+                            : 'border-[#E5E5EA] bg-white hover:border-[#007AFF]/30 hover:bg-[#007AFF]/5'
+                        )}
+                      >
+                        <div className="space-y-3">
+                          {/* Header */}
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h3 className="font-semibold text-[15px] text-[#1C1C1E] tracking-[-0.022em] flex items-center gap-1.5">
+                                🔄 Joining Cycle
+                                <span className="text-[10px] bg-[#34C759] text-white px-2 py-0.5 rounded-full">Recommended</span>
+                              </h3>
+                              <p className="text-xs text-[#8E8E93] mt-0.5">30 days from join date</p>
+                            </div>
+                            <div className={cn(
+                              'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
+                              watch('billingMode') === 'joining_cycle' || (!watch('billingMode') && settings?.billingMode === 'joining_cycle')
+                                ? 'border-[#007AFF] bg-[#007AFF]'
+                                : 'border-[#8E8E93]'
+                            )}>
+                              {(watch('billingMode') === 'joining_cycle' || (!watch('billingMode') && settings?.billingMode === 'joining_cycle')) && (
+                                <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Calculation */}
+                          <div className="space-y-2 text-sm">
+                            <div className="text-[#8E8E93]">Collect Today:</div>
+                            <div className="pl-3 space-y-1">
+                              <div className="flex justify-between">
+                                <span className="text-[#8E8E93]">• Deposit</span>
+                                <span className="font-medium text-[#1C1C1E]">₹{(watch('depositAmount') || depositDefault).toLocaleString('en-IN')}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-[#8E8E93]">• 30 days rent</span>
+                                <span className="font-medium text-[#1C1C1E]">₹{totalMonthlyPrice.toLocaleString('en-IN')}</span>
+                              </div>
+                            </div>
+                            <div className="pt-2 border-t border-[#E5E5EA] flex justify-between font-semibold">
+                              <span className="text-[#1C1C1E]">Total</span>
+                              <span className="text-[#007AFF]">
+                                ₹{(totalMonthlyPrice + (watch('depositAmount') || depositDefault)).toLocaleString('en-IN')}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Next Due */}
+                          <div className="pt-3 border-t border-[#E5E5EA]">
+                            <div className="text-xs text-[#8E8E93]">Next Due:</div>
+                            <div className="text-sm font-medium text-[#1C1C1E] mt-1">
+                              {joiningDate && (() => {
+                                const start = new Date(joiningDate);
+                                const next = new Date(start);
+                                next.setDate(next.getDate() + 30);
+                                return `${next.getDate()} ${next.toLocaleString('default', { month: 'long' })}`;
+                              })()}
+                            </div>
+                            <div className="text-xs text-[#8E8E93] mt-0.5">₹{totalMonthlyPrice.toLocaleString('en-IN')}/month + electricity</div>
+                          </div>
+
+                          {/* Pros */}
+                          <div className="pt-3 border-t border-[#E5E5EA] space-y-1">
+                            <div className="flex items-center gap-2 text-xs text-[#34C759]">
+                              <Check className="w-4 h-4" strokeWidth={2} /> Fair for resident
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-[#34C759]">
+                              <Check className="w-4 h-4" strokeWidth={2} /> Full month always
+                            </div>
+                          </div>
+                        </div>
+                      </button>
                     </div>
-                  )}
-                </div>
+
+                    {/* Info Box */}
+                    <div className="rounded-xl bg-[#007AFF]/5 border border-[#007AFF]/20 p-3">
+                      <p className="text-xs text-[#007AFF] flex items-start gap-2">
+                        <Info className="w-5 h-5 strokeWidth={2} mt-0.5 flex-shrink-0" />
+                        <span>
+                          <strong>Electricity bill:</strong> Not included in first payment. Added from 2nd month onwards based on actual usage and split among room residents.
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {!selectedPlanId && (
+                  <div className="p-4 bg-[#F9F9FB] border border-[#E5E5EA] rounded-xl text-sm text-[#8E8E93]">
+                    Select a room and plan in previous steps to see billing options.
+                  </div>
+                )}
 
                 {/* Collect Payment Section */}
                 {selectedPlanId && (

@@ -14,6 +14,7 @@ export interface IResident extends Document {
   bed: Types.ObjectId;
   currentPlan: Types.ObjectId;
   joiningDate: Date;
+  billingMode?: 'calendar' | 'joining_cycle';
   status: 'active' | 'notice' | 'left';
   noticeDate?: Date | null;
   expectedLeavingDate?: Date | null;
@@ -35,6 +36,7 @@ const ResidentSchema = new Schema<IResident>({
   bed: { type: Schema.Types.ObjectId, ref: 'Bed', required: true },
   currentPlan: { type: Schema.Types.ObjectId, ref: 'Plan', required: true },
   joiningDate: { type: Date, required: true },
+  billingMode: { type: String, enum: ['calendar', 'joining_cycle'], default: 'joining_cycle' },
   status: { type: String, enum: ['active', 'notice', 'left'], default: 'active' },
   noticeDate: { type: Date, default: null },
   expectedLeavingDate: { type: Date, default: null },
