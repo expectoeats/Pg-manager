@@ -42,6 +42,7 @@ import {
   Banknote,
   Smartphone,
   Landmark,
+  AlertCircle,
 } from 'lucide-react';
 
 interface PlanData {
@@ -640,183 +641,180 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
               </div>
             )}
 
-            {/* ── Step 3: Deposit & First Rent ── */}
+            {/* ── Step 3: Payment Details ── */}
             {currentStep === 3 && (
               <div className="space-y-5">
 
-                {/* Security Deposit */}
-                <div className="rounded-xl border border-gray-200 p-4 space-y-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-                      <Wallet className="w-4 h-4 text-blue-600" />
+                {/* Payment Summary Card */}
+                <div className="rounded-xl border border-[#E5E5EA] bg-white p-5 space-y-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 bg-[#007AFF]/10 rounded-xl flex items-center justify-center">
+                      <Wallet className="w-5 h-5 text-[#007AFF]" />
                     </div>
-                    <p className="font-semibold text-gray-800 text-sm">Security Deposit</p>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label>Deposit Amount (₹)</Label>
-                    <Input type="number" min={0} className="rounded-xl h-10" {...register('depositAmount', { valueAsNumber: true })} />
-                    {errors.depositAmount && <p className="text-red-500 text-xs">{errors.depositAmount.message}</p>}
-                  </div>
-
-                  <div className="flex items-center justify-between py-1">
                     <div>
-                      <p className="text-sm font-medium text-gray-700">Deposit received now?</p>
-                      <p className="text-xs text-gray-400">Record the receipt immediately</p>
+                      <p className="font-semibold text-[#1C1C1E] text-base">Payment Summary</p>
+                      <p className="text-xs text-[#8E8E93]">Amount to collect on joining</p>
                     </div>
-                    <ToggleSwitch
-                      checked={depositReceived}
-                      onChange={(v) => setValue('depositReceived', v)}
-                      color="green"
-                    />
-                  </div>
-
-                  {depositReceived && (
-                    <div className="space-y-3 pl-4 border-l-2 border-green-200">
-                      <div className="space-y-1.5">
-                        <Label>Payment Method</Label>
-                        <Select value={depositMethod || ''} onValueChange={(v) => setValue('depositMethod', v as 'cash' | 'upi' | 'bank')}>
-                          <SelectTrigger className="rounded-xl h-10">
-                            <SelectValue placeholder="Select method" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="cash"><span className="flex items-center gap-2"><Banknote className="w-3.5 h-3.5 inline" /> Cash</span></SelectItem>
-                            <SelectItem value="upi"><span className="flex items-center gap-2"><Smartphone className="w-3.5 h-3.5 inline" /> UPI</span></SelectItem>
-                            <SelectItem value="bank"><span className="flex items-center gap-2"><Landmark className="w-3.5 h-3.5 inline" /> Bank Transfer</span></SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label>Transaction Reference <span className="text-gray-400 text-xs">(optional)</span></Label>
-                        <Input className="rounded-xl h-10" placeholder="UPI / NEFT reference" {...register('depositTransactionRef')} />
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* First Month Rent */}
-                <div className="rounded-xl border border-gray-200 p-4 space-y-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
-                      <Home className="w-4 h-4 text-green-600" />
-                    </div>
-                    <p className="font-semibold text-gray-800 text-sm">First Month Rent</p>
                   </div>
 
                   {selectedPlanId ? (
-                    <div className="rounded-xl bg-[#F2F2F7] border border-[#E5E5EA] p-4 space-y-2.5 text-sm">
-                      {/* Room Plan */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-[#8E8E93]">Room ({selectedRoomPlan?.name})</span>
-                        <span className="font-medium text-[#1C1C1E]">₹{roomPlanPrice.toLocaleString('en-IN')}/mo</span>
-                      </div>
-
-                      {/* Food Plan */}
-                      {wantsFood && selectedFoodPlan && (
+                    <div className="rounded-xl bg-[#F9F9FB] border border-[#E5E5EA] p-4 space-y-3 text-sm">
+                      {/* Breakdown */}
+                      <div className="space-y-2.5">
                         <div className="flex items-center justify-between">
-                          <span className="text-[#8E8E93]">Food ({selectedFoodPlan.name})</span>
-                          <span className="font-medium text-[#1C1C1E]">₹{foodPlanPrice.toLocaleString('en-IN')}/mo</span>
+                          <span className="text-[#8E8E93]">Security deposit</span>
+                          <span className="font-medium text-[#1C1C1E]">₹{(watch('depositAmount') || depositDefault).toLocaleString('en-IN')}</span>
                         </div>
-                      )}
 
-                      {/* Monthly Total */}
-                      <div className="flex items-center justify-between pt-2 border-t border-[#E5E5EA]">
-                        <span className="text-[#1C1C1E] font-medium">Monthly rent</span>
-                        <span className="font-semibold text-[#1C1C1E]">₹{totalMonthlyPrice.toLocaleString('en-IN')}</span>
-                      </div>
-
-                      {/* Prorated First Month */}
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-[#8E8E93]">First month </span>
-                          {settings?.prorateFirstMonth && firstMonthRent !== totalMonthlyPrice && (
-                            <span className="text-[#8E8E93] text-xs">
-                              ({(() => {
-                                const d = new Date(joiningDate);
-                                const daysInMonth = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
-                                const daysRemaining = daysInMonth - d.getUTCDate() + 1;
-                                return `${daysRemaining} days`;
-                              })()})
-                            </span>
-                          )}
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-[#8E8E93]">First month rent </span>
+                            {settings?.prorateFirstMonth && firstMonthRent !== totalMonthlyPrice && (
+                              <span className="text-[#8E8E93] text-xs">
+                                ({(() => {
+                                  const d = new Date(joiningDate);
+                                  const daysInMonth = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+                                  const daysRemaining = daysInMonth - d.getUTCDate() + 1;
+                                  return `${daysRemaining} days`;
+                                })()})
+                              </span>
+                            )}
+                          </div>
+                          <span className="font-medium text-[#1C1C1E]">₹{firstMonthRent.toLocaleString('en-IN')}</span>
                         </div>
-                        <span className="font-medium text-[#1C1C1E]">₹{firstMonthRent.toLocaleString('en-IN')}</span>
                       </div>
 
-                      {/* Deposit */}
-                      <div className="flex items-center justify-between pt-2 border-t border-[#E5E5EA]">
-                        <span className="text-[#007AFF] font-medium">Security deposit</span>
-                        <span className="font-semibold text-[#007AFF]">₹{(watch('depositAmount') || depositDefault).toLocaleString('en-IN')}</span>
-                      </div>
-
-                      {/* TOTAL DUE ON JOINING */}
-                      <div className="flex items-center justify-between pt-2.5 border-t-2 border-[#1C1C1E]">
-                        <span className="text-[#1C1C1E] font-bold text-base">Total due on joining</span>
-                        <span className="font-bold text-[#1C1C1E] text-lg">
+                      {/* Total */}
+                      <div className="flex items-center justify-between pt-3 border-t-2 border-[#1C1C1E]">
+                        <span className="text-[#1C1C1E] font-bold text-base">Total amount</span>
+                        <span className="font-bold text-[#007AFF] text-xl">
                           ₹{(firstMonthRent + (watch('depositAmount') || depositDefault)).toLocaleString('en-IN')}
                         </span>
                       </div>
                     </div>
                   ) : (
-                    <div className="p-3 bg-[#F2F2F7] border border-[#E5E5EA] rounded-xl text-sm text-[#8E8E93]">
-                      Select a plan in Step 2 to see the rent preview.
+                    <div className="p-4 bg-[#F9F9FB] border border-[#E5E5EA] rounded-xl text-sm text-[#8E8E93]">
+                      Select a room and plan in previous steps to see payment details.
                     </div>
                   )}
 
                   {selectedPlanId && (
-                    <p className="text-xs text-[#8E8E93] mt-2 flex items-start gap-1.5">
-                      <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
-                      <span>
-                        One-time payment. From next month onwards, only ₹{totalMonthlyPrice.toLocaleString('en-IN')}/month will be charged.
-                        {settings?.prorateFirstMonth && firstMonthRent !== totalMonthlyPrice &&
-                          ' First month is prorated based on joining date.'}
-                      </span>
-                    </p>
-                  )}
-
-                  <div className="flex items-center justify-between py-1">
-                    <div>
-                      <p className="text-sm font-medium text-gray-700">Record first payment now?</p>
-                      <p className="text-xs text-gray-400">Mark rent as paid immediately</p>
-                    </div>
-                    <ToggleSwitch
-                      checked={recordFirstPayment}
-                      onChange={(v) => {
-                        setValue('recordFirstPayment', v);
-                        if (v) setValue('firstPaymentAmount', firstMonthRent);
-                      }}
-                      color="green"
-                    />
-                  </div>
-
-                  {recordFirstPayment && (
-                    <div className="space-y-3 pl-4 border-l-2 border-green-200">
-                      <div className="space-y-1.5">
-                        <Label>Amount (₹)</Label>
-                        <Input
-                          type="number"
-                          min={0}
-                          defaultValue={firstMonthRent}
-                          className="rounded-xl h-10"
-                          {...register('firstPaymentAmount', { valueAsNumber: true })}
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label>Payment Method</Label>
-                        <Select value={firstPaymentMethod || ''} onValueChange={(v) => setValue('firstPaymentMethod', v as 'cash' | 'upi' | 'bank')}>
-                          <SelectTrigger className="rounded-xl h-10">
-                            <SelectValue placeholder="Select method" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="cash"><span className="flex items-center gap-2"><Banknote className="w-3.5 h-3.5 inline" /> Cash</span></SelectItem>
-                            <SelectItem value="upi"><span className="flex items-center gap-2"><Smartphone className="w-3.5 h-3.5 inline" /> UPI</span></SelectItem>
-                            <SelectItem value="bank"><span className="flex items-center gap-2"><Landmark className="w-3.5 h-3.5 inline" /> Bank Transfer</span></SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                    <div className="rounded-xl bg-[#007AFF]/5 border border-[#007AFF]/20 p-3">
+                      <p className="text-xs text-[#007AFF] flex items-start gap-2">
+                        <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span>
+                          <strong>From next month:</strong> Regular monthly rent of ₹{totalMonthlyPrice.toLocaleString('en-IN')} will be charged.
+                          {settings?.prorateFirstMonth && firstMonthRent !== totalMonthlyPrice &&
+                            ' First month is prorated based on joining date.'}
+                        </span>
+                      </p>
                     </div>
                   )}
                 </div>
+
+                {/* Collect Payment Section */}
+                {selectedPlanId && (
+                  <div className="rounded-xl border border-[#E5E5EA] bg-white p-5 space-y-4">
+                    <div className="flex items-center justify-between pb-2">
+                      <div>
+                        <p className="text-base font-semibold text-[#1C1C1E]">Collect payment now?</p>
+                        <p className="text-xs text-[#8E8E93] mt-0.5">Record payment receipt immediately</p>
+                      </div>
+                      <ToggleSwitch
+                        checked={recordFirstPayment}
+                        onChange={(v) => {
+                          setValue('recordFirstPayment', v);
+                          // Also mark deposit as received when payment is being collected
+                          setValue('depositReceived', v);
+                          if (v) {
+                            // Set amount to total (deposit + first rent)
+                            setValue('firstPaymentAmount', firstMonthRent + (watch('depositAmount') || depositDefault));
+                          }
+                        }}
+                        color="green"
+                      />
+                    </div>
+
+                    {recordFirstPayment && (
+                      <div className="space-y-4 pt-3 border-t border-[#E5E5EA]">
+                        {/* Amount Display (read-only, auto-calculated) */}
+                        <div className="space-y-2">
+                          <Label className="text-[#1C1C1E]">Amount to collect (₹)</Label>
+                          <div className="rounded-xl h-11 bg-[#F9F9FB] border border-[#E5E5EA] px-4 flex items-center">
+                            <span className="text-[#1C1C1E] font-semibold text-lg">
+                              ₹{(firstMonthRent + (watch('depositAmount') || depositDefault)).toLocaleString('en-IN')}
+                            </span>
+                          </div>
+                          <p className="text-xs text-[#8E8E93] flex items-center gap-1">
+                            <Info className="w-3 h-3" />
+                            This includes security deposit + first month rent
+                          </p>
+                        </div>
+
+                        {/* Payment Method */}
+                        <div className="space-y-2">
+                          <Label className="text-[#1C1C1E]">Payment method</Label>
+                          <Select 
+                            value={firstPaymentMethod || ''} 
+                            onValueChange={(v) => {
+                              setValue('firstPaymentMethod', v as 'cash' | 'upi' | 'bank');
+                              // Also set deposit method to same
+                              setValue('depositMethod', v as 'cash' | 'upi' | 'bank');
+                            }}
+                          >
+                            <SelectTrigger className="rounded-xl h-11">
+                              <SelectValue placeholder="Select payment method" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="cash">
+                                <span className="flex items-center gap-2">
+                                  <Banknote className="w-4 h-4" /> Cash
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="upi">
+                                <span className="flex items-center gap-2">
+                                  <Smartphone className="w-4 h-4" /> UPI
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="bank">
+                                <span className="flex items-center gap-2">
+                                  <Landmark className="w-4 h-4" /> Bank Transfer / NEFT
+                                </span>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Transaction Reference (only for UPI/Bank) */}
+                        {(firstPaymentMethod === 'upi' || firstPaymentMethod === 'bank') && (
+                          <div className="space-y-2">
+                            <Label className="text-[#1C1C1E]">
+                              Transaction reference <span className="text-[#8E8E93] font-normal">(optional)</span>
+                            </Label>
+                            <Input 
+                              className="rounded-xl h-11" 
+                              placeholder="UPI Transaction ID or NEFT reference" 
+                              {...register('depositTransactionRef')} 
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {!recordFirstPayment && (
+                      <div className="pt-3 border-t border-[#E5E5EA]">
+                        <div className="rounded-xl bg-[#FF9500]/5 border border-[#FF9500]/20 p-3">
+                          <p className="text-xs text-[#FF9500] flex items-start gap-2">
+                            <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <span>
+                              Payment not collected now. You can record it later from the resident's profile or rent section.
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
               </div>
             )}
