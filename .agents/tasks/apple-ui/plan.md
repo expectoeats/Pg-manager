@@ -1,363 +1,141 @@
-# Implementation Plan — Apple UI Redesign (PG Manager)
+# Implementation Plan: Apple UI Transformation
 
-Scope: **Visual/styling + form UI/UX only.** Do NOT change routing, route structure, link
-hrefs, financial business logic (`lib/services/*`), or any data model. Windows workspace —
-use forward slashes in imports. Final gate: `npm run build` passes with 0 TypeScript errors.
+This plan transforms the entire PG management app to authentic Apple software design (iOS/macOS style).
 
-The Apple design system this plan applies (authoritative tokens):
-- Typography: `-apple-system, BlinkMacSystemFont, Inter, Segoe UI, sans-serif`; body 14px,
-  labels 13px, captions 12px, antialiased.
-- Colors: bg `#F2F2F7` (iOS grouped bg); cards pure white `#FFFFFF`; primary `#007AFF`
-  (iOS blue); green `#34C759` (paid/active status only); destructive `#FF3B30`; warning
-  `#FF9500`; text primary `#1C1C1E`; text secondary `#8E8E93`; separator/border `#E5E5EA`;
-  placeholder `#C7C7CC`.
-- Elevation (cards): `shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)]`.
-- Radius: cards/panels `rounded-2xl` (16px); inputs `rounded-xl` (12px); buttons
-  `rounded-xl`; small badges `rounded-full`; toggles `rounded-full`.
-- Status badge tints (bg = color/10, text = color, border-transparent): Active/Paid/Vacant
-  `#34C759`; Notice/Partial `#FF9500`; Overdue/Pending `#FF3B30`; Left/Inactive `#8E8E93`.
-- Tables: no outer border; header `text-xs uppercase text-[#8E8E93]`; row hover `bg-[#F2F2F7]/50`.
+## Foundation (FEAT-001): Apple Design System Base
 
-Ordering rationale: shared foundation (ToggleSwitch + globals.css + primitives) must land
-first because every page consumes those tokens. Then chrome/navigation, then auth+dashboard,
-then the CRUD feature pages, then the AddResidentForm card UX. Each file is touched by exactly
-one step (no double-editing). Each step leaves the project building.
+- [ ] 1. Update `tailwind.config.js` with Apple design tokens
+      Add Apple system fonts (-apple-system, BlinkMacSystemFont, SF Pro Display, Inter), Apple color palette (#007AFF blue, #34C759 green, #FF9500 orange, #FF3B30 red, #8E8E93 gray, #E5E5EA border, #F2F2F7 secondary bg), Apple border radius values (10-24px), and spacing tokens.
+      Files: `tailwind.config.js`
+      Verify: Run `npm run build` — no errors. Inspect generated CSS to confirm Apple tokens are included.
 
----
+- [ ] 2. Update `app/globals.css` with Apple typography and utilities
+      Set body font to Apple system stack with proper letter-spacing (-0.016em) and line-height (1.5). Add heading styles (h1-h6) with letter-spacing -0.022em. Define CSS custom properties for Apple shadows (--apple-shadow-card, --apple-shadow-elevated, --apple-shadow-button-hover, --apple-shadow-dialog). Add custom scrollbar styles (8px width, #C7C7CC thumb). Add spring animation keyframes with cubic-bezier(0.4,0,0.2,1). Add utility classes for focus rings and shadows.
+      Files: `app/globals.css`
+      Verify: Run `npm run dev`, open browser, inspect any page — font should be -apple-system, scrollbars styled, no console errors.
 
-## Toggle locations found (all must become `<ToggleSwitch />`)
+## UI Primitives (FEAT-002): Transform All Components
 
-| File | Field | Approx line | New color |
-|------|-------|-------------|-----------|
-| `components/residents/AddResidentForm.tsx` | wantsFood | ~495 | `orange` |
-| `components/residents/AddResidentForm.tsx` | depositReceived | ~642 | `green` |
-| `components/residents/AddResidentForm.tsx` | recordFirstPayment | ~727 | `green` |
-| `components/settings/SettingsForm.tsx` | prorateFirstMonth | ~216 | `green` |
-| `components/plans/PlansClient.tsx` | isActive | ~430 | `blue` |
-| `components/rooms/RoomsClient.tsx` | hasSubMeter | ~320 | `blue` |
-| `components/rooms/RoomsClient.tsx` | isActive | ~340 | `blue` |
+- [ ] 3. Update `components/ui/button.tsx` to Apple button styles
+      Height 44px, rounded-xl (12px), font 15-16px medium, primary bg-[#007AFF], hover scale(0.98) with spring animation (NOT color change), destructive bg-[#FF3B30], outline border-[#E5E5EA], secondary bg-[#F2F2F7], ghost hover:bg-[#F2F2F7]. Icons 20px (w-5 h-5). Use transition-all duration-200 cubic-bezier(0.4,0,0.2,1).
+      Files: `components/ui/button.tsx`
+      Verify: Run `npm run dev`, test button hover on any page — should scale down slightly, not change color.
 
-Each replacement swaps the `<button>`+`<span>` knob block for
-`<ToggleSwitch checked={value} onChange={(v)=>setValue(field,v)} color="…" size="md" />`.
-Toggles are folded into each file's own styling pass (no separate pass that re-edits a file).
+- [ ] 4. Update `components/ui/card.tsx` to Apple card styles
+      rounded-2xl (20px), border 1px #E5E5EA, shadow using --apple-shadow-card or Tailwind multi-layer (shadow-[0_1px_3px_rgba(0,0,0,0.04),0_2px_8px_rgba(0,0,0,0.03),0_4px_16px_rgba(0,0,0,0.02)]), hover:shadow-elevated + translateY(-2px), padding 16-20px, CardTitle font-semibold 17-19px letter-spacing -0.022em.
+      Files: `components/ui/card.tsx`
+      Verify: Inspect dashboard stat cards — should have soft shadow, proper border radius, hover lifts card up.
 
-## Emoji / icon findings
+- [ ] 5. Update `components/ui/badge.tsx` to Apple badge styles
+      rounded-full or rounded-xl (12px), 10-12px font medium, padding px-3 py-1, colors with 10% opacity backgrounds (bg-[#007AFF]/10 text-[#007AFF], bg-[#34C759]/10 text-[#34C759], bg-[#FF3B30]/10 text-[#FF3B30], bg-[#FF9500]/10 text-[#FF9500]), border-transparent.
+      Files: `components/ui/badge.tsx`
+      Verify: Check status badges on residents page — should have subtle colored backgrounds, not harsh borders.
 
-No literal emoji characters exist anywhere in `app/` or `components/`. The whole UI already
-uses `lucide-react`. The only non-lucide UI icon is the inline SVG home logo in
-`app/(auth)/login/page.tsx` — replace it with `Building2` from lucide-react. Meal indicator
-icons (`Coffee`/`Sun`/`Moon`/`Utensils`) in `PlansClient.tsx` and `AddResidentForm.tsx` are
-already lucide line icons — keep them, just recolor to Apple tints.
+- [ ] 6. Update `components/ui/input.tsx` to Apple input styles
+      Height 44px, rounded-xl, border #E5E5EA (1px), bg-[#FBFBFD], placeholder text-[#8E8E93], focus:ring-2 ring-[#007AFF] with blue shadow (shadow-[0_0_0_3px_rgba(0,122,255,0.1)]), font 15-16px, letter-spacing -0.016em.
+      Files: `components/ui/input.tsx`
+      Verify: Test input focus on add resident form — should show blue ring with subtle shadow.
 
----
+- [ ] 7. Update `components/ui/select.tsx` to Apple select styles
+      SelectTrigger height 44px rounded-xl border-[#E5E5EA] bg-[#FBFBFD] placeholder:text-[#8E8E93], focus:ring-2 ring-[#007AFF]. SelectContent rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)]. SelectItem hover:bg-[#F2F2F7] rounded-lg. Icons (Check, ChevronDown) 20px (w-5 h-5).
+      Files: `components/ui/select.tsx`
+      Verify: Test dropdown on add resident form — should have soft shadow, rounded corners, hover states work.
 
-## Step 1 — Apple design foundation (shared primitives)
+- [ ] 8. Update `components/ui/table.tsx` to Apple table styles
+      Remove grid borders. Row separator border-b border-[#E5E5EA] (1px) only. NO zebra stripes. TableHead text-[#8E8E93] font-semibold text-xs uppercase tracking-wide. TableRow hover:bg-[#F9F9FB]. Cell padding py-3 px-4, font 14-15px.
+      Files: `components/ui/table.tsx`
+      Verify: Check residents table, payments table — should only have horizontal row separators, no vertical borders.
 
-Create and update the shared building blocks every page depends on.
+- [ ] 9. Update `components/ui/dialog.tsx` to Apple dialog styles
+      DialogContent rounded-2xl, border-[#E5E5EA], shadow-[0_8px_30px_rgba(0,0,0,0.12)], padding p-6. DialogOverlay bg-black/30 with backdrop-blur. DialogTitle font-semibold 19px letter-spacing -0.022em. Close button (X icon) 20px rounded-lg hover:bg-[#F2F2F7].
+      Files: `components/ui/dialog.tsx`
+      Verify: Open any dialog/modal — should have soft shadow, rounded corners, blurred backdrop.
 
-- [ ] 1a. Create `components/ui/toggle-switch.tsx` — a `'use client'` component:
-  `ToggleSwitch({ checked, onChange, disabled?, size='md', color='blue' })`, `cn` from
-  `@/lib/utils`. iOS pill: `<button type="button" role="switch" aria-checked={checked}>`
-  track `rounded-full transition-all duration-200 ease-in-out`, off bg `#E5E5EA`, on bg =
-  blue(`#007AFF`)/green(`#34C759`)/orange(`#FF9500`) per `color`. White knob
-  `bg-white rounded-full shadow-sm`, `transition-all duration-200`. md: track `w-[51px]
-  h-[31px]`, knob `w-[27px] h-[27px]`, `translate-x-[2px]` off / `translate-x-[22px]` on. sm:
-  track `w-[38px] h-[22px]`, knob `w-[18px] h-[18px]`, `translate-x-[2px]` off /
-  `translate-x-[18px]` on. `disabled:opacity-50 disabled:cursor-not-allowed`.
-  Files: `components/ui/toggle-switch.tsx`
-  Verify: `npm run build` compiles (new file has no type errors).
+- [ ] 10. Update `components/ui/tabs.tsx` to Apple tabs styles
+       TabsList rounded-xl bg-[#F2F2F7] padding p-1. TabsTrigger rounded-lg px-4 py-2 text-[#8E8E93] font-medium 15px, active:bg-white text-[#1C1C1E] shadow-sm. Transition-all 200ms spring.
+       Files: `components/ui/tabs.tsx`
+       Verify: Check tabs on resident profile page — should have pill-style background, active tab is white with shadow.
 
-- [ ] 1b. Rewrite `app/globals.css` `:root` to the Apple palette exactly:
-  `--background 240 5% 96%` (pair `#F2F2F7`), `--foreground 0 0% 11%` (`#1C1C1E`),
-  `--card 0 0% 100%`, `--card-foreground 0 0% 11%`, `--popover 0 0% 100%`,
-  `--popover-foreground 0 0% 11%`, `--primary 211 100% 50%` (`#007AFF`),
-  `--primary-foreground 0 0% 100%`, `--secondary 240 5% 96%`, `--secondary-foreground 0 0% 11%`,
-  `--muted 240 5% 94%`, `--muted-foreground 240 4% 54%` (`#8E8E93`), `--accent 240 5% 94%`,
-  `--accent-foreground 0 0% 11%`, `--destructive 4 90% 58%` (`#FF3B30`),
-  `--destructive-foreground 0 0% 100%`, `--border 240 6% 90%` (`#E5E5EA`),
-  `--input 240 6% 90%`, `--ring 211 100% 50%`, `--radius 0.75rem`. Remove the `.dark` block
-  (dark mode out of scope). Add to the `@layer base { body {} }`: `font-family:
-  -apple-system, BlinkMacSystemFont, var(--font-inter), 'Segoe UI', sans-serif;`
-  `-webkit-font-smoothing: antialiased; font-size: 14px;`. Add `::-webkit-scrollbar`
-  (`&::-webkit-scrollbar { width: 6px; height: 6px }`, track `transparent`, thumb `#C7C7CC`
-  `rounded-full`, `&:hover` thumb `#8E8E93`).
-  Files: `app/globals.css`
-  Verify: `npm run build` compiles.
+- [ ] 11. Verify and update `components/ui/toggle-switch.tsx`
+       Confirm track colors (bg-[#E5E5EA] off, bg-[#007AFF] on), knob sizes correct (md: 51x31px track, 27px knob), smooth transition 200ms, colors match Apple (blue #007AFF, green #34C759, orange #FF9500).
+       Files: `components/ui/toggle-switch.tsx`
+       Verify: Test toggle on add resident form food selection — should animate smoothly, colors match Apple palette.
 
-- [ ] 1c. Update `app/layout.tsx` so the Apple font stack leads: change `const inter =
-  Inter(...)` usage from `<body className={inter.className}>` to `<body
-  className={inter.variable}>` (this defines `--font-inter` instead of forcing the font), so
-  the globals.css stack with `-apple-system` first actually applies. Keep the `Inter` import.
-  Files: `app/layout.tsx`
-  Verify: `npm run build` compiles; login/dashboard render with the system font leading.
+- [ ] 12. Update remaining UI primitives
+       Update skeleton.tsx (rounded-xl, bg-[#F2F2F7]), dropdown-menu.tsx (rounded-xl, shadow-elevated, items hover:bg-[#F2F2F7] rounded-lg, icons 20px), separator.tsx (bg-[#E5E5EA] h-px or w-px), label.tsx (font-medium 15px text-[#1C1C1E] letter-spacing -0.016em), toast.tsx (rounded-xl, colored backgrounds with 10% opacity, shadow-elevated).
+       Files: `components/ui/skeleton.tsx`, `components/ui/dropdown-menu.tsx`, `components/ui/separator.tsx`, `components/ui/label.tsx`, `components/ui/toast.tsx`, `components/ui/toaster.tsx`
+       Verify: Build succeeds, no TypeScript errors. Test each component on relevant pages.
 
-- [ ] 1d. Restyle `components/ui/button.tsx` `buttonVariants`: base → `rounded-xl font-medium
-  transition-all duration-150 active:scale-[0.97]` (replace `rounded-md`/`transition-colors`);
-  keep focus rings. `default`: `bg-[#007AFF] text-white hover:bg-[#0071EB]`;
-  `destructive`: `bg-[#FF3B30] text-white hover:bg-[#E0352B]`; `outline`:
-  `border border-[#E5E5EA] bg-white text-[#1C1C1E] hover:bg-[#F2F2F7]`; `secondary`:
-  `bg-[#F2F2F7] text-[#1C1C1E] hover:bg-[#E5E5EA]`; `ghost`:
-  `text-[#007AFF] hover:bg-[#F2F2F7]`; `link`: `text-[#007AFF]`. Sizes: `default h-[44px] px-5`,
-  `sm h-9 px-4`, `lg h-[50px] px-7`, keep `icon h-10 w-10`.
-  Files: `components/ui/button.tsx`
-  Verify: `npm run build` compiles.
+- [ ] 13. Enforce 20px icon size across all UI components
+       Search all files in components/ui/ for Lucide icon usages. Replace w-4 h-4 with w-5 h-5 (20px). Common icons: Check, ChevronDown, ChevronUp, X, Search, User, Plus, Minus. Ensure strokeWidth=2 where applicable.
+       Files: All files in `components/ui/`
+       Verify: Inspect icons on buttons, selects, dialogs — all should be uniform 20px size.
 
-- [ ] 1e. Restyle `components/ui/input.tsx`: `rounded-xl h-11 border-[#E5E5EA] bg-white
-  text-[#1C1C1E] placeholder:text-[#C7C7CC] focus-visible:ring-2
-  focus-visible:ring-[#007AFF] focus-visible:ring-offset-0 focus-visible:border-[#007AFF]`
-  (replace `rounded-md h-10 border-input` + `ring-offset-2`).
-  Files: `components/ui/input.tsx`
-  Verify: `npm run build` compiles.
+## Layout & Pages (FEAT-003): Apply Apple Design Throughout
 
-- [ ] 1f. Restyle `components/ui/card.tsx` `Card` base: `rounded-2xl border border-[#E5E5EA]
-  bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)]` (replace
-  `rounded-lg border bg-card shadow-sm`). Leave `CardTitle`/`CardHeader`/etc. (pages override).
-  Files: `components/ui/card.tsx`
-  Verify: `npm run build` compiles.
+- [ ] 14. Update `components/layout/Sidebar.tsx` to Apple sidebar styles
+       Nav items: active state bg-[#007AFF]/10 text-[#007AFF] (NOT solid bg-[#007AFF]), hover bg-[#F2F2F7], rounded-lg (10px), padding px-3 py-2.5, icons 20px (w-5 h-5), font-medium 15px. Section labels text-[#8E8E93] text-xs font-semibold uppercase tracking-wider. Border-r border-[#E5E5EA]. User avatar rounded-full bg-[#F2F2F7]. Sign-out button hover:bg-[#FF3B30]/10 hover:text-[#FF3B30].
+       Files: `components/layout/Sidebar.tsx`
+       Verify: Check sidebar — active nav item should have light blue background (10% opacity), not solid blue.
 
-- [ ] 1g. Restyle `components/ui/badge.tsx`: base `rounded-full text-xs font-medium px-2.5
-  py-0.5 border` (change `font-semibold`→`font-medium`); `default`:
-  `bg-[#007AFF] text-white border-transparent`; `secondary`:
-  `bg-[#F2F2F7] text-[#1C1C1E] border-transparent`; `destructive`:
-  `bg-[#FF3B30]/10 text-[#FF3B30] border-transparent`; `outline`:
-  `border border-current bg-transparent text-foreground`.
-  Files: `components/ui/badge.tsx`
-  Verify: `npm run build` compiles.
+- [ ] 15. Update `components/layout/TopBar.tsx` to Apple topbar styles
+       Height 60px, border-b border-[#E5E5EA]. Search input rounded-full bg-[#F2F2F7] h-9 text-15px placeholder:text-[#8E8E93] focus:ring-2 ring-[#007AFF]. Bell icon button w-10 h-10 rounded-xl hover:bg-[#F2F2F7]. Icons 20px (w-5 h-5).
+       Files: `components/layout/TopBar.tsx`
+       Verify: Check top bar — search should be pill-shaped, bell icon 20px, proper hover states.
 
-- [ ] 1h. Restyle `components/ui/tabs.tsx`: `TabsList` →
-  `inline-flex items-center justify-center rounded-xl bg-[#F2F2F7] p-1 gap-1
-  text-muted-foreground` (remove `h-10`); `TabsTrigger` → `rounded-lg text-[#8E8E93]
-  font-medium text-sm data-[state=active]:bg-white data-[state=active]:text-[#1C1C1E]
-  data-[state=active]:shadow-sm transition-all` (replace `rounded-sm` + bg-background/text-foreground).
-  Files: `components/ui/tabs.tsx`
-  Verify: `npm run build` compiles.
+- [ ] 16. Update `components/layout/BottomNav.tsx` to Apple bottom nav styles
+       Active text-[#007AFF], inactive text-[#8E8E93], icons 20px (w-5 h-5), font-medium 13px, padding py-3, border-t border-[#E5E5EA], bg-white with backdrop-blur.
+       Files: `components/layout/BottomNav.tsx`
+       Verify: Test on mobile width — bottom nav should show, active item blue, icons 20px.
 
-- [ ] 1i. Restyle `components/ui/select.tsx`: `SelectTrigger` → `rounded-xl h-11
-  border-[#E5E5EA] bg-white focus:ring-2 focus:ring-[#007AFF] focus:border-[#007AFF]`
-  (replace `rounded-md h-10 border-input` + `ring-offset-2`); `SelectContent` → `rounded-xl
-  border-[#E5E5EA] shadow-[0_8px_30px_rgba(0,0,0,0.12)]` (replace `rounded-md ... shadow-md`);
-  `SelectItem` → `rounded-lg focus:bg-[#F2F2F7] focus:text-[#1C1C1E]` (replace `rounded-sm`).
-  Files: `components/ui/select.tsx`
-  Verify: `npm run build` compiles.
+- [ ] 17. Update `components/residents/AddResidentForm.tsx` to Apple form styles
+       All inputs h-11 (44px) rounded-xl. Labels font-medium 15px. Stepper circles bg-[#007AFF] with ring-4 ring-[#007AFF]/20 for active, completed with Check icon 20px. Plan cards rounded-xl border-2 (active border-[#007AFF] bg-[#007AFF]/5, inactive border-[#E5E5EA]). Room/food plan icons 20px. Price summary card rounded-xl bg-[#F2F2F7] border-[#E5E5EA] padding p-4. All buttons use Apple button styles from step 3.
+       Files: `components/residents/AddResidentForm.tsx`
+       Verify: Test entire add resident flow — all inputs, selects, cards, buttons should match Apple design. Check stepper, plan selection cards, room layout preview.
 
-- [ ] 1j. Restyle `components/ui/table.tsx` defaults: `TableRow` `hover:bg-[#F2F2F7]/50`
-  (replace `hover:bg-muted/50`); `TableHead` → `h-11 px-4 text-xs uppercase tracking-wide
-  font-medium text-[#8E8E93]` (replace `h-12 ... text-muted-foreground`).
-  Files: `components/ui/table.tsx`
-  Verify: `npm run build` compiles.
+- [ ] 18. Update `components/rooms/RoomLayoutPreview.tsx` to Apple preview styles
+       Card rounded-2xl. Bed cards rounded-xl padding p-3 border-2 (vacant border-[#34C759] bg-[#34C759]/5, occupied border-[#FF3B30] bg-[#FF3B30]/5). Icons 20px. Status dots w-2.5 h-2.5 rounded-full. Electricity bill alert rounded-xl bg-[#FF9500]/10 border-[#FF9500]/20.
+       Files: `components/rooms/RoomLayoutPreview.tsx`
+       Verify: Select a room in add resident form — layout preview should show with Apple-styled bed cards and colors.
 
-- [ ] 1k. Restyle `components/ui/dialog.tsx`: `DialogOverlay` `bg-black/30` (replace
-  `bg-black/80`); `DialogContent` base `rounded-2xl border-[#E5E5EA]
-  shadow-[0_8px_30px_rgba(0,0,0,0.12)]` (replace `border bg-background ... shadow-lg ...
-  sm:rounded-lg`).
-  Files: `components/ui/dialog.tsx`
-  Verify: `npm run build` compiles.
+- [ ] 19. Update dashboard page `app/(dashboard)/dashboard/page.tsx`
+       Stat cards use Card component (already Apple-styled). Icon containers w-12 h-12 rounded-xl with 10% opacity backgrounds. Icons 20px. Heading font-semibold 22px letter-spacing -0.022em. Subtext text-[#8E8E93] 15px. Grid gaps gap-4.
+       Files: `app/(dashboard)/dashboard/page.tsx`
+       Verify: Dashboard stat cards should have soft shadows, proper spacing, icons 20px in colored rounded containers.
 
-## Step 2 — Layout chrome (navigation)
+- [ ] 20. Update residents pages
+       Update `app/(dashboard)/residents/page.tsx`: Search/filters match TopBar style, table uses Apple table styles (no grid borders), status badges Apple style, action buttons 20px icons rounded-lg hover:bg-[#F2F2F7]. Update `app/(dashboard)/residents/[id]/page.tsx`: Header photo rounded-2xl, tabs use Apple tabs component, action buttons Apple style, tables Apple style, all icons 20px.
+       Files: `app/(dashboard)/residents/page.tsx`, `app/(dashboard)/residents/[id]/page.tsx`
+       Verify: Residents list table has row separators only. Resident profile tabs are Apple-styled. All icons 20px.
 
-- [ ] 2a. `components/layout/Sidebar.tsx` (macOS sidebar): aside `bg-white border-r
-  border-[#E5E5EA]`; logo tile `bg-[#007AFF] rounded-lg` with white `DoorOpen`, title
-  `text-[#1C1C1E]`; nav items default `text-[#1C1C1E] text-sm` with icon `text-[#8E8E93]`,
-  active `bg-[#007AFF] text-white rounded-xl` (text AND icon white), hover `bg-[#F2F2F7]`;
-  bottom area separator `border-[#E5E5EA]`, name `text-[#1C1C1E] font-semibold`, email
-  `text-[#8E8E93]`; Sign out `hover:bg-[#FF3B30]/10 hover:text-[#FF3B30]`. Optionally add
-  small uppercase `text-[#8E8E93]` section labels grouping items (Management / Finance /
-  System) — keep all `href`s unchanged.
-  Files: `components/layout/Sidebar.tsx`
-  Verify: `npm run build` compiles; sidebar active pill is blue, not green.
+- [ ] 21. Update rooms, plans, rent pages
+       Update `app/(dashboard)/rooms/page.tsx`: Room cards rounded-2xl border-[#E5E5EA] shadow-apple-card, bed icons 20px, colors (#34C759 / #FF3B30), hover translateY(-2px) + shadow-elevated. Update `app/(dashboard)/plans/page.tsx`: Plan cards/table Apple styled, dialogs use Apple dialog, toggles already styled, meal icons 20px, price text-[#007AFF]. Update `app/(dashboard)/rent/page.tsx`: Month selector Apple select style, summary cards Apple style, table Apple style, buttons Apple style, badges Apple style, icons 20px.
+       Files: `app/(dashboard)/rooms/page.tsx`, `app/(dashboard)/plans/page.tsx`, `app/(dashboard)/rent/page.tsx`
+       Verify: Rooms page cards lift on hover. Plans toggles work smoothly. Rent page table has proper Apple styling.
 
-- [ ] 2b. `components/layout/TopBar.tsx`: header `h-[52px] bg-white border-b border-[#E5E5EA]`;
-  add a center search pill `<input className="rounded-full bg-[#F2F2F7] border-none ...">`
-  with a `Search` lucide icon inside (visual only, local state, no submit wiring); right
-  `Bell` button `hover:bg-[#F2F2F7] rounded-xl`; pgName title `text-[#1C1C1E]`.
-  Files: `components/layout/TopBar.tsx`
-  Verify: `npm run build` compiles.
+- [ ] 22. Update payments, deposits, electricity pages
+       Update `app/(dashboard)/payments/page.tsx`: Ledger table Apple style (row separators, hover:bg-[#F9F9FB]), filters Apple style, icons 20px, reversal badges bg-[#FF9500]/10. Update `app/(dashboard)/deposits/page.tsx`: Tabs Apple style, deposit cards rounded-xl, eligibility indicators with Apple colors and 20px icons. Update `app/(dashboard)/electricity/page.tsx`: Form inputs h-11 rounded-xl, selectors Apple style, preview cards rounded-xl, buttons Apple style, Zap icon 20px.
+       Files: `app/(dashboard)/payments/page.tsx`, `app/(dashboard)/deposits/page.tsx`, `app/(dashboard)/electricity/page.tsx`
+       Verify: All tables use row separators only. Forms use 44px inputs. Icons are 20px.
 
-- [ ] 2c. `components/layout/BottomNav.tsx`: active `text-[#007AFF]` (icon + label), inactive
-  `text-[#8E8E93]`; `border-t border-[#E5E5EA]`. Keep hrefs.
-  Files: `components/layout/BottomNav.tsx`
-  Verify: `npm run build` compiles.
+- [ ] 23. Update expenses, reports, settings, activity-log pages
+       Update `app/(dashboard)/expenses/page.tsx`: Form inputs Apple style, category badges Apple style, table Apple style. Update `app/(dashboard)/reports/page.tsx`: Report cards rounded-2xl shadow-apple-card, export buttons Apple style, date pickers Apple style. Update `app/(dashboard)/settings/page.tsx`: Form inputs h-11 rounded-xl, labels font-medium 15px, separators bg-[#E5E5EA] h-px, toggles already styled, save button Apple primary. Update `app/(dashboard)/activity-log/page.tsx`: Table Apple style, badges Apple style, filters Apple style, icons 20px.
+       Files: `app/(dashboard)/expenses/page.tsx`, `app/(dashboard)/reports/page.tsx`, `app/(dashboard)/settings/page.tsx`, `app/(dashboard)/activity-log/page.tsx`
+       Verify: All pages follow consistent Apple design. No generic Material Design elements remain.
 
-- [ ] 2d. `app/(dashboard)/layout.tsx`: root div `bg-[#F2F2F7]` (replace `bg-[#f5f5f5]`).
-  Files: `app/(dashboard)/layout.tsx`
-  Verify: `npm run build` compiles; dashboard bg is `#F2F2F7`.
+- [ ] 24. Global icon size enforcement across all pages
+       Search all files in app/(dashboard)/ and components/ (excluding ui/) for Lucide icon usages. Replace w-4 h-4 with w-5 h-5 (20px). Common icons: User, Users, DoorOpen, BedDouble, Bed, Receipt, CreditCard, Wallet, Zap, ShoppingCart, BarChart2, Settings, Clock, LogOut, Bell, Search, Check, ChevronDown, ChevronUp, ChevronRight, ChevronLeft, Info, Banknote, Smartphone, Landmark, Coffee, Moon, Sun, Utensils, UtensilsCrossed, Building2, TrendingUp, LayoutDashboard, ListCheck, X, Plus, Minus, Edit, Trash.
+       Files: All relevant files in `app/(dashboard)/` and `components/` (layout, residents, rooms, etc.)
+       Verify: Visual inspection of every page — all icons should be uniform 20px size.
 
-## Step 3 — Login
+- [ ] 25. Test responsive behavior across all breakpoints
+       Test mobile view (BottomNav visible, Sidebar hidden), tablet view, desktop view. Ensure all Apple styles work: cards maintain rounded-xl, proper padding, touch-friendly sizes (min 44px tap targets), navigation transitions smooth, no layout shift.
+       Files: N/A (testing step)
+       Verify: Resize browser from mobile (375px) to desktop (1440px+). All pages should look native Apple at every size. BottomNav shows on mobile, Sidebar on desktop. All interactive elements maintain 44px minimum height.
 
-- [ ] 3a. `app/(auth)/login/page.tsx`: outer `bg-[#F2F2F7]` (replace the green gradient); logo
-  tile `bg-[#34C759] rounded-2xl` with lucide `Building2` (white) — remove the inline SVG;
-  title `PG Manager` `text-[22px] font-semibold text-[#1C1C1E]`; subtitle `text-sm
-  text-[#8E8E93]`. Import `Building2` from `lucide-react`.
-  Files: `app/(auth)/login/page.tsx`
-  Verify: `npm run build` compiles.
+## Final Verification
 
-- [ ] 3b. `components/auth/LoginForm.tsx`: Card `rounded-2xl p-8
-  shadow-[0_20px_60px_rgba(0,0,0,0.08)] border-0`; card title `text-[22px] font-semibold
-  text-[#1C1C1E]`, subtitle `text-sm text-[#8E8E93]`; labels `text-sm font-medium
-  text-[#1C1C1E]`; remove per-input `rounded-lg` overrides (Input primitive is now Apple); error
-  box `bg-[#FF3B30]/10 text-[#FF3B30]` (no border); inline field errors `text-[#FF3B30]`;
-  login button `w-full bg-[#007AFF] h-[44px] rounded-xl` (use default variant + `w-full
-  h-[44px]`), keep the `Loader2` spinner.
-  Files: `components/auth/LoginForm.tsx`
-  Verify: `npm run build` compiles.
-
-## Step 4 — Dashboard
-
-- [ ] 4a. `app/(dashboard)/dashboard/page.tsx`: heading `text-[22px] font-semibold
-  text-[#1C1C1E]`, subtitle `text-[#8E8E93]`; stat `Card`s use the new Apple card defaults
-  (drop `border-0 shadow-sm rounded-xl` overrides → keep just `<Card>`); stat icon tiles to
-  Apple tints — Residents `bg-[#007AFF]/10 text-[#007AFF]`, Occupied Beds
-  `bg-[#34C759]/10 text-[#34C759]`, Pending Rent `bg-[#FF9500]/10 text-[#FF9500]`, Income
-  `bg-[#AF52DE]/10 text-[#AF52DE]`; section `CardTitle` `text-[15px] font-semibold
-  text-[#1C1C1E]`; "Phase 2 coming soon" text `text-[#8E8E93]`. Keep lucide icons.
-  Files: `app/(dashboard)/dashboard/page.tsx`
-  Verify: `npm run build` compiles.
-
-## Step 5 — Rooms page
-
-- [ ] 5a. `components/rooms/RoomsClient.tsx`: header `text-[22px] font-semibold
-  text-[#1C1C1E]`, subtitle `text-[#8E8E93]`; Add Room button = default Apple variant (drop
-  `bg-green-600`); filter pills active `bg-[#007AFF]/10 text-[#007AFF]`, inactive `bg-white
-  text-[#8E8E93] border border-[#E5E5EA]`, all `rounded-xl`; empty-state tile `bg-[#F2F2F7]
-  text-[#8E8E93]`; remove dialog `rounded-lg` overrides on inputs/selects/buttons (primitives
-  are Apple now); replace the **hasSubMeter** toggle (~L320) with `<ToggleSwitch
-  color="blue">` and the **isActive** toggle (~L340) with `<ToggleSwitch color="blue">`
-  (read both `watch` values, `setValue` on change).
-  Files: `components/rooms/RoomsClient.tsx`
-  Verify: `npm run build` compiles; both toggles render as iOS switches.
-
-- [ ] 5b. `components/rooms/RoomCard.tsx`: card `rounded-2xl border border-[#E5E5EA]` + Apple
-  shadow; room number `text-[#1C1C1E]`; Inactive badge `bg-[#8E8E93]/10 text-[#8E8E93]`;
-  sharing badge double `bg-[#007AFF]/10 text-[#007AFF]`, triple `bg-[#5856D6]/10
-  text-[#5856D6]`; Sub-meter badge `bg-[#FF9500]/10 text-[#FF9500]`; bed dots vacant
-  `bg-[#34C759]`, occupied `bg-[#FF3B30]`; footer count `text-[#8E8E93]`; Deactivate button
-  `text-[#FF3B30] border-[#FF3B30]/20 hover:bg-[#FF3B30]/10`, Activate `text-[#34C759]`.
-  Files: `components/rooms/RoomCard.tsx`
-  Verify: `npm run build` compiles.
-
-## Step 6 — Plans page
-
-- [ ] 6a. `components/plans/PlansClient.tsx`: header `text-[22px] font-semibold
-  text-[#1C1C1E]`, subtitle `text-[#8E8E93]`; Add Plan button = Apple default; table
-  container `bg-white rounded-2xl` + Apple shadow, no outer border; header row — remove
-  `bg-gray-50`, header cells `text-xs uppercase tracking-wide text-[#8E8E93] font-medium`;
-  row hover `bg-[#F2F2F7]/50`; Type badge `bg-[#007AFF]/10 text-[#007AFF]`; meal badges —
-  Breakfast `bg-[#FF9500]/10 text-[#FF9500]` (`Coffee`), Lunch `bg-[#34C759]/10 text-[#34C759]`
-  (`Sun`), Dinner `bg-[#5856D6]/10 text-[#5856D6]` (`Moon`), keep icons; price `text-[#1C1C1E]`;
-  status Active `bg-[#34C759]/10 text-[#34C759]`, Inactive `bg-[#8E8E93]/10 text-[#8E8E93]`;
-  mobile cards `rounded-2xl border border-[#E5E5EA]` + Apple shadow; dialog inputs/selects/
-  buttons Apple (drop `rounded-lg`); meal checkboxes keep but `accent-[#007AFF]`; replace
-  the **isActive** toggle (~L430) with `<ToggleSwitch color="blue">`.
-  Files: `components/plans/PlansClient.tsx`
-  Verify: `npm run build` compiles; isActive toggle is an iOS switch.
-
-## Step 7 — Residents list & profile
-
-- [ ] 7a. `components/residents/ResidentsList.tsx`: header `text-[22px] font-semibold
-  text-[#1C1C1E]`; count badge `bg-[#007AFF]/10 text-[#007AFF]`; Add Resident button Apple;
-  filter selects Apple (drop `rounded-lg`); `STATUS_BADGE` → active
-  `text-[#34C759] border-transparent bg-[#34C759]/10`, notice
-  `text-[#FF9500] border-transparent bg-[#FF9500]/10`, left
-  `text-[#8E8E93] border-transparent bg-[#8E8E93]/10`; avatar circle
-  `bg-[#007AFF]/10 text-[#007AFF]`; table container `bg-white rounded-2xl` + Apple shadow, no
-  outer border, header row no bg + `text-xs uppercase text-[#8E8E93]`, row hover
-  `bg-[#F2F2F7]/50`; mobile cards `rounded-2xl border border-[#E5E5EA]` + Apple shadow;
-  empty-state tile `bg-[#F2F2F7] text-[#8E8E93]`.
-  Files: `components/residents/ResidentsList.tsx`
-  Verify: `npm run build` compiles.
-
-- [ ] 7b. `components/residents/ResidentProfile.tsx`: back link `text-[#8E8E93]
-  hover:text-[#1C1C1E]`; header card `rounded-2xl` + Apple shadow `border-[#E5E5EA]`; avatar
-  tile `bg-[#007AFF]/10 text-[#007AFF]`; name `text-[22px] font-semibold text-[#1C1C1E]`;
-  status badge Apple tints; meta icons `text-[#8E8E93]`; Give Notice button
-  `text-[#FF9500] border-[#FF9500]/30 hover:bg-[#FF9500]/10`, Check Out
-  `text-[#FF3B30] border-[#FF3B30]/20 hover:bg-[#FF3B30]/10`; notice banner
-  `bg-[#FF9500]/10 border-[#FF9500]/20 text-[#FF9500]`; `TabsList` → remove `bg-white border
-  border-gray-100`, use `bg-[#F2F2F7] rounded-xl p-1 gap-1 flex-wrap h-auto`, triggers
-  `rounded-lg`; overview cards `rounded-2xl` + Apple shadow, section titles `text-[15px]
-  font-semibold text-[#1C1C1E]`, labels `text-[#8E8E93]`, values `text-[#1C1C1E]`, notes box
-  `bg-[#F2F2F7]`; plan-history table Apple header, "Current" badge
-  `bg-[#34C759]/10 text-[#34C759]`; placeholder tab icon tiles Apple tints (rent
-  `bg-[#FF9500]/10 text-[#FF9500]`, payments `bg-[#007AFF]/10 text-[#007AFF]`, electricity
-  `bg-[#FF9500]/10 text-[#FF9500]`, deposit `bg-[#5856D6]/10 text-[#5856D6]`); dialogs Apple
-  (inputs/selects/buttons); Record Notice button `bg-[#FF9500] hover:bg-[#E68B00] text-white`,
-  notice banner `bg-[#FF9500]/10 text-[#FF9500]`; success/error banners Apple tints.
-  Files: `components/residents/ResidentProfile.tsx`
-  Verify: `npm run build` compiles.
-
-## Step 8 — Settings page
-
-- [ ] 8a. `components/settings/SettingsForm.tsx` (Apple Settings app style): `TabsList`
-  Apple pill tabs (`bg-[#F2F2F7] rounded-xl`); each group `Card` uses new Apple defaults,
-  `CardTitle` `text-[15px] font-semibold text-[#1C1C1E]`; inputs Apple (drop `rounded-lg`); the
-  receipt `<textarea>` → `rounded-xl border-[#E5E5EA] focus:ring-2 focus:ring-[#007AFF]`; billing
-  radios keep but `accent-[#007AFF]`; **prorateFirstMonth** row → label LEFT, `<ToggleSwitch
-  color="green">` RIGHT (iOS Settings row) — restructure to `flex items-center justify-between`
-  and remove the old `<button>`+`<span>` block (~L216); Save/Change-Password buttons = Apple
-  default variant (drop `bg-green-500`); success banner `bg-[#34C759]/10 text-[#34C759]`, error
-  banner `bg-[#FF3B30]/10 text-[#FF3B30]`. (Security tab sits outside the main `<form>` — keep
-  that structure; just restyle.)
-  Files: `components/settings/SettingsForm.tsx`
-  Verify: `npm run build` compiles; prorate toggle is an iOS switch on the right.
-
-## Step 9 — AddResidentForm card UX + sharing-based plan filter + food-optional nested options
-
-- [ ] 9a. `components/residents/AddResidentForm.tsx` — redesign the "Stay & Plan" step into a
-  proper card-based UX. Add a TOP-LEVEL **Sharing Type** selector (two Apple selectable cards:
-  Double / Triple), new state `selectedSharing` (UI-only, NOT submitted, NOT in the schema).
-  When sharing changes: clear room/bed/plan/food (`setValue('room','')`,
-  `setValue('bed','')`, `setValue('currentPlan','')`, `setSelectedFoodPlanId('')`,
-  `setWantsFood(false)`). Filter the Room dropdown to rooms whose `sharingType` matches
-  `selectedSharing`. Keep the existing vacant-bed load effect. Filter room plans by
-  `selectedSharing` (the existing `roomPlans` filter currently keys off the selected room's
-  sharing — keep that working AND gate it on `selectedSharing` so plans match the top selector).
-  Do NOT change `residentSchema`, `checkInResident`, or what is submitted (food plan still
-  appended to `notes` on submit exactly as today). Files: `components/residents/AddResidentForm.tsx`
-  Verify: `npm run build` compiles; selecting Double hides Triple plans and vice-versa.
-
-- [ ] 9b. Same file — Apple-style the Room Plan cards (mandatory) and Food Plan cards
-  (optional). Room plan selected state → `border-[#007AFF] bg-[#007AFF]/5`, selected tile
-  `bg-[#007AFF] text-white` (replace green); food plan selected state → `border-[#FF9500]
-  bg-[#FF9500]/10`, tile `bg-[#FF9500] text-white` (replace orange-400). Keep "Room Plan
-  Mandatory" + "Food Plan Optional" badges and the meal-icon logic. The **Food Plan** section
-  keeps the optional toggle that reveals nested food plan cards (food_only plans) — this is the
-  "food optional → nested options" requirement, already present; just restyle. Replace the
-  **wantsFood** toggle (~L495) with `<ToggleSwitch color="orange">`, **depositReceived**
-  (~L642) with `<ToggleSwitch color="green">`, **recordFirstPayment** (~L727) with
-  `<ToggleSwitch color="green">`. Files: `components/residents/AddResidentForm.tsx`
-  Verify: `npm run build` compiles; all three toggles are iOS switches.
-
-- [ ] 9c. Same file — finish Apple styling of the rest: stepper circles active/complete
-  `bg-[#007AFF] text-white` ring `ring-[#007AFF]/20` (replace green); step header icon
-  `text-[#007AFF]`; the main `Card` uses new Apple defaults; section cards
-  `rounded-xl border-[#E5E5EA]`; deposit/first-rent nested panels `border-l-2
-  border-[#34C759]/30`; price summary `bg-[#F2F2F7]`, total `text-[#1C1C1E]`; error banner
-  `bg-[#FF3B30]/10 text-[#FF3B30]`; ID-upload info banner `bg-[#007AFF]/10 text-[#007AFF]
-  border-[#007AFF]/20`; nav buttons — Back/Cancel `outline`, Next/Submit default Apple
-  (drop `bg-green-600`); all inputs/selects Apple (drop per-field `rounded-xl h-10`
-  overrides — rely on primitives, keep `h-10` only where layout needs it).
-  Files: `components/residents/AddResidentForm.tsx`
-  Verify: `npm run build` compiles.
-
-## Step 10 — Cross-page consistency pass (convergence)
-
-- [ ] 10a. Run `npm run build`. Fix every TypeScript/compile error. Open each route
-  (`/login`, `/dashboard`, `/residents`, `/residents/new`, `/residents/[id]`, `/rooms`,
-  `/plans`, `/settings`, and the placeholder pages) and confirm: no green accent remains in
-  nav/buttons (blue `#007AFF` only), all toggles are iOS switches, status badges use the
-  Apple tint system, tables have no outer border, no leftover `rounded-lg` input overrides.
-  Re-run `npm run build` until it passes with 0 errors.
-  Files: any file with a leftover issue.
-  Verify: `npm run build` passes with 0 TypeScript errors; visual check of the routes above.
-
----
-
-## Verification (final gate)
-
-`npm run build` must pass with **0 TypeScript errors**. There is no test runner configured
-(no vitest/jest), so the build is the verification command. If a build error appears, fix it
-in the offending file and rebuild. Do not disable strict mode or skip the build.
-
-Record what changed: a short list of files touched per step (already enumerated above) and
-any assumption made (e.g. font stack uses `var(--font-inter)` so `-apple-system` leads; toggles
-use semantic colors blue/green/orange; sharing selector in AddResidentForm is UI-only state).
+- [ ] 26. Complete visual and functional audit
+       Navigate through every page: dashboard, residents, residents/new, residents/[id], rooms, plans, rent, payments, deposits, electricity, expenses, reports, settings, activity-log. Verify: all icons 20px, all inputs 44px, all borders 1px #E5E5EA, all shadows soft multi-layer, all interactions spring-animated (buttons scale on hover, NOT color change), all colors match Apple palette, typography is -apple-system with proper letter-spacing, no console errors.
+       Files: N/A (audit step)
+       Verify: Run `npm run build` — no errors. Run `npm run dev` — no console errors. Compare against Apple design spec checklist. Take screenshots and compare to iOS/macOS native apps for authenticity.

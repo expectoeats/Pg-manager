@@ -109,7 +109,7 @@ export default function RoomCard({ room, beds, onEdit, onToggleActive, toggling 
             className="h-7 px-2 text-xs"
             onClick={() => onEdit(room)}
           >
-            <Pencil className="w-3 h-3 mr-1" />
+            <Pencil className="w-5 h-5 mr-1" />
             Edit
           </Button>
           <Button
@@ -119,7 +119,7 @@ export default function RoomCard({ room, beds, onEdit, onToggleActive, toggling 
             onClick={() => onToggleActive(room._id)}
             disabled={toggling}
           >
-            <Power className="w-3 h-3 mr-1" />
+            <Power className="w-5 h-5 mr-1" />
             {room.isActive ? 'Deactivate' : 'Activate'}
           </Button>
         </div>

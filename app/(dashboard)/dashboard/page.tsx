@@ -36,10 +36,10 @@ export default async function DashboardPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-[22px] font-semibold text-[#1C1C1E]">
+        <h1 className="font-semibold text-[22px] tracking-[-0.022em] text-[#1C1C1E]">
           Welcome back, {session?.user?.name?.split(' ')[0] || 'Owner'}
         </h1>
-        <p className="text-[#8E8E93] mt-1">Here&apos;s an overview of your PG</p>
+        <p className="text-[#8E8E93] text-[15px] mt-1">Here&apos;s an overview of your PG</p>
       </div>
 
       {/* Stat Cards */}
@@ -51,9 +51,9 @@ export default async function DashboardPage() {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-3">
                   <div
-                    className={`w-10 h-10 rounded-xl ${card.bg} flex items-center justify-center`}
+                    className={`w-12 h-12 rounded-xl ${card.bg} flex items-center justify-center`}
                   >
-                    <Icon className={`w-5 h-5 ${card.color}`} />
+                    <Icon className={`w-5 h-5 ${card.color}`} strokeWidth={2} />
                   </div>
                 </div>
                 <Skeleton className="h-7 w-16 mb-1" />
@@ -68,12 +68,12 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-[15px] font-semibold text-[#1C1C1E]">Recent Payments</CardTitle>
+            <CardTitle className="font-semibold text-[17px] tracking-[-0.022em] text-[#1C1C1E]">Recent Payments</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-3">
+                <div key={i} className="flex items-center gap-3 pb-3 border-b border-[#E5E5EA] last:border-0 last:pb-0">
                   <Skeleton className="h-9 w-9 rounded-full" />
                   <div className="flex-1">
                     <Skeleton className="h-4 w-32 mb-1" />
@@ -91,12 +91,12 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-[15px] font-semibold text-[#1C1C1E]">Pending Dues</CardTitle>
+            <CardTitle className="font-semibold text-[17px] tracking-[-0.022em] text-[#1C1C1E]">Pending Dues</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-3">
+                <div key={i} className="flex items-center gap-3 pb-3 border-b border-[#E5E5EA] last:border-0 last:pb-0">
                   <Skeleton className="h-9 w-9 rounded-full" />
                   <div className="flex-1">
                     <Skeleton className="h-4 w-32 mb-1" />

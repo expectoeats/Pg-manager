@@ -40,8 +40,8 @@ export default async function AddResidentPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Add Resident</h1>
-        <p className="text-gray-500 mt-1">Check in a new resident to a room</p>
+        <h1 className="font-semibold text-[22px] tracking-[-0.022em] text-[#1C1C1E]">Add Resident</h1>
+        <p className="text-[#8E8E93] text-[15px] mt-1">Check in a new resident to a room</p>
       </div>
       <AddResidentForm
         plans={data.activePlans}

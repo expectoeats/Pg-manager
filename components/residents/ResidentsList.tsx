@@ -80,13 +80,13 @@ export default function ResidentsList({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <h1 className="text-[22px] font-semibold text-[#1C1C1E]">Residents</h1>
-          <Badge variant="outline" className="bg-[#007AFF]/10 text-[#007AFF] border-transparent">
+          <h1 className="font-semibold text-[22px] tracking-[-0.022em] text-[#1C1C1E]">Residents</h1>
+          <Badge variant="outline" className="rounded-full bg-[#007AFF]/10 text-[#007AFF] border-transparent">
             {residents.length}
           </Badge>
         </div>
-        <Button onClick={() => router.push('/residents/new')}>
-          <Plus className="w-4 h-4 mr-2" />
+        <Button onClick={() => router.push('/residents/new')} className="h-11">
+          <Plus className="w-5 h-5 mr-2" strokeWidth={2} />
           Add Resident
         </Button>
       </div>
@@ -97,7 +97,7 @@ export default function ResidentsList({
           value={initialFilters.status || 'all'}
           onValueChange={(v) => updateFilter('status', v)}
         >
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-36 h-11 rounded-xl border-[#E5E5EA]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -112,7 +112,7 @@ export default function ResidentsList({
           value={initialFilters.planId || 'all'}
           onValueChange={(v) => updateFilter('planId', v)}
         >
-          <SelectTrigger className="w-44">
+          <SelectTrigger className="w-44 h-11 rounded-xl border-[#E5E5EA]">
             <SelectValue placeholder="Plan" />
           </SelectTrigger>
           <SelectContent>
@@ -129,7 +129,7 @@ export default function ResidentsList({
           value={initialFilters.roomId || 'all'}
           onValueChange={(v) => updateFilter('roomId', v)}
         >
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-36 h-11 rounded-xl border-[#E5E5EA]">
             <SelectValue placeholder="Room" />
           </SelectTrigger>
           <SelectContent>
@@ -146,7 +146,7 @@ export default function ResidentsList({
       {residents.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="w-16 h-16 bg-[#F2F2F7] rounded-2xl flex items-center justify-center mb-4">
-            <Users className="w-8 h-8 text-[#8E8E93]" />
+            <Users className="w-8 h-8 text-[#8E8E93]" strokeWidth={2} />
           </div>
           <h3 className="text-lg font-medium text-[#1C1C1E] mb-2">No residents found</h3>
           <p className="text-sm text-[#8E8E93] mb-4">
@@ -155,8 +155,8 @@ export default function ResidentsList({
               : 'Add your first resident to get started.'}
           </p>
           {!Object.values(initialFilters).some(Boolean) && (
-            <Button onClick={() => router.push('/residents/new')}>
-              <Plus className="w-4 h-4 mr-2" /> Add Resident
+            <Button onClick={() => router.push('/residents/new')} className="h-11">
+              <Plus className="w-5 h-5 mr-2" strokeWidth={2} /> Add Resident
             </Button>
           )}
         </div>
@@ -167,18 +167,18 @@ export default function ResidentsList({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Mobile</TableHead>
-                  <TableHead>Room / Bed</TableHead>
-                  <TableHead>Plan</TableHead>
-                  <TableHead>Joining</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Name</TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Mobile</TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Room / Bed</TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Plan</TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Joining</TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Status</TableHead>
+                  <TableHead className="text-right text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {residents.map((r) => (
-                  <TableRow key={r._id}>
+                  <TableRow key={r._id} className="hover:bg-[#F9F9FB]">
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center text-[#007AFF] font-semibold text-sm flex-shrink-0">
@@ -202,14 +202,14 @@ export default function ResidentsList({
                       {new Date(r.joiningDate).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={cn('text-xs capitalize', STATUS_BADGE[r.status])}>
+                      <Badge variant="outline" className={cn('rounded-full text-xs capitalize', STATUS_BADGE[r.status])}>
                         {r.status === 'notice' ? 'On Notice' : r.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <Link href={`/residents/${r._id}`}>
-                        <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
-                          <Eye className="w-3 h-3 mr-1" /> View
+                        <Button variant="outline" size="sm" className="h-7 px-2 text-xs rounded-lg hover:bg-[#F2F2F7]">
+                          <Eye className="w-5 h-5 mr-1" strokeWidth={2} /> View
                         </Button>
                       </Link>
                     </TableCell>
@@ -234,7 +234,7 @@ export default function ResidentsList({
                         <p className="text-xs text-[#8E8E93]">{r.mobile}</p>
                       </div>
                     </div>
-                    <Badge variant="outline" className={cn('text-xs capitalize', STATUS_BADGE[r.status])}>
+                    <Badge variant="outline" className={cn('rounded-full text-xs capitalize', STATUS_BADGE[r.status])}>
                       {r.status === 'notice' ? 'On Notice' : r.status}
                     </Badge>
                   </div>

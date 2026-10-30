@@ -284,7 +284,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
               )}
               {pwSuccess && (
                 <div className="bg-[#34C759]/10 text-[#34C759] px-4 py-3 rounded-xl text-sm flex items-center gap-2">
-                  <Check className="w-4 h-4" /> Password changed successfully
+                  <Check className="w-5 h-5" /> Password changed successfully
                 </div>
               )}
               <div className="space-y-2">
@@ -362,7 +362,7 @@ function SaveButton({
       )}
       {saveSuccess && (
         <div className="bg-[#34C759]/10 text-[#34C759] px-4 py-3 rounded-xl text-sm mb-3 flex items-center gap-2">
-          <Check className="w-4 h-4" /> Settings saved successfully
+          <Check className="w-5 h-5" /> Settings saved successfully
         </div>
       )}
       <Button

@@ -155,7 +155,7 @@ export default function ResidentProfile({
     <div>
       {/* Back link */}
       <Link href="/residents" className="inline-flex items-center gap-1 text-sm text-[#8E8E93] hover:text-[#1C1C1E] mb-4">
-        <ArrowLeft className="w-4 h-4" /> Back to Residents
+        <ArrowLeft className="w-5 h-5" strokeWidth={2} /> Back to Residents
       </Link>
 
       {/* Header card */}
@@ -167,22 +167,22 @@ export default function ResidentProfile({
             </div>
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-2 mb-1">
-                <h1 className="text-[22px] font-semibold text-[#1C1C1E]">{resident.name}</h1>
+                <h1 className="font-semibold text-[22px] tracking-[-0.022em] text-[#1C1C1E]">{resident.name}</h1>
                 <Badge
                   variant="outline"
-                  className={cn('text-xs capitalize', STATUS_BADGE[resident.status])}
+                  className={cn('rounded-full text-xs capitalize', STATUS_BADGE[resident.status])}
                 >
                   {resident.status === 'notice' ? 'On Notice' : resident.status}
                 </Badge>
               </div>
               <div className="flex flex-wrap gap-3 text-sm text-[#1C1C1E]">
                 {resident.room && resident.bed && (
-                  <span className="flex items-center gap-1.5"><Home className="w-3.5 h-3.5 text-[#8E8E93]" /> Room {resident.room.roomNumber} / Bed {resident.bed.bedLabel}</span>
+                  <span className="flex items-center gap-1.5"><Home className="w-5 h-5 text-[#8E8E93]" strokeWidth={2} /> Room {resident.room.roomNumber} / Bed {resident.bed.bedLabel}</span>
                 )}
                 {resident.currentPlan && (
-                  <span className="flex items-center gap-1.5"><ClipboardList className="w-3.5 h-3.5 text-[#8E8E93]" /> {resident.currentPlan.name}</span>
+                  <span className="flex items-center gap-1.5"><ClipboardList className="w-5 h-5 text-[#8E8E93]" strokeWidth={2} /> {resident.currentPlan.name}</span>
                 )}
-                <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-[#8E8E93]" /> {resident.mobile}</span>
+                <span className="flex items-center gap-1.5"><Phone className="w-5 h-5 text-[#8E8E93]" strokeWidth={2} /> {resident.mobile}</span>
               </div>
             </div>
             {/* Action buttons */}
@@ -191,7 +191,7 @@ export default function ResidentProfile({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs"
+                  className="text-xs h-11"
                   onClick={() => {
                     setNewPlanId(resident.currentPlan?._id as string || '');
                     setChangePlanOpen(true);
@@ -204,7 +204,7 @@ export default function ResidentProfile({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs text-[#FF9500] border-[#FF9500]/30 hover:bg-[#FF9500]/10"
+                  className="text-xs h-11 text-[#FF9500] border-[#FF9500]/30 hover:bg-[#FF9500]/10"
                   onClick={() => setNoticeOpen(true)}
                 >
                   Give Notice
@@ -215,9 +215,9 @@ export default function ResidentProfile({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-xs text-[#FF3B30] border-[#FF3B30]/20 hover:bg-[#FF3B30]/10"
+                    className="text-xs h-11 text-[#FF3B30] border-[#FF3B30]/20 hover:bg-[#FF3B30]/10"
                   >
-                    <LogOut className="w-3 h-3 mr-1" />
+                    <LogOut className="w-5 h-5 mr-1" strokeWidth={2} />
                     Check Out
                   </Button>
                 </Link>
@@ -227,7 +227,7 @@ export default function ResidentProfile({
 
           {resident.status === 'notice' && resident.expectedLeavingDate && (
             <div className="mt-4 p-3 bg-[#FF9500]/10 border border-[#FF9500]/20 rounded-lg text-sm text-[#FF9500] flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-[#FF9500] flex-shrink-0" />
+              <AlertTriangle className="w-5 h-5 text-[#FF9500] flex-shrink-0" strokeWidth={2} />
               On notice since {formatDate(resident.noticeDate)}. Expected leaving: {formatDate(resident.expectedLeavingDate)}
             </div>
           )}
@@ -250,36 +250,36 @@ export default function ResidentProfile({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardContent className="pt-6">
-                <h3 className="text-[15px] font-semibold text-[#1C1C1E] mb-4">Personal Details</h3>
+                <h3 className="font-semibold text-[17px] tracking-[-0.022em] text-[#1C1C1E] mb-4">Personal Details</h3>
                 <dl className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <dt className="text-[#8E8E93] text-xs">Full Name</dt>
-                    <dd className="text-[#1C1C1E] text-sm text-right">{resident.name}</dd>
+                  <div className="flex justify-between border-b border-[#E5E5EA] pb-2 last:border-0 last:pb-0">
+                    <dt className="text-[#8E8E93] text-[14px]">Full Name</dt>
+                    <dd className="font-medium text-[15px] text-[#1C1C1E] text-right">{resident.name}</dd>
                   </div>
-                  <div className="flex justify-between">
-                    <dt className="text-[#8E8E93] text-xs">Mobile</dt>
-                    <dd className="text-[#1C1C1E] text-sm">{resident.mobile}</dd>
+                  <div className="flex justify-between border-b border-[#E5E5EA] pb-2 last:border-0 last:pb-0">
+                    <dt className="text-[#8E8E93] text-[14px]">Mobile</dt>
+                    <dd className="font-medium text-[15px] text-[#1C1C1E]">{resident.mobile}</dd>
                   </div>
                   {resident.alternateMobile && (
-                    <div className="flex justify-between">
-                      <dt className="text-[#8E8E93] text-xs">Alt. Mobile</dt>
-                      <dd className="text-[#1C1C1E] text-sm">{resident.alternateMobile}</dd>
+                    <div className="flex justify-between border-b border-[#E5E5EA] pb-2 last:border-0 last:pb-0">
+                      <dt className="text-[#8E8E93] text-[14px]">Alt. Mobile</dt>
+                      <dd className="font-medium text-[15px] text-[#1C1C1E]">{resident.alternateMobile}</dd>
                     </div>
                   )}
-                  <div className="flex justify-between">
-                    <dt className="text-[#8E8E93] text-xs">Joining Date</dt>
-                    <dd className="text-[#1C1C1E] text-sm">{formatDate(resident.joiningDate)}</dd>
+                  <div className="flex justify-between border-b border-[#E5E5EA] pb-2 last:border-0 last:pb-0">
+                    <dt className="text-[#8E8E93] text-[14px]">Joining Date</dt>
+                    <dd className="font-medium text-[15px] text-[#1C1C1E]">{formatDate(resident.joiningDate)}</dd>
                   </div>
                   {resident.leavingDate && (
-                    <div className="flex justify-between">
-                      <dt className="text-[#8E8E93] text-xs">Leaving Date</dt>
-                      <dd className="text-[#1C1C1E] text-sm">{formatDate(resident.leavingDate)}</dd>
+                    <div className="flex justify-between border-b border-[#E5E5EA] pb-2 last:border-0 last:pb-0">
+                      <dt className="text-[#8E8E93] text-[14px]">Leaving Date</dt>
+                      <dd className="font-medium text-[15px] text-[#1C1C1E]">{formatDate(resident.leavingDate)}</dd>
                     </div>
                   )}
                   {resident.notes && (
                     <div>
-                      <dt className="text-[#8E8E93] text-xs mb-1">Notes</dt>
-                      <dd className="text-[#1C1C1E] bg-[#F2F2F7] p-2 rounded-lg">{resident.notes}</dd>
+                      <dt className="text-[#8E8E93] text-[14px] mb-1">Notes</dt>
+                      <dd className="text-[#1C1C1E] text-[15px] bg-[#F2F2F7] p-2 rounded-lg">{resident.notes}</dd>
                     </div>
                   )}
                 </dl>
@@ -288,30 +288,30 @@ export default function ResidentProfile({
 
             <Card>
               <CardContent className="pt-6">
-                <h3 className="text-[15px] font-semibold text-[#1C1C1E] mb-4">ID &amp; Guardian</h3>
+                <h3 className="font-semibold text-[17px] tracking-[-0.022em] text-[#1C1C1E] mb-4">ID &amp; Guardian</h3>
                 <dl className="space-y-3 text-sm">
                   {resident.idProofType && (
-                    <div className="flex justify-between">
-                      <dt className="text-[#8E8E93] text-xs">ID Type</dt>
-                      <dd className="text-[#1C1C1E] text-sm capitalize">{resident.idProofType.replace('_', ' ')}</dd>
+                    <div className="flex justify-between border-b border-[#E5E5EA] pb-2 last:border-0 last:pb-0">
+                      <dt className="text-[#8E8E93] text-[14px]">ID Type</dt>
+                      <dd className="font-medium text-[15px] text-[#1C1C1E] capitalize">{resident.idProofType.replace('_', ' ')}</dd>
                     </div>
                   )}
                   {resident.idProofNumber && (
-                    <div className="flex justify-between">
-                      <dt className="text-[#8E8E93] text-xs">ID Number</dt>
-                      <dd className="text-[#1C1C1E] text-sm">{resident.idProofNumber}</dd>
+                    <div className="flex justify-between border-b border-[#E5E5EA] pb-2 last:border-0 last:pb-0">
+                      <dt className="text-[#8E8E93] text-[14px]">ID Number</dt>
+                      <dd className="font-medium text-[15px] text-[#1C1C1E]">{resident.idProofNumber}</dd>
                     </div>
                   )}
                   {resident.guardianName && (
-                    <div className="flex justify-between">
-                      <dt className="text-[#8E8E93] text-xs">Guardian</dt>
-                      <dd className="text-[#1C1C1E] text-sm">{resident.guardianName}</dd>
+                    <div className="flex justify-between border-b border-[#E5E5EA] pb-2 last:border-0 last:pb-0">
+                      <dt className="text-[#8E8E93] text-[14px]">Guardian</dt>
+                      <dd className="font-medium text-[15px] text-[#1C1C1E]">{resident.guardianName}</dd>
                     </div>
                   )}
                   {resident.guardianMobile && (
-                    <div className="flex justify-between">
-                      <dt className="text-[#8E8E93] text-xs">Guardian Mobile</dt>
-                      <dd className="text-[#1C1C1E] text-sm">{resident.guardianMobile}</dd>
+                    <div className="flex justify-between border-b border-[#E5E5EA] pb-2 last:border-0 last:pb-0">
+                      <dt className="text-[#8E8E93] text-[14px]">Guardian Mobile</dt>
+                      <dd className="font-medium text-[15px] text-[#1C1C1E]">{resident.guardianMobile}</dd>
                     </div>
                   )}
                   {!resident.idProofType && !resident.guardianName && (
@@ -327,7 +327,7 @@ export default function ResidentProfile({
         <TabsContent value="plan-history">
           <Card>
             <CardContent className="pt-6">
-              <h3 className="text-[15px] font-semibold text-[#1C1C1E] mb-4">Plan History</h3>
+              <h3 className="font-semibold text-[17px] tracking-[-0.022em] text-[#1C1C1E] mb-4">Plan History</h3>
               {planHistory.length === 0 ? (
                 <p className="text-[#8E8E93] text-sm">No plan history available.</p>
               ) : (
@@ -335,15 +335,15 @@ export default function ResidentProfile({
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Plan</TableHead>
-                        <TableHead>Price</TableHead>
-                        <TableHead>Effective From</TableHead>
-                        <TableHead>Effective To</TableHead>
+                        <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Plan</TableHead>
+                        <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Price</TableHead>
+                        <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Effective From</TableHead>
+                        <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Effective To</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {planHistory.map((ph) => (
-                        <TableRow key={ph._id}>
+                        <TableRow key={ph._id} className="hover:bg-[#F9F9FB]">
                           <TableCell className="font-medium">{ph.plan?.name || '—'}</TableCell>
                           <TableCell>₹{(ph.plan?.price ?? 0).toLocaleString('en-IN')}</TableCell>
                           <TableCell>{formatDate(ph.effectiveFrom)}</TableCell>
@@ -351,7 +351,7 @@ export default function ResidentProfile({
                             {ph.effectiveTo ? (
                               formatDate(ph.effectiveTo)
                             ) : (
-                              <Badge variant="outline" className="text-xs bg-[#34C759]/10 text-[#34C759] border-transparent">
+                              <Badge variant="outline" className="text-xs rounded-full bg-[#34C759]/10 text-[#34C759] border-transparent">
                                 Current
                               </Badge>
                             )}
@@ -371,7 +371,7 @@ export default function ResidentProfile({
           <Card>
             <CardContent className="pt-12 pb-12 flex flex-col items-center text-center">
               <div className="w-12 h-12 bg-[#FF9500]/10 rounded-2xl flex items-center justify-center mb-3">
-                <Receipt className="w-6 h-6 text-[#FF9500]" />
+                <Receipt className="w-5 h-5 text-[#FF9500]" strokeWidth={2} />
               </div>
               <h3 className="text-base font-medium text-[#1C1C1E] mb-1">Rent Records</h3>
               <p className="text-sm text-[#8E8E93]">Phase 4 — coming soon.</p>
@@ -384,7 +384,7 @@ export default function ResidentProfile({
           <Card>
             <CardContent className="pt-12 pb-12 flex flex-col items-center text-center">
               <div className="w-12 h-12 bg-[#007AFF]/10 rounded-2xl flex items-center justify-center mb-3">
-                <CreditCard className="w-6 h-6 text-[#007AFF]" />
+                <CreditCard className="w-5 h-5 text-[#007AFF]" strokeWidth={2} />
               </div>
               <h3 className="text-base font-medium text-[#1C1C1E] mb-1">Payment History</h3>
               <p className="text-sm text-[#8E8E93]">Phase 4 — coming soon.</p>
@@ -397,7 +397,7 @@ export default function ResidentProfile({
           <Card>
             <CardContent className="pt-12 pb-12 flex flex-col items-center text-center">
               <div className="w-12 h-12 bg-[#FF9500]/10 rounded-2xl flex items-center justify-center mb-3">
-                <Zap className="w-6 h-6 text-[#FF9500]" />
+                <Zap className="w-5 h-5 text-[#FF9500]" strokeWidth={2} />
               </div>
               <h3 className="text-base font-medium text-[#1C1C1E] mb-1">Electricity Shares</h3>
               <p className="text-sm text-[#8E8E93]">Phase 6 — coming soon.</p>
@@ -410,7 +410,7 @@ export default function ResidentProfile({
           <Card>
             <CardContent className="pt-12 pb-12 flex flex-col items-center text-center">
               <div className="w-12 h-12 bg-[#5856D6]/10 rounded-2xl flex items-center justify-center mb-3">
-                <Landmark className="w-6 h-6 text-[#5856D6]" />
+                <Landmark className="w-5 h-5 text-[#5856D6]" strokeWidth={2} />
               </div>
               <h3 className="text-base font-medium text-[#1C1C1E] mb-1">Deposit Details</h3>
               <p className="text-sm text-[#8E8E93]">Phase 5 — coming soon.</p>

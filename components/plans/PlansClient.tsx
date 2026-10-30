@@ -164,7 +164,7 @@ export default function PlansClient({ plans }: PlansClientProps) {
           onClick={openAddDialog}
           className="rounded-xl"
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="w-5 h-5 mr-2" />
           Add Plan
         </Button>
       </div>
@@ -177,7 +177,7 @@ export default function PlansClient({ plans }: PlansClientProps) {
           <h3 className="text-lg font-medium text-[#1C1C1E] mb-2">No plans yet</h3>
           <p className="text-sm text-[#8E8E93] mb-4">Add your first plan to get started.</p>
           <Button onClick={openAddDialog} className="rounded-xl">
-            <Plus className="w-4 h-4 mr-2" /> Add Plan
+            <Plus className="w-5 h-5 mr-2" /> Add Plan
           </Button>
         </div>
       ) : (
@@ -213,17 +213,17 @@ export default function PlansClient({ plans }: PlansClientProps) {
                         <div className="flex gap-1 flex-wrap">
                           {plan.includesBreakfast && (
                             <span className="inline-flex items-center gap-1 text-xs text-[#FF9500] border border-[#FF9500]/20 bg-[#FF9500]/10 px-1.5 py-0.5 rounded-full">
-                              <Coffee className="w-3 h-3" /> B
+                              <Coffee className="w-5 h-5" /> B
                             </span>
                           )}
                           {plan.includesLunch && (
                             <span className="inline-flex items-center gap-1 text-xs text-[#34C759] border border-[#34C759]/20 bg-[#34C759]/10 px-1.5 py-0.5 rounded-full">
-                              <Sun className="w-3 h-3" /> L
+                              <Sun className="w-5 h-5" /> L
                             </span>
                           )}
                           {plan.includesDinner && (
                             <span className="inline-flex items-center gap-1 text-xs text-[#5856D6] border border-[#5856D6]/20 bg-[#5856D6]/10 px-1.5 py-0.5 rounded-full">
-                              <Moon className="w-3 h-3" /> D
+                              <Moon className="w-5 h-5" /> D
                             </span>
                           )}
                           {!plan.includesBreakfast && !plan.includesLunch && !plan.includesDinner && (
@@ -255,7 +255,7 @@ export default function PlansClient({ plans }: PlansClientProps) {
                             className="h-7 px-2 text-xs"
                             onClick={() => openEditDialog(plan)}
                           >
-                            <Pencil className="w-3 h-3 mr-1" />
+                            <Pencil className="w-5 h-5 mr-1" />
                             Edit
                           </Button>
                           <ToggleSwitch
@@ -304,13 +304,13 @@ export default function PlansClient({ plans }: PlansClientProps) {
                   </div>
                 </div>
                 <div className="flex gap-1 mb-3">
-                  {plan.includesBreakfast && <span className="inline-flex items-center gap-1 text-xs text-[#FF9500] border border-[#FF9500]/20 bg-[#FF9500]/10 px-1.5 py-0.5 rounded-full"><Coffee className="w-3 h-3" /> Breakfast</span>}
-                  {plan.includesLunch && <span className="inline-flex items-center gap-1 text-xs text-[#34C759] border border-[#34C759]/20 bg-[#34C759]/10 px-1.5 py-0.5 rounded-full"><Sun className="w-3 h-3" /> Lunch</span>}
-                  {plan.includesDinner && <span className="inline-flex items-center gap-1 text-xs text-[#5856D6] border border-[#5856D6]/20 bg-[#5856D6]/10 px-1.5 py-0.5 rounded-full"><Moon className="w-3 h-3" /> Dinner</span>}
+                  {plan.includesBreakfast && <span className="inline-flex items-center gap-1 text-xs text-[#FF9500] border border-[#FF9500]/20 bg-[#FF9500]/10 px-1.5 py-0.5 rounded-full"><Coffee className="w-5 h-5" /> Breakfast</span>}
+                  {plan.includesLunch && <span className="inline-flex items-center gap-1 text-xs text-[#34C759] border border-[#34C759]/20 bg-[#34C759]/10 px-1.5 py-0.5 rounded-full"><Sun className="w-5 h-5" /> Lunch</span>}
+                  {plan.includesDinner && <span className="inline-flex items-center gap-1 text-xs text-[#5856D6] border border-[#5856D6]/20 bg-[#5856D6]/10 px-1.5 py-0.5 rounded-full"><Moon className="w-5 h-5" /> Dinner</span>}
                 </div>
                 <div className="flex gap-2 items-center">
                   <Button variant="outline" size="sm" className="flex-1 text-xs" onClick={() => openEditDialog(plan)}>
-                    <Pencil className="w-3 h-3 mr-1" /> Edit
+                    <Pencil className="w-5 h-5 mr-1" /> Edit
                   </Button>
                   <ToggleSwitch
                     checked={plan.isActive}
@@ -399,9 +399,9 @@ export default function PlansClient({ plans }: PlansClientProps) {
                         type="checkbox"
                         checked={value}
                         onChange={(e) => setValue(key, e.target.checked)}
-                        className="accent-[#007AFF] w-4 h-4"
+                        className="accent-[#007AFF] w-5 h-5"
                       />
-                      <Icon className="w-4 h-4 text-[#8E8E93]" />
+                      <Icon className="w-5 h-5 text-[#8E8E93]" />
                       <span className="text-sm">{label}</span>
                     </label>
                   ))}

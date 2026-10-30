@@ -163,7 +163,7 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
           <p className="text-[#8E8E93] mt-1">{roomsWithBeds.length} room{roomsWithBeds.length !== 1 ? 's' : ''} total</p>
         </div>
         <Button onClick={openAddDialog}>
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="w-5 h-5 mr-2" />
           Add Room
         </Button>
       </div>
@@ -218,7 +218,7 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
           </p>
           {roomsWithBeds.length === 0 && (
             <Button onClick={openAddDialog}>
-              <Plus className="w-4 h-4 mr-2" /> Add Room
+              <Plus className="w-5 h-5 mr-2" /> Add Room
             </Button>
           )}
         </div>
