@@ -52,15 +52,15 @@ export default function LoginForm() {
   };
 
   return (
-    <Card className="shadow-xl border-0">
+    <Card className="rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.08)] border-0 p-8">
       <CardHeader>
-        <CardTitle className="text-xl">Welcome back</CardTitle>
-        <CardDescription>Enter your credentials to access the dashboard</CardDescription>
+        <CardTitle className="text-[22px] font-semibold text-[#1C1C1E]">Welcome back</CardTitle>
+        <CardDescription className="text-sm text-[#8E8E93]">Enter your credentials to access the dashboard</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            <div className="bg-[#FF3B30]/10 text-[#FF3B30] px-4 py-3 rounded-xl text-sm">
               {error}
             </div>
           )}
@@ -70,11 +70,10 @@ export default function LoginForm() {
               id="email"
               type="email"
               placeholder="admin@pg.com"
-              className="rounded-lg"
               {...register('email')}
             />
             {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email.message}</p>
+              <p className="text-[#FF3B30] text-sm">{errors.email.message}</p>
             )}
           </div>
           <div className="space-y-2">
@@ -83,16 +82,15 @@ export default function LoginForm() {
               id="password"
               type="password"
               placeholder="••••••••"
-              className="rounded-lg"
               {...register('password')}
             />
             {errors.password && (
-              <p className="text-red-500 text-sm">{errors.password.message}</p>
+              <p className="text-[#FF3B30] text-sm">{errors.password.message}</p>
             )}
           </div>
           <Button
             type="submit"
-            className="w-full bg-green-500 hover:bg-green-600 text-white rounded-lg h-11"
+            className="w-full h-[44px] rounded-xl"
             disabled={isSubmitting}
           >
             {isSubmitting ? (

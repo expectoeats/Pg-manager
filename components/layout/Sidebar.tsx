@@ -43,63 +43,81 @@ interface SidebarProps {
 export default function Sidebar({ userName, userEmail }: SidebarProps) {
   const pathname = usePathname();
 
+  // Section groups (display only — link hrefs unchanged)
+  const managementItems = navItems.slice(0, 4);
+  const financeItems = navItems.slice(4, 9);
+  const systemItems = navItems.slice(9);
+
+  const renderLink = (item: (typeof navItems)[number]) => {
+    const Icon = item.icon;
+    const isActive =
+      pathname === item.href ||
+      (item.href !== '/dashboard' && pathname.startsWith(item.href));
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        className={cn(
+          'flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 text-sm font-medium transition-colors',
+          isActive
+            ? 'bg-[#007AFF] text-white'
+            : 'text-[#1C1C1E] hover:bg-[#F2F2F7]'
+        )}
+      >
+        <Icon
+          className={cn(
+            'w-4 h-4',
+            isActive ? 'text-white' : 'text-[#8E8E93]'
+          )}
+        />
+        {item.label}
+      </Link>
+    );
+  };
+
   return (
-    <aside className="fixed inset-y-0 left-0 z-50 w-60 bg-white border-r border-gray-100 flex flex-col">
-      <div className="px-6 py-5 border-b border-gray-100">
+    <aside className="fixed inset-y-0 left-0 z-50 w-60 bg-white border-r border-[#E5E5EA] flex flex-col">
+      <div className="px-6 py-5 border-b border-[#E5E5EA]">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-[#007AFF] rounded-lg flex items-center justify-center">
             <DoorOpen className="w-4 h-4 text-white" />
           </div>
-          <span className="font-semibold text-gray-900">PG Manager</span>
+          <span className="font-semibold text-[#1C1C1E]">PG Manager</span>
         </div>
       </div>
 
       <nav className="flex-1 overflow-y-auto py-4 px-3">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive =
-            pathname === item.href ||
-            (item.href !== '/dashboard' && pathname.startsWith(item.href));
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-green-50 text-green-700'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              )}
-            >
-              <Icon
-                className={cn(
-                  'w-4 h-4',
-                  isActive ? 'text-green-600' : 'text-gray-400'
-                )}
-              />
-              {item.label}
-            </Link>
-          );
-        })}
+        <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-wider text-[#8E8E93]">
+          Management
+        </p>
+        {managementItems.map(renderLink)}
+        <p className="px-3 mt-3 mb-1 text-[10px] font-semibold uppercase tracking-wider text-[#8E8E93]">
+          Finance
+        </p>
+        {financeItems.map(renderLink)}
+        <p className="px-3 mt-3 mb-1 text-[10px] font-semibold uppercase tracking-wider text-[#8E8E93]">
+          System
+        </p>
+        {systemItems.map(renderLink)}
       </nav>
 
-      <div className="p-4 border-t border-gray-100">
+      <div className="p-4 border-t border-[#E5E5EA]">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-            <span className="text-xs font-semibold text-gray-600">
+          <div className="w-8 h-8 bg-[#F2F2F7] text-[#1C1C1E] rounded-full flex items-center justify-center">
+            <span className="text-xs font-semibold">
               {userName?.charAt(0).toUpperCase() || 'O'}
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
+            <p className="text-sm font-semibold text-[#1C1C1E] truncate">
               {userName || 'Owner'}
             </p>
-            <p className="text-xs text-gray-500 truncate">{userEmail || ''}</p>
+            <p className="text-xs text-[#8E8E93] truncate">{userEmail || ''}</p>
           </div>
         </div>
         <button
           onClick={() => signOut({ callbackUrl: '/login' })}
-          className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+          className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-sm text-[#1C1C1E] hover:bg-[#FF3B30]/10 hover:text-[#FF3B30] transition-colors"
         >
           <LogOut className="w-4 h-4" />
           Sign out

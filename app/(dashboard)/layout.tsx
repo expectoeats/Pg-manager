@@ -26,7 +26,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] font-sans">
+    <div className="min-h-screen bg-[#F2F2F7] font-sans">
       {/* Desktop Sidebar */}
       <div className="hidden md:block">
         <Sidebar
