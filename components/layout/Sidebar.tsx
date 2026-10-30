@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
@@ -79,9 +80,7 @@ export default function Sidebar({ userName, userEmail }: SidebarProps) {
     <aside className="fixed inset-y-0 left-0 z-50 w-60 bg-white border-r border-[#E5E5EA] flex flex-col">
       <div className="px-6 py-5 border-b border-[#E5E5EA]">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-[#007AFF] rounded-lg flex items-center justify-center">
-            <DoorOpen className="w-4 h-4 text-white" />
-          </div>
+          <Image src='/logo.png' width={32} height={32} alt='PG Manager' className='rounded-lg object-contain' />
           <span className="font-semibold text-[#1C1C1E]">PG Manager</span>
         </div>
       </div>

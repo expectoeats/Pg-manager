@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { Bell, Search } from 'lucide-react';
 
@@ -12,7 +13,8 @@ export default function TopBar({ pgName }: TopBarProps) {
 
   return (
     <header className="h-[52px] bg-white border-b border-[#E5E5EA] flex items-center px-4 md:px-6 gap-3">
-      <div className="flex-1">
+      <div className="flex-1 flex items-center">
+        <Image src='/logo.png' width={28} height={28} alt='' className='rounded-lg object-contain md:hidden mr-2' />
         <h2 className="font-semibold text-[#1C1C1E] text-sm lg:text-base">
           {pgName || 'PG Manager'}
         </h2>
