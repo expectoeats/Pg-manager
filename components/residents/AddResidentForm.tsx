@@ -175,16 +175,35 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
   // Business decision: store only room plan as currentPlan; food plan stored separately.
   // For simplicity in this form: combine into a note on room plan selection.
 
-  // Prorated first month rent
+  // Billing calculation based on mode
   let firstMonthRent = totalMonthlyPrice;
-  if (joiningDate && settings?.prorateFirstMonth && settings?.billingMode === 'calendar') {
+  let nextMonthRent = 0;
+  let daysRemaining = 0;
+  let billingDescription = '';
+
+  if (joiningDate && settings) {
     const d = new Date(joiningDate);
     const year = d.getUTCFullYear();
-    const month = d.getUTCMonth() + 1;
+    const month = d.getUTCMonth();
     const day = d.getUTCDate();
-    const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
-    const daysRemaining = daysInMonth - day + 1;
-    firstMonthRent = Math.round((totalMonthlyPrice * daysRemaining) / daysInMonth);
+    const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    daysRemaining = daysInMonth - day + 1;
+
+    if (settings.billingMode === 'calendar') {
+      // Calendar Mode: Partial current + Full next month
+      if (settings.prorateFirstMonth) {
+        firstMonthRent = Math.round((totalMonthlyPrice * daysRemaining) / daysInMonth);
+        nextMonthRent = totalMonthlyPrice;
+        billingDescription = 'calendar_with_advance';
+      } else {
+        firstMonthRent = totalMonthlyPrice;
+        billingDescription = 'calendar_no_prorate';
+      }
+    } else {
+      // Joining Date Cycle: Full 30 days from joining date
+      firstMonthRent = totalMonthlyPrice;
+      billingDescription = 'joining_cycle';
+    }
   }
 
   // Load vacant beds when room changes
@@ -658,56 +677,109 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                   </div>
 
                   {selectedPlanId ? (
-                    <div className="rounded-xl bg-[#F9F9FB] border border-[#E5E5EA] p-4 space-y-3 text-sm">
-                      {/* Breakdown */}
-                      <div className="space-y-2.5">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[#8E8E93]">Security deposit</span>
-                          <span className="font-medium text-[#1C1C1E]">₹{(watch('depositAmount') || depositDefault).toLocaleString('en-IN')}</span>
+                    <>
+                      {/* Billing Mode Indicator */}
+                      <div className="flex items-center gap-2 pb-2 border-b border-[#E5E5EA]">
+                        <div className="flex items-center gap-1.5 text-xs font-medium text-[#8E8E93]">
+                          📅 Billing Mode: 
+                          <span className="text-[#007AFF]">
+                            {settings?.billingMode === 'joining_cycle' ? 'Joining Date Cycle' : 'Calendar Month'}
+                          </span>
                         </div>
+                      </div>
 
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <span className="text-[#8E8E93]">First month rent </span>
-                            {settings?.prorateFirstMonth && firstMonthRent !== totalMonthlyPrice && (
-                              <span className="text-[#8E8E93] text-xs">
-                                ({(() => {
-                                  const d = new Date(joiningDate);
-                                  const daysInMonth = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
-                                  const daysRemaining = daysInMonth - d.getUTCDate() + 1;
-                                  return `${daysRemaining} days`;
-                                })()})
-                              </span>
-                            )}
+                      {/* Billing Breakdown */}
+                      <div className="rounded-xl bg-[#F9F9FB] border border-[#E5E5EA] p-4 space-y-3 text-sm">
+                        <div className="space-y-2.5">
+                          {/* Security Deposit */}
+                          <div className="flex items-center justify-between">
+                            <span className="text-[#8E8E93]">Security deposit (one-time)</span>
+                            <span className="font-medium text-[#1C1C1E]">₹{(watch('depositAmount') || depositDefault).toLocaleString('en-IN')}</span>
                           </div>
-                          <span className="font-medium text-[#1C1C1E]">₹{firstMonthRent.toLocaleString('en-IN')}</span>
+
+                          {/* First Month Rent based on billing mode */}
+                          {settings?.billingMode === 'joining_cycle' ? (
+                            // Joining Date Cycle: Show 30 days from joining
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <span className="text-[#8E8E93]">
+                                  {joiningDate && (() => {
+                                    const start = new Date(joiningDate);
+                                    const end = new Date(start);
+                                    end.setDate(end.getDate() + 29);
+                                    return `${start.getDate()} ${start.toLocaleString('default', { month: 'short' })} - ${end.getDate()} ${end.toLocaleString('default', { month: 'short' })}`;
+                                  })()}
+                                </span>
+                                <span className="text-[#8E8E93] text-xs ml-1">(30 days)</span>
+                              </div>
+                              <span className="font-medium text-[#1C1C1E]">₹{totalMonthlyPrice.toLocaleString('en-IN')}</span>
+                            </div>
+                          ) : (
+                            // Calendar Mode: Show partial + advance
+                            <>
+                              {settings.prorateFirstMonth && daysRemaining < 30 && (
+                                <>
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <span className="text-[#8E8E93]">Current month </span>
+                                      <span className="text-[#8E8E93] text-xs">({daysRemaining} days)</span>
+                                    </div>
+                                    <span className="font-medium text-[#1C1C1E]">₹{firstMonthRent.toLocaleString('en-IN')}</span>
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-[#8E8E93]">Next month (advance)</span>
+                                    <span className="font-medium text-[#1C1C1E]">₹{nextMonthRent.toLocaleString('en-IN')}</span>
+                                  </div>
+                                </>
+                              )}
+                              {(!settings.prorateFirstMonth || daysRemaining === 30) && (
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[#8E8E93]">First month</span>
+                                  <span className="font-medium text-[#1C1C1E]">₹{firstMonthRent.toLocaleString('en-IN')}</span>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+
+                        {/* Total */}
+                        <div className="flex items-center justify-between pt-3 border-t-2 border-[#1C1C1E]">
+                          <span className="text-[#1C1C1E] font-bold text-base">Total to collect</span>
+                          <span className="font-bold text-[#007AFF] text-xl">
+                            ₹{((settings?.billingMode === 'calendar' && settings.prorateFirstMonth && daysRemaining < 30 
+                              ? firstMonthRent + nextMonthRent 
+                              : firstMonthRent) + (watch('depositAmount') || depositDefault)).toLocaleString('en-IN')}
+                          </span>
                         </div>
                       </div>
 
-                      {/* Total */}
-                      <div className="flex items-center justify-between pt-3 border-t-2 border-[#1C1C1E]">
-                        <span className="text-[#1C1C1E] font-bold text-base">Total amount</span>
-                        <span className="font-bold text-[#007AFF] text-xl">
-                          ₹{(firstMonthRent + (watch('depositAmount') || depositDefault)).toLocaleString('en-IN')}
-                        </span>
+                      {/* Info Box */}
+                      <div className="rounded-xl bg-[#007AFF]/5 border border-[#007AFF]/20 p-3">
+                        <p className="text-xs text-[#007AFF] flex items-start gap-2">
+                          <Info className="w-5 h-5 strokeWidth={2} mt-0.5 flex-shrink-0" />
+                          <span>
+                            {settings?.billingMode === 'joining_cycle' ? (
+                              <>
+                                <strong>Billing Cycle:</strong> From joining date to same date next month (30 days). 
+                                Next payment due on {joiningDate && (() => {
+                                  const next = new Date(joiningDate);
+                                  next.setDate(next.getDate() + 30);
+                                  return `${next.getDate()} ${next.toLocaleString('default', { month: 'long' })}`;
+                                })()}.
+                              </>
+                            ) : (
+                              <>
+                                <strong>Calendar Mode:</strong> Monthly rent ₹{totalMonthlyPrice.toLocaleString('en-IN')} + electricity bill (from 2nd month). 
+                                {settings.prorateFirstMonth && daysRemaining < 30 && ' First month prorated, advance collected for next month.'}
+                              </>
+                            )}
+                          </span>
+                        </p>
                       </div>
-                    </div>
+                    </>
                   ) : (
                     <div className="p-4 bg-[#F9F9FB] border border-[#E5E5EA] rounded-xl text-sm text-[#8E8E93]">
                       Select a room and plan in previous steps to see payment details.
-                    </div>
-                  )}
-
-                  {selectedPlanId && (
-                    <div className="rounded-xl bg-[#007AFF]/5 border border-[#007AFF]/20 p-3">
-                      <p className="text-xs text-[#007AFF] flex items-start gap-2">
-                        <Info className="w-5 h-5 strokeWidth={2} mt-0.5 flex-shrink-0" />
-                        <span>
-                          <strong>From next month:</strong> Regular monthly rent of ₹{totalMonthlyPrice.toLocaleString('en-IN')} will be charged.
-                          {settings?.prorateFirstMonth && firstMonthRent !== totalMonthlyPrice &&
-                            ' First month is prorated based on joining date.'}
-                        </span>
-                      </p>
                     </div>
                   )}
                 </div>
@@ -727,8 +799,11 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                           // Also mark deposit as received when payment is being collected
                           setValue('depositReceived', v);
                           if (v) {
-                            // Set amount to total (deposit + first rent)
-                            setValue('firstPaymentAmount', firstMonthRent + (watch('depositAmount') || depositDefault));
+                            // Calculate total based on billing mode
+                            const totalRent = settings?.billingMode === 'calendar' && settings.prorateFirstMonth && daysRemaining < 30
+                              ? firstMonthRent + nextMonthRent
+                              : firstMonthRent;
+                            setValue('firstPaymentAmount', totalRent + (watch('depositAmount') || depositDefault));
                           }
                         }}
                         color="green"
@@ -742,12 +817,21 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                           <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Amount to collect (₹)</Label>
                           <div className="rounded-xl h-11 bg-[#F9F9FB] border border-[#E5E5EA] px-4 flex items-center">
                             <span className="text-[#1C1C1E] font-semibold text-lg">
-                              ₹{(firstMonthRent + (watch('depositAmount') || depositDefault)).toLocaleString('en-IN')}
+                              ₹{(() => {
+                                const totalRent = settings?.billingMode === 'calendar' && settings.prorateFirstMonth && daysRemaining < 30
+                                  ? firstMonthRent + nextMonthRent
+                                  : firstMonthRent;
+                                return (totalRent + (watch('depositAmount') || depositDefault)).toLocaleString('en-IN');
+                              })()}
                             </span>
                           </div>
                           <p className="text-xs text-[#8E8E93] flex items-center gap-1">
                             <Info className="w-5 h-5 strokeWidth={2}" />
-                            This includes security deposit + first month rent
+                            {settings?.billingMode === 'joining_cycle' 
+                              ? 'Includes deposit + 30 days rent from joining date'
+                              : (settings?.prorateFirstMonth && daysRemaining < 30
+                                ? 'Includes deposit + current month partial + next month advance'
+                                : 'Includes deposit + first month rent')}
                           </p>
                         </div>
 

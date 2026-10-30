@@ -184,28 +184,56 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                   {...register('rentDueDay')}
                 />
               </div>
-              <div className="space-y-2">
-                <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Billing Mode</Label>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
+              <div className="space-y-3">
+                <div>
+                  <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Billing Mode</Label>
+                  <p className="text-[13px] text-[#8E8E93] mt-0.5">Choose how rent is calculated for new residents</p>
+                </div>
+                <div className="space-y-3">
+                  <label className="flex items-start gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all hover:bg-[#F9F9FB]"
+                    style={{
+                      borderColor: billingMode === 'calendar' ? '#007AFF' : '#E5E5EA',
+                      backgroundColor: billingMode === 'calendar' ? 'rgba(0, 122, 255, 0.05)' : 'transparent'
+                    }}>
                     <input
                       type="radio"
                       value="calendar"
                       checked={billingMode === 'calendar'}
                       onChange={() => setValue('billingMode', 'calendar')}
-                      className="accent-[#007AFF] w-4 h-4"
+                      className="accent-[#007AFF] w-5 h-5 mt-0.5 flex-shrink-0"
                     />
-                    <span className="text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Calendar month</span>
+                    <div>
+                      <div className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">📅 Calendar Month</div>
+                      <p className="text-[13px] text-[#8E8E93] mt-1">
+                        All residents pay on 1st of every month. First month is prorated + advance for next month collected.
+                      </p>
+                      <p className="text-[12px] text-[#007AFF] mt-1.5">
+                        Example: Join 29 Oct → Pay for 29-31 Oct (₹466) + full November (₹7,000) = ₹7,466 + deposit
+                      </p>
+                    </div>
                   </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
+
+                  <label className="flex items-start gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all hover:bg-[#F9F9FB]"
+                    style={{
+                      borderColor: billingMode === 'joining_cycle' ? '#007AFF' : '#E5E5EA',
+                      backgroundColor: billingMode === 'joining_cycle' ? 'rgba(0, 122, 255, 0.05)' : 'transparent'
+                    }}>
                     <input
                       type="radio"
                       value="joining_cycle"
                       checked={billingMode === 'joining_cycle'}
                       onChange={() => setValue('billingMode', 'joining_cycle')}
-                      className="accent-[#007AFF] w-4 h-4"
+                      className="accent-[#007AFF] w-5 h-5 mt-0.5 flex-shrink-0"
                     />
-                    <span className="text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Joining cycle</span>
+                    <div>
+                      <div className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">🔄 Joining Date Cycle</div>
+                      <p className="text-[13px] text-[#8E8E93] mt-1">
+                        Each resident pays 30 days from their joining date. Due date varies per resident.
+                      </p>
+                      <p className="text-[12px] text-[#007AFF] mt-1.5">
+                        Example: Join 29 Oct → Pay for 29 Oct - 27 Nov (30 days) = ₹7,000 + deposit. Next due 28 Nov.
+                      </p>
+                    </div>
                   </label>
                 </div>
               </div>
