@@ -13,7 +13,29 @@ export default async function AddResidentPage() {
   const activePlans = plans.filter((p) => p.isActive);
   const activeRooms = rooms.filter((r) => r.isActive);
 
-  const data = JSON.parse(JSON.stringify({ activePlans, activeRooms, settings }));
+  // Properly serialize Mongoose data for client components
+  const data = {
+    activePlans: activePlans.map(p => ({
+      _id: p._id.toString(),
+      name: p.name,
+      price: p.price,
+      type: p.type,
+      sharingType: p.sharingType,
+      includesBreakfast: p.includesBreakfast,
+      includesLunch: p.includesLunch,
+      includesDinner: p.includesDinner,
+    })),
+    activeRooms: activeRooms.map(r => ({
+      _id: r._id.toString(),
+      roomNumber: r.roomNumber,
+      sharingType: r.sharingType,
+    })),
+    settings: {
+      depositAmount: settings?.depositAmount ?? 2000,
+      prorateFirstMonth: settings?.prorateFirstMonth ?? true,
+      billingMode: settings?.billingMode ?? 'calendar',
+    }
+  };
 
   return (
     <div>

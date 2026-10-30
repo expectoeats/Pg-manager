@@ -148,3 +148,37 @@ export async function toggleRoomActive(roomId: string) {
   revalidatePath('/rooms');
   return { success: true };
 }
+
+export async function getRoomLayoutWithBills(roomId: string) {
+  await connectDB();
+
+  const [beds, room] = await Promise.all([
+    Bed.find({ room: roomId })
+      .populate<{ currentResident: { name: string } | null }>('currentResident', 'name')
+      .lean(),
+    Room.findById(roomId).lean(),
+  ]);
+
+  const now = new Date();
+  const currentMonth = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}`;
+
+  // Import ElectricityBill model inline to avoid circular deps
+  const ElectricityBill = (await import('@/models/ElectricityBill')).default;
+  const electricityBill = await ElectricityBill.findOne({
+    room: roomId,
+    month: currentMonth,
+    status: 'finalized',
+  }).lean();
+
+  return {
+    roomNumber: room?.roomNumber ?? '',
+    sharingType: (room?.sharingType ?? 'double') as 'double' | 'triple',
+    beds: beds.map((b) => ({
+      _id: b._id.toString(),
+      bedLabel: b.bedLabel,
+      status: b.status as 'vacant' | 'occupied',
+      residentName: b.currentResident?.name ?? undefined,
+    })),
+    currentElectricityBill: (electricityBill as { totalAmount?: number } | null)?.totalAmount,
+  };
+}

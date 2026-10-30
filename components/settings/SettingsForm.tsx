@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ToggleSwitch } from '@/components/ui/toggle-switch';
 import { Loader2, Check } from 'lucide-react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -106,7 +107,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
 
   return (
     <Tabs defaultValue="pg-details">
-      <TabsList className="mb-6">
+      <TabsList className="mb-6 w-full">
         <TabsTrigger value="pg-details">PG Details</TabsTrigger>
         <TabsTrigger value="billing">Billing</TabsTrigger>
         <TabsTrigger value="electricity">Electricity</TabsTrigger>
@@ -116,26 +117,25 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <TabsContent value="pg-details">
-          <Card className="border-0 shadow-sm rounded-xl">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-base">PG Details</CardTitle>
+              <CardTitle className="text-[15px] font-semibold text-[#1C1C1E]">PG Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>PG Name</Label>
-                <Input className="rounded-lg" {...register('pgName')} />
+                <Input {...register('pgName')} />
                 {errors.pgName && (
-                  <p className="text-red-500 text-sm">{errors.pgName.message}</p>
+                  <p className="text-[#FF3B30] text-sm">{errors.pgName.message}</p>
                 )}
               </div>
               <div className="space-y-2">
                 <Label>Address</Label>
-                <Input className="rounded-lg" {...register('address')} />
+                <Input {...register('address')} />
               </div>
               <div className="space-y-2">
                 <Label>Phone</Label>
                 <Input
-                  className="rounded-lg"
                   type="tel"
                   {...register('phone')}
                 />
@@ -150,9 +150,9 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
         </TabsContent>
 
         <TabsContent value="billing">
-          <Card className="border-0 shadow-sm rounded-xl">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-base">Billing Settings</CardTitle>
+              <CardTitle className="text-[15px] font-semibold text-[#1C1C1E]">Billing Settings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -160,7 +160,6 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                   <Label>Deposit Amount (₹)</Label>
                   <Input
                     type="number"
-                    className="rounded-lg"
                     {...register('depositAmount')}
                   />
                 </div>
@@ -168,7 +167,6 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                   <Label>Notice Period (days)</Label>
                   <Input
                     type="number"
-                    className="rounded-lg"
                     {...register('noticePeriodDays')}
                   />
                 </div>
@@ -179,7 +177,6 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                   type="number"
                   min={1}
                   max={28}
-                  className="rounded-lg"
                   {...register('rentDueDay')}
                 />
               </div>
@@ -192,7 +189,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                       value="calendar"
                       checked={billingMode === 'calendar'}
                       onChange={() => setValue('billingMode', 'calendar')}
-                      className="accent-green-500"
+                      className="accent-[#007AFF]"
                     />
                     <span className="text-sm">Calendar month</span>
                   </label>
@@ -202,38 +199,19 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                       value="joining_cycle"
                       checked={billingMode === 'joining_cycle'}
                       onChange={() => setValue('billingMode', 'joining_cycle')}
-                      className="accent-green-500"
+                      className="accent-[#007AFF]"
                     />
                     <span className="text-sm">Joining cycle</span>
                   </label>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setValue('prorateFirstMonth', !prorateFirstMonth)
-                  }
-                  className={`w-11 h-6 rounded-full transition-colors ${
-                    prorateFirstMonth ? 'bg-green-500' : 'bg-gray-300'
-                  } relative`}
-                >
-                  <span
-                    className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                      prorateFirstMonth
-                        ? 'translate-x-5'
-                        : 'translate-x-0.5'
-                    }`}
-                  />
-                </button>
-                <Label
-                  className="cursor-pointer"
-                  onClick={() =>
-                    setValue('prorateFirstMonth', !prorateFirstMonth)
-                  }
-                >
-                  Prorate first month&apos;s rent
-                </Label>
+              <div className="flex items-center justify-between">
+                <Label>Prorate first month&apos;s rent</Label>
+                <ToggleSwitch
+                  checked={prorateFirstMonth}
+                  onChange={(v) => setValue('prorateFirstMonth', v)}
+                  color="green"
+                />
               </div>
               <SaveButton
                 saving={saving}
@@ -245,9 +223,9 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
         </TabsContent>
 
         <TabsContent value="electricity">
-          <Card className="border-0 shadow-sm rounded-xl">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-base">Electricity Settings</CardTitle>
+              <CardTitle className="text-[15px] font-semibold text-[#1C1C1E]">Electricity Settings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -255,7 +233,6 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                 <Input
                   type="number"
                   step="0.01"
-                  className="rounded-lg"
                   {...register('defaultRatePerUnit')}
                 />
               </div>
@@ -269,15 +246,15 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
         </TabsContent>
 
         <TabsContent value="receipt">
-          <Card className="border-0 shadow-sm rounded-xl">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-base">Receipt Settings</CardTitle>
+              <CardTitle className="text-[15px] font-semibold text-[#1C1C1E]">Receipt Settings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Receipt Footer Text</Label>
                 <textarea
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full rounded-xl border border-[#E5E5EA] px-3 py-2 text-sm text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
                   rows={4}
                   placeholder="Thank you for staying with us!"
                   {...register('receiptFooter')}
@@ -294,19 +271,19 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
       </form>
 
       <TabsContent value="security">
-        <Card className="border-0 shadow-sm rounded-xl">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-base">Change Password</CardTitle>
+            <CardTitle className="text-[15px] font-semibold text-[#1C1C1E]">Change Password</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handlePasswordChange} className="space-y-4">
               {pwError && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                <div className="bg-[#FF3B30]/10 text-[#FF3B30] px-4 py-3 rounded-xl text-sm">
                   {pwError}
                 </div>
               )}
               {pwSuccess && (
-                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                <div className="bg-[#34C759]/10 text-[#34C759] px-4 py-3 rounded-xl text-sm flex items-center gap-2">
                   <Check className="w-4 h-4" /> Password changed successfully
                 </div>
               )}
@@ -314,7 +291,6 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                 <Label>Current Password</Label>
                 <Input
                   type="password"
-                  className="rounded-lg"
                   value={pwData.currentPassword}
                   onChange={(e) =>
                     setPwData((p) => ({
@@ -328,7 +304,6 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                 <Label>New Password</Label>
                 <Input
                   type="password"
-                  className="rounded-lg"
                   value={pwData.newPassword}
                   onChange={(e) =>
                     setPwData((p) => ({ ...p, newPassword: e.target.value }))
@@ -339,7 +314,6 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                 <Label>Confirm New Password</Label>
                 <Input
                   type="password"
-                  className="rounded-lg"
                   value={pwData.confirmPassword}
                   onChange={(e) =>
                     setPwData((p) => ({
@@ -351,7 +325,6 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
               </div>
               <Button
                 type="submit"
-                className="bg-green-500 hover:bg-green-600 text-white rounded-lg"
                 disabled={pwSaving}
               >
                 {pwSaving ? (
@@ -383,18 +356,17 @@ function SaveButton({
   return (
     <div>
       {saveError && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-3">
+        <div className="bg-[#FF3B30]/10 text-[#FF3B30] px-4 py-3 rounded-xl text-sm mb-3">
           {saveError}
         </div>
       )}
       {saveSuccess && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm mb-3 flex items-center gap-2">
+        <div className="bg-[#34C759]/10 text-[#34C759] px-4 py-3 rounded-xl text-sm mb-3 flex items-center gap-2">
           <Check className="w-4 h-4" /> Settings saved successfully
         </div>
       )}
       <Button
         type="submit"
-        className="bg-green-500 hover:bg-green-600 text-white rounded-lg"
         disabled={saving}
       >
         {saving ? (

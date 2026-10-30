@@ -1,0 +1,41 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "id": 1,
+      "label": "Middleware auth gap",
+      "severity": "blocking",
+      "confidence": "confirmed",
+      "description": "proxy.ts only protects /dashboard/* but all new feature pages live at /residents, /rooms, /plans, /rent, /payments, /deposits, /electricity, /expenses, /reports, /settings, /activity-log. The middleware-level edge redirect never fires for these routes. The (dashboard) layout's auth() call provides server-side protection, but the edge redirect is missing. Fix: update isDashboardPage to protect all non-public paths (invert: protect everything except /login and static assets)."
+    },
+    {
+      "id": 2,
+      "label": "updateRoom totalBeds divergence",
+      "severity": "blocking",
+      "confidence": "confirmed",
+      "description": "updateRoom writes totalBeds to Room without syncing the Bed collection. The UI prevents this via a disabled field, but there is no server-side guard. Strip totalBeds from the update payload in updateRoom, or add a check that the new value equals the existing count."
+    },
+    {
+      "id": 3,
+      "label": "Orphan /activity route",
+      "severity": "minor",
+      "confidence": "confirmed",
+      "description": "app/(dashboard)/activity/page.tsx was not deleted when activity-log/page.tsx was created. It is a live route at /activity with stale placeholder content. Delete it."
+    },
+    {
+      "id": 4,
+      "label": "joining_cycle due date unimplemented",
+      "severity": "minor",
+      "confidence": "likely",
+      "description": "When billingMode is joining_cycle, the first RentRecord dueDate should be joiningDate.getDate() of the following month, not rentDueDay. The current code uses rentDueDay for both modes. Add a branch for joining_cycle or document as a known gap."
+    },
+    {
+      "id": 5,
+      "label": "Dead DB query in givePlanChange",
+      "severity": "minor",
+      "confidence": "confirmed",
+      "description": "const resident = await Resident.findById(residentId).lean() is called after the update in givePlanChange but the result is never used. Remove it."
+    }
+  ],
+  "reviewDoc": "c:\\Users\\Adarsh\\Desktop\\agency\\demo-demand\\PG\\.agents\\tasks\\review.md"
+}

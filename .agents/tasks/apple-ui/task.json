@@ -1,0 +1,7 @@
+{
+  "task_id": "task-apple-ui-redesign",
+  "task_description": "Apple SF/iOS visual redesign of the PG Manager Next.js + TS + Tailwind + shadcn/ui app: shared Apple design tokens, iOS toggle switches, Apple-styled primitives, macOS/iOS chrome, login, dashboard, and CRUD feature pages (rooms, plans, residents, settings), plus an AddResidentForm card UX with a top-level sharing selector that filters plans and food-optional nested options. Visual/styling + form UI/UX only — no changes to routing, link hrefs, financial business logic, or data models.",
+  "status": "pending",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004"],
+  "blocked_reason": null
+}

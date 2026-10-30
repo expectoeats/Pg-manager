@@ -18,7 +18,12 @@ import { revalidatePath } from 'next/cache';
 export async function getVacantBedsByRoom(roomId: string) {
   await connectDB();
   const beds = await Bed.find({ room: roomId, status: 'vacant' }).lean();
-  return beds;
+  // Return plain objects for client components
+  return beds.map(b => ({
+    _id: b._id.toString(),
+    bedLabel: b.bedLabel,
+    status: b.status,
+  }));
 }
 
 export async function checkInResident(data: unknown) {
