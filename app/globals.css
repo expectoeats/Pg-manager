@@ -4,60 +4,161 @@
 
 @layer base {
   :root {
-    --background: 240 5% 96%;
-    --foreground: 0 0% 11%;
+    /* Apple Color System - HSL values for dynamic theming */
+    --background: 240 5% 98%;
+    --foreground: 210 14% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 11%;
+    --card-foreground: 210 14% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 11%;
+    --popover-foreground: 210 14% 11%;
 
+    /* Apple Blue #007AFF */
     --primary: 211 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 0 0% 11%;
+    /* Apple Secondary Gray #F2F2F7 */
+    --secondary: 240 5% 97%;
+    --secondary-foreground: 210 14% 11%;
 
+    /* Apple Muted Gray */
     --muted: 240 5% 94%;
-    --muted-foreground: 240 4% 54%;
+    --muted-foreground: 240 4% 56%;
 
     --accent: 240 5% 94%;
-    --accent-foreground: 0 0% 11%;
+    --accent-foreground: 210 14% 11%;
 
-    --destructive: 4 90% 58%;
+    /* Apple Red #FF3B30 */
+    --destructive: 4 100% 60%;
     --destructive-foreground: 0 0% 100%;
 
+    /* Apple Border #E5E5EA */
     --border: 240 6% 90%;
     --input: 240 6% 90%;
+    
+    /* Apple Blue Ring */
     --ring: 211 100% 50%;
 
-    --radius: 0.75rem;
+    --radius: 12px;
+
+    /* Apple Multi-layer Shadow System */
+    --apple-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.03), 0 4px 16px rgba(0, 0, 0, 0.02);
+    --apple-shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.04);
+    --apple-shadow-button-hover: 0 2px 8px rgba(0, 122, 255, 0.15);
+    --apple-shadow-dialog: 0 8px 30px rgba(0, 0, 0, 0.12);
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+    transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
   }
+
   body {
     @apply bg-background text-foreground;
-    font-family: -apple-system, BlinkMacSystemFont, var(--font-inter), "Segoe UI", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
-    font-size: 14px;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.016em;
+    line-height: 1.5;
+    font-size: 15px;
   }
+
+  /* Apple Typography System */
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.022em;
+    line-height: 1.2;
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  h5 {
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  h6 {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  /* Apple Custom Scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
+
   ::-webkit-scrollbar-track {
     background: transparent;
   }
+
   ::-webkit-scrollbar-thumb {
-    background: #c7c7cc;
-    border-radius: 3px;
+    background: #C7C7CC;
+    border-radius: 9999px;
   }
+
   ::-webkit-scrollbar-thumb:hover {
-    background: #8e8e93;
+    background: #8E8E93;
+  }
+}
+
+@layer utilities {
+  /* Apple Focus Ring */
+  .apple-focus-ring {
+    @apply outline-none ring-2 ring-apple-blue ring-offset-2 ring-offset-background;
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px #007AFF, 0 2px 8px rgba(0, 122, 255, 0.15);
+  }
+
+  /* Apple Shadow Utilities */
+  .apple-card-shadow {
+    box-shadow: var(--apple-shadow-card);
+  }
+
+  .apple-elevated-shadow {
+    box-shadow: var(--apple-shadow-elevated);
+  }
+
+  .apple-button-hover-shadow {
+    box-shadow: var(--apple-shadow-button-hover);
+  }
+
+  .apple-dialog-shadow {
+    box-shadow: var(--apple-shadow-dialog);
+  }
+
+  /* Apple Smooth Scroll */
+  .apple-smooth-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Apple Spring Animations */
+  .spring-scale {
+    animation: spring-scale 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+
+  .spring-fade {
+    animation: spring-fade 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
   }
 }

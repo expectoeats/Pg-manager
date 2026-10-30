@@ -16,6 +16,11 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'SF Pro Text', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Inter', 'sans-serif'],
+        text: ['SF Pro Text', '-apple-system', 'BlinkMacSystemFont', 'Inter', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -50,11 +55,30 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Apple Design System Colors
+        apple: {
+          blue: '#007AFF',
+          green: '#34C759',
+          orange: '#FF9500',
+          red: '#FF3B30',
+          gray: '#8E8E93',
+          border: '#E5E5EA',
+          'secondary-bg': '#F2F2F7',
+          'tertiary-bg': '#FBFBFD',
+          text: '#1C1C1E',
+        },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        sm: '10px',
+        DEFAULT: '12px',
+        md: '12px',
+        lg: '16px',
+        xl: '20px',
+        '2xl': '24px',
+      },
+      spacing: {
+        '18': '4.5rem',
+        '22': '5.5rem',
       },
       keyframes: {
         "accordion-down": {
@@ -65,10 +89,21 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "spring-scale": {
+          '0%': { transform: 'scale(0.95)', opacity: '0' },
+          '60%': { transform: 'scale(1.02)' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        "spring-fade": {
+          '0%': { opacity: '0', transform: 'translateY(-8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "spring-scale": "spring-scale 0.4s cubic-bezier(0.4, 0.0, 0.2, 1)",
+        "spring-fade": "spring-fade 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)",
       },
     },
   },
