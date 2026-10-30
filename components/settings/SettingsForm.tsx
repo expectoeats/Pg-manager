@@ -107,7 +107,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
 
   return (
     <Tabs defaultValue="pg-details">
-      <TabsList className="mb-6 w-full">
+      <TabsList className="mb-6">
         <TabsTrigger value="pg-details">PG Details</TabsTrigger>
         <TabsTrigger value="billing">Billing</TabsTrigger>
         <TabsTrigger value="electricity">Electricity</TabsTrigger>
@@ -117,25 +117,26 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <TabsContent value="pg-details">
-          <Card>
+          <Card className="rounded-2xl border-[#E5E5EA]">
             <CardHeader>
-              <CardTitle className="text-[15px] font-semibold text-[#1C1C1E]">PG Details</CardTitle>
+              <CardTitle className="text-[17px] font-semibold text-[#1C1C1E] tracking-[-0.022em]">PG Details</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5">
               <div className="space-y-2">
-                <Label>PG Name</Label>
-                <Input {...register('pgName')} />
+                <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">PG Name</Label>
+                <Input className="h-11" {...register('pgName')} />
                 {errors.pgName && (
-                  <p className="text-[#FF3B30] text-sm">{errors.pgName.message}</p>
+                  <p className="text-[#FF3B30] text-[13px]">{errors.pgName.message}</p>
                 )}
               </div>
               <div className="space-y-2">
-                <Label>Address</Label>
-                <Input {...register('address')} />
+                <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Address</Label>
+                <Input className="h-11" {...register('address')} />
               </div>
               <div className="space-y-2">
-                <Label>Phone</Label>
+                <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Phone</Label>
                 <Input
+                  className="h-11"
                   type="tel"
                   {...register('phone')}
                 />
@@ -150,30 +151,33 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
         </TabsContent>
 
         <TabsContent value="billing">
-          <Card>
+          <Card className="rounded-2xl border-[#E5E5EA]">
             <CardHeader>
-              <CardTitle className="text-[15px] font-semibold text-[#1C1C1E]">Billing Settings</CardTitle>
+              <CardTitle className="text-[17px] font-semibold text-[#1C1C1E] tracking-[-0.022em]">Billing Settings</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Deposit Amount (₹)</Label>
+                  <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Deposit Amount (₹)</Label>
                   <Input
+                    className="h-11"
                     type="number"
                     {...register('depositAmount')}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Notice Period (days)</Label>
+                  <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Notice Period (days)</Label>
                   <Input
+                    className="h-11"
                     type="number"
                     {...register('noticePeriodDays')}
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Rent Due Day (1-28)</Label>
+                <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Rent Due Day (1-28)</Label>
                 <Input
+                  className="h-11"
                   type="number"
                   min={1}
                   max={28}
@@ -181,7 +185,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Billing Mode</Label>
+                <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Billing Mode</Label>
                 <div className="flex gap-4">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
@@ -189,9 +193,9 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                       value="calendar"
                       checked={billingMode === 'calendar'}
                       onChange={() => setValue('billingMode', 'calendar')}
-                      className="accent-[#007AFF]"
+                      className="accent-[#007AFF] w-4 h-4"
                     />
-                    <span className="text-sm">Calendar month</span>
+                    <span className="text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Calendar month</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
@@ -199,18 +203,17 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                       value="joining_cycle"
                       checked={billingMode === 'joining_cycle'}
                       onChange={() => setValue('billingMode', 'joining_cycle')}
-                      className="accent-[#007AFF]"
+                      className="accent-[#007AFF] w-4 h-4"
                     />
-                    <span className="text-sm">Joining cycle</span>
+                    <span className="text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Joining cycle</span>
                   </label>
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <Label>Prorate first month&apos;s rent</Label>
+              <div className="flex items-center justify-between py-2">
+                <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Prorate first month&apos;s rent</Label>
                 <ToggleSwitch
                   checked={prorateFirstMonth}
                   onChange={(v) => setValue('prorateFirstMonth', v)}
-                  color="green"
                 />
               </div>
               <SaveButton
@@ -223,14 +226,15 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
         </TabsContent>
 
         <TabsContent value="electricity">
-          <Card>
+          <Card className="rounded-2xl border-[#E5E5EA]">
             <CardHeader>
-              <CardTitle className="text-[15px] font-semibold text-[#1C1C1E]">Electricity Settings</CardTitle>
+              <CardTitle className="text-[17px] font-semibold text-[#1C1C1E] tracking-[-0.022em]">Electricity Settings</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5">
               <div className="space-y-2">
-                <Label>Default Rate per Unit (₹)</Label>
+                <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Default Rate per Unit (₹)</Label>
                 <Input
+                  className="h-11"
                   type="number"
                   step="0.01"
                   {...register('defaultRatePerUnit')}
@@ -246,15 +250,15 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
         </TabsContent>
 
         <TabsContent value="receipt">
-          <Card>
+          <Card className="rounded-2xl border-[#E5E5EA]">
             <CardHeader>
-              <CardTitle className="text-[15px] font-semibold text-[#1C1C1E]">Receipt Settings</CardTitle>
+              <CardTitle className="text-[17px] font-semibold text-[#1C1C1E] tracking-[-0.022em]">Receipt Settings</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5">
               <div className="space-y-2">
-                <Label>Receipt Footer Text</Label>
+                <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Receipt Footer Text</Label>
                 <textarea
-                  className="w-full rounded-xl border border-[#E5E5EA] px-3 py-2 text-sm text-[#1C1C1E] focus:outline-none focus:ring-2 focus:ring-[#007AFF]"
+                  className="w-full h-24 rounded-xl border border-[#E5E5EA] px-3 py-2.5 text-[15px] text-[#1C1C1E] tracking-[-0.016em] focus:outline-none focus:ring-2 focus:ring-[#007AFF] focus:border-transparent transition-all resize-none"
                   rows={4}
                   placeholder="Thank you for staying with us!"
                   {...register('receiptFooter')}
@@ -271,25 +275,26 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
       </form>
 
       <TabsContent value="security">
-        <Card>
+        <Card className="rounded-2xl border-[#E5E5EA]">
           <CardHeader>
-            <CardTitle className="text-[15px] font-semibold text-[#1C1C1E]">Change Password</CardTitle>
+            <CardTitle className="text-[17px] font-semibold text-[#1C1C1E] tracking-[-0.022em]">Change Password</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handlePasswordChange} className="space-y-4">
+            <form onSubmit={handlePasswordChange} className="space-y-5">
               {pwError && (
-                <div className="bg-[#FF3B30]/10 text-[#FF3B30] px-4 py-3 rounded-xl text-sm">
+                <div className="bg-[#FF3B30]/10 text-[#FF3B30] px-4 py-3 rounded-xl text-[13px] border border-[#FF3B30]/20">
                   {pwError}
                 </div>
               )}
               {pwSuccess && (
-                <div className="bg-[#34C759]/10 text-[#34C759] px-4 py-3 rounded-xl text-sm flex items-center gap-2">
-                  <Check className="w-5 h-5" /> Password changed successfully
+                <div className="bg-[#34C759]/10 text-[#34C759] px-4 py-3 rounded-xl text-[13px] flex items-center gap-2 border border-[#34C759]/20">
+                  <Check className="w-5 h-5 strokeWidth={2}" /> Password changed successfully
                 </div>
               )}
               <div className="space-y-2">
-                <Label>Current Password</Label>
+                <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Current Password</Label>
                 <Input
+                  className="h-11"
                   type="password"
                   value={pwData.currentPassword}
                   onChange={(e) =>
@@ -301,8 +306,9 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label>New Password</Label>
+                <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">New Password</Label>
                 <Input
+                  className="h-11"
                   type="password"
                   value={pwData.newPassword}
                   onChange={(e) =>
@@ -311,8 +317,9 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Confirm New Password</Label>
+                <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Confirm New Password</Label>
                 <Input
+                  className="h-11"
                   type="password"
                   value={pwData.confirmPassword}
                   onChange={(e) =>
@@ -324,12 +331,14 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                 />
               </div>
               <Button
+                className="h-11"
                 type="submit"
                 disabled={pwSaving}
+                variant="destructive"
               >
                 {pwSaving ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin strokeWidth={2}" />{' '}
                     Changing...
                   </>
                 ) : (
@@ -356,22 +365,23 @@ function SaveButton({
   return (
     <div>
       {saveError && (
-        <div className="bg-[#FF3B30]/10 text-[#FF3B30] px-4 py-3 rounded-xl text-sm mb-3">
+        <div className="bg-[#FF3B30]/10 text-[#FF3B30] px-4 py-3 rounded-xl text-[13px] mb-3 border border-[#FF3B30]/20">
           {saveError}
         </div>
       )}
       {saveSuccess && (
-        <div className="bg-[#34C759]/10 text-[#34C759] px-4 py-3 rounded-xl text-sm mb-3 flex items-center gap-2">
-          <Check className="w-5 h-5" /> Settings saved successfully
+        <div className="bg-[#34C759]/10 text-[#34C759] px-4 py-3 rounded-xl text-[13px] mb-3 flex items-center gap-2 border border-[#34C759]/20">
+          <Check className="w-5 h-5 strokeWidth={2}" /> Settings saved successfully
         </div>
       )}
       <Button
+        className="h-11"
         type="submit"
         disabled={saving}
       >
         {saving ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
+            <Loader2 className="mr-2 h-5 w-5 animate-spin strokeWidth={2}" /> Saving...
           </>
         ) : (
           'Save Settings'
