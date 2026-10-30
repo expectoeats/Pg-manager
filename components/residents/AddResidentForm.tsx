@@ -244,6 +244,12 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
   }
 
   const onSubmit = async (data: ResidentFormData) => {
+    // Extra safety: only submit if on final step
+    if (currentStep < STEPS.length - 1) {
+      console.warn('Form submission blocked: not on final step');
+      return;
+    }
+    
     setSubmitError('');
     // Attach food plan info to notes if selected
     const submissionData = {
@@ -268,10 +274,18 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
     });
   };
 
-  // Prevent form submission on Enter key in input fields
+  // Prevent form submission on Enter key - comprehensive approach
   const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
-    if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+    // Prevent Enter key from submitting form anywhere except the final Submit button
+    if (e.key === 'Enter' && currentStep < STEPS.length - 1) {
       e.preventDefault();
+      return;
+    }
+    
+    // Also prevent if Enter is pressed on any input/select (not textarea)
+    if (e.key === 'Enter' && (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement)) {
+      e.preventDefault();
+      return;
     }
   };
 
