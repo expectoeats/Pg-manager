@@ -159,11 +159,11 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
       {/* Page header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-[22px] font-semibold text-[#1C1C1E]">Rooms &amp; Beds</h1>
+          <h1 className="text-[22px] font-semibold text-[#1C1C1E] tracking-[-0.022em]">Rooms &amp; Beds</h1>
           <p className="text-[#8E8E93] mt-1">{roomsWithBeds.length} room{roomsWithBeds.length !== 1 ? 's' : ''} total</p>
         </div>
-        <Button onClick={openAddDialog}>
-          <Plus className="w-5 h-5 mr-2" />
+        <Button onClick={openAddDialog} className="h-11 rounded-xl">
+          <Plus className="w-5 h-5 mr-2" strokeWidth={2} />
           Add Room
         </Button>
       </div>
@@ -173,8 +173,10 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
         <button
           onClick={() => setFilterVacant(false)}
           className={cn(
-            'px-3 py-1.5 rounded-xl text-sm font-medium transition-colors border',
-            !filterVacant ? 'bg-[#007AFF]/10 text-[#007AFF] border-[#007AFF]/20' : 'bg-white text-[#8E8E93] border-[#E5E5EA]'
+            'h-9 px-3.5 rounded-xl text-sm font-medium transition-all duration-200 border',
+            !filterVacant 
+              ? 'bg-[#007AFF] text-white border-[#007AFF] shadow-sm' 
+              : 'bg-white text-[#8E8E93] border-[#E5E5EA] hover:border-[#007AFF]/30'
           )}
         >
           All
@@ -182,20 +184,24 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
         <button
           onClick={() => setFilterVacant(true)}
           className={cn(
-            'px-3 py-1.5 rounded-xl text-sm font-medium transition-colors border',
-            filterVacant ? 'bg-[#007AFF]/10 text-[#007AFF] border-[#007AFF]/20' : 'bg-white text-[#8E8E93] border-[#E5E5EA]'
+            'h-9 px-3.5 rounded-xl text-sm font-medium transition-all duration-200 border',
+            filterVacant 
+              ? 'bg-[#007AFF] text-white border-[#007AFF] shadow-sm' 
+              : 'bg-white text-[#8E8E93] border-[#E5E5EA] hover:border-[#007AFF]/30'
           )}
         >
           Vacant Only
         </button>
-        <div className="flex gap-1 ml-2">
+        <div className="flex gap-2 ml-2">
           {(['all', 'double', 'triple'] as const).map((type) => (
             <button
               key={type}
               onClick={() => setFilterSharing(type)}
               className={cn(
-                'px-3 py-1.5 rounded-xl text-sm font-medium transition-colors capitalize border',
-                filterSharing === type ? 'bg-[#007AFF]/10 text-[#007AFF] border-[#007AFF]/20' : 'bg-white text-[#8E8E93] border-[#E5E5EA]'
+                'h-9 px-3.5 rounded-xl text-sm font-medium transition-all duration-200 capitalize border',
+                filterSharing === type 
+                  ? 'bg-[#007AFF] text-white border-[#007AFF] shadow-sm' 
+                  : 'bg-white text-[#8E8E93] border-[#E5E5EA] hover:border-[#007AFF]/30'
               )}
             >
               {type === 'all' ? 'All Types' : `${type} sharing`}
@@ -208,7 +214,7 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="w-16 h-16 bg-[#F2F2F7] rounded-2xl flex items-center justify-center mb-4">
-            <DoorOpen className="w-8 h-8 text-[#8E8E93]" />
+            <DoorOpen className="w-8 h-8 text-[#8E8E93]" strokeWidth={2} />
           </div>
           <h3 className="text-lg font-medium text-[#1C1C1E] mb-2">No rooms found</h3>
           <p className="text-sm text-[#8E8E93] mb-4">
@@ -217,8 +223,8 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
               : 'No rooms match the current filters.'}
           </p>
           {roomsWithBeds.length === 0 && (
-            <Button onClick={openAddDialog}>
-              <Plus className="w-5 h-5 mr-2" /> Add Room
+            <Button onClick={openAddDialog} className="h-11 rounded-xl">
+              <Plus className="w-5 h-5 mr-2" strokeWidth={2} /> Add Room
             </Button>
           )}
         </div>
@@ -255,6 +261,7 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
               <Input
                 placeholder="e.g. 101, A1"
                 {...register('roomNumber')}
+                className="h-11 rounded-xl"
               />
               {errors.roomNumber && (
                 <p className="text-[#FF3B30] text-xs">{errors.roomNumber.message}</p>
@@ -270,7 +277,7 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
                   setValue('totalBeds', v === 'double' ? 2 : 3);
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-11 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -281,7 +288,7 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
             </div>
 
             {selectedRoom ? (
-              <div className="p-3 bg-[#FF9500]/10 border border-[#FF9500]/20 rounded-lg text-sm text-[#FF9500]">
+              <div className="p-3 bg-[#FF9500]/10 border border-[#FF9500]/20 rounded-xl text-sm text-[#FF9500]">
                 Bed count cannot be changed after creation.
               </div>
             ) : (
@@ -292,6 +299,7 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
                   min={1}
                   max={10}
                   {...register('totalBeds')}
+                  className="h-11 rounded-xl"
                 />
                 {errors.totalBeds && (
                   <p className="text-[#FF3B30] text-xs">{errors.totalBeds.message}</p>
@@ -304,6 +312,7 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
               <Input
                 placeholder="e.g. Ground, 1st, 2nd"
                 {...register('floor')}
+                className="h-11 rounded-xl"
               />
             </div>
 
@@ -323,14 +332,14 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
               <Button
                 type="button"
                 variant="outline"
-                className="flex-1"
+                className="flex-1 h-11 rounded-xl"
                 onClick={() => setDialogOpen(false)}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="flex-1"
+                className="flex-1 h-11 rounded-xl"
                 disabled={isPending}
               >
                 {isPending ? 'Saving...' : selectedRoom ? 'Update Room' : 'Add Room'}
