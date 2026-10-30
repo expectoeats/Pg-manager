@@ -19,14 +19,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Users, Plus, Eye } from 'lucide-react';
+import { Users, Plus, Eye, Clock, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { calculateNextRentDue } from '@/lib/utils/rentCalculations';
 
 interface ResidentData {
   _id: string;
   name: string;
   mobile: string;
   joiningDate: string;
+  billingMode?: 'calendar' | 'joining_cycle';
   status: 'active' | 'notice' | 'left';
   room?: { roomNumber: string } | null;
   bed?: { bedLabel: string } | null;
@@ -171,13 +173,23 @@ export default function ResidentsList({
                   <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Mobile</TableHead>
                   <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Room / Bed</TableHead>
                   <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Plan</TableHead>
-                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Joining</TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Next Payment</TableHead>
                   <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Status</TableHead>
                   <TableHead className="text-right text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {residents.map((r) => (
+                {residents.map((r) => {
+                  // Calculate next payment info for active/notice residents
+                  const paymentInfo = (r.status === 'active' || r.status === 'notice')
+                    ? calculateNextRentDue(
+                        r.joiningDate,
+                        r.billingMode || 'joining_cycle',
+                        r.currentPlan?.price || 7000
+                      )
+                    : null;
+
+                  return (
                   <TableRow key={r._id} className="hover:bg-[#F9F9FB]">
                     <TableCell>
                       <div className="flex items-center gap-3">
@@ -198,8 +210,35 @@ export default function ResidentsList({
                     <TableCell className="text-sm text-[#1C1C1E]">
                       {r.currentPlan?.name || <span className="text-[#8E8E93]">—</span>}
                     </TableCell>
-                    <TableCell className="text-sm text-[#1C1C1E]">
-                      {new Date(r.joiningDate).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                    <TableCell>
+                      {paymentInfo ? (
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={cn(
+                              'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
+                              paymentInfo.isOverdue && 'animate-pulse'
+                            )}
+                            style={{
+                              backgroundColor: paymentInfo.bgColor,
+                              color: paymentInfo.textColor,
+                            }}
+                          >
+                            {paymentInfo.isOverdue ? (
+                              <Clock className="w-4 h-4" strokeWidth={2.5} />
+                            ) : paymentInfo.daysLeft <= 5 ? (
+                              <Clock className="w-4 h-4" strokeWidth={2.5} />
+                            ) : (
+                              <Calendar className="w-4 h-4" strokeWidth={2} />
+                            )}
+                            <span>{paymentInfo.label}</span>
+                          </div>
+                          <div className="text-xs text-[#8E8E93]">
+                            ₹{paymentInfo.amount.toLocaleString('en-IN')}
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-[#8E8E93] text-xs">—</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={cn('rounded-full text-xs capitalize', STATUS_BADGE[r.status])}>
@@ -214,17 +253,28 @@ export default function ResidentsList({
                       </Link>
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
 
           {/* Mobile cards */}
           <div className="md:hidden space-y-3">
-            {residents.map((r) => (
+            {residents.map((r) => {
+              // Calculate next payment info for active/notice residents
+              const paymentInfo = (r.status === 'active' || r.status === 'notice')
+                ? calculateNextRentDue(
+                    r.joiningDate,
+                    r.billingMode || 'joining_cycle',
+                    r.currentPlan?.price || 7000
+                  )
+                : null;
+
+              return (
               <Link key={r._id} href={`/residents/${r._id}`}>
                 <div className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] border border-[#E5E5EA] p-4">
-                  <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-[#007AFF]/10 flex items-center justify-center text-[#007AFF] font-semibold">
                         {r.name.charAt(0).toUpperCase()}
@@ -238,6 +288,43 @@ export default function ResidentsList({
                       {r.status === 'notice' ? 'On Notice' : r.status}
                     </Badge>
                   </div>
+
+                  {/* Next Payment Countdown */}
+                  {paymentInfo && (
+                    <div
+                      className={cn(
+                        'mb-3 p-3 rounded-xl flex items-center justify-between transition-all',
+                        paymentInfo.isOverdue && 'animate-pulse'
+                      )}
+                      style={{ backgroundColor: paymentInfo.bgColor }}
+                    >
+                      <div className="flex items-center gap-2">
+                        {paymentInfo.isOverdue || paymentInfo.daysLeft <= 5 ? (
+                          <Clock className="w-5 h-5" strokeWidth={2.5} style={{ color: paymentInfo.textColor }} />
+                        ) : (
+                          <Calendar className="w-5 h-5" strokeWidth={2} style={{ color: paymentInfo.textColor }} />
+                        )}
+                        <div>
+                          <p className="text-xs font-semibold" style={{ color: paymentInfo.textColor }}>
+                            {paymentInfo.label}
+                          </p>
+                          <p className="text-[10px]" style={{ color: paymentInfo.textColor, opacity: 0.8 }}>
+                            {paymentInfo.nextDueDate.toLocaleDateString('en-IN', { 
+                              day: 'numeric',
+                              month: 'short',
+                              timeZone: 'Asia/Kolkata' 
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold" style={{ color: paymentInfo.textColor }}>
+                          ₹{paymentInfo.amount.toLocaleString('en-IN')}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
                       <span className="text-[#8E8E93] text-xs">Room/Bed</span>
@@ -252,7 +339,8 @@ export default function ResidentsList({
                   </div>
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </>
       )}
