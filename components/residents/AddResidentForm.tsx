@@ -268,6 +268,13 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
     });
   };
 
+  // Prevent form submission on Enter key in input fields
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto">
       {/* Stepper */}
@@ -311,7 +318,7 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
         })}
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} onKeyDown={handleKeyDown}>
         <Card className="border border-[#E5E5EA] shadow-sm rounded-2xl">
           <CardHeader className="pb-2 pt-6 px-6">
             <CardTitle className="text-[17px] font-semibold tracking-[-0.022em] text-[#1C1C1E] flex items-center gap-2">
