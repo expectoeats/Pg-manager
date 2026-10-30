@@ -36,7 +36,7 @@ export default function RoomCard({ room, beds, onEdit, onToggleActive, toggling 
   return (
     <div
       className={cn(
-        'bg-white rounded-xl shadow-sm p-4 border border-gray-100 flex flex-col gap-3',
+        'bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] p-4 border border-[#E5E5EA] flex flex-col gap-3',
         !room.isActive && 'opacity-60'
       )}
     >
@@ -44,9 +44,9 @@ export default function RoomCard({ room, beds, onEdit, onToggleActive, toggling 
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xl font-bold text-gray-900">Room {room.roomNumber}</span>
+            <span className="text-xl font-bold text-[#1C1C1E]">Room {room.roomNumber}</span>
             {!room.isActive && (
-              <Badge variant="outline" className="text-gray-400 border-gray-300 text-xs">
+              <Badge variant="outline" className="bg-[#8E8E93]/10 text-[#8E8E93] border-transparent text-xs">
                 Inactive
               </Badge>
             )}
@@ -55,19 +55,19 @@ export default function RoomCard({ room, beds, onEdit, onToggleActive, toggling 
             <Badge
               variant="outline"
               className={cn(
-                'text-xs capitalize',
+                'text-xs capitalize border-transparent',
                 room.sharingType === 'double'
-                  ? 'text-blue-600 border-blue-200 bg-blue-50'
-                  : 'text-purple-600 border-purple-200 bg-purple-50'
+                  ? 'bg-[#007AFF]/10 text-[#007AFF]'
+                  : 'bg-[#5856D6]/10 text-[#5856D6]'
               )}
             >
               {room.sharingType} sharing
             </Badge>
             {room.floor && (
-              <span className="text-xs text-gray-500">Floor {room.floor}</span>
+              <span className="text-xs text-[#8E8E93]">Floor {room.floor}</span>
             )}
             {room.hasSubMeter && (
-              <Badge variant="outline" className="text-xs text-orange-600 border-orange-200 bg-orange-50">
+              <Badge variant="outline" className="text-xs bg-[#FF9500]/10 text-[#FF9500] border-transparent">
                 Sub-meter
               </Badge>
             )}
@@ -83,13 +83,13 @@ export default function RoomCard({ room, beds, onEdit, onToggleActive, toggling 
               title={bed.status === 'occupied' ? bed.currentResident?.name || 'Occupied' : `Bed ${bed.bedLabel} - Vacant`}
               className={cn(
                 'w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white cursor-default',
-                bed.status === 'vacant' ? 'bg-green-500' : 'bg-red-500'
+                bed.status === 'vacant' ? 'bg-[#34C759]' : 'bg-[#FF3B30]'
               )}
             >
               {bed.bedLabel}
             </div>
             {bed.status === 'occupied' && bed.currentResident && (
-              <span className="text-xs text-gray-500 max-w-[48px] truncate text-center">
+              <span className="text-xs text-[#8E8E93] max-w-[48px] truncate text-center">
                 {bed.currentResident.name.split(' ')[0]}
               </span>
             )}
@@ -98,15 +98,15 @@ export default function RoomCard({ room, beds, onEdit, onToggleActive, toggling 
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-1 border-t border-gray-50">
-        <span className="text-xs text-gray-500">
+      <div className="flex items-center justify-between pt-1 border-t border-[#E5E5EA]">
+        <span className="text-xs text-[#8E8E93]">
           {occupiedCount}/{beds.length} occupied
         </span>
         <div className="flex gap-1.5">
           <Button
             variant="outline"
             size="sm"
-            className="h-7 px-2 text-xs rounded-lg"
+            className="h-7 px-2 text-xs"
             onClick={() => onEdit(room)}
           >
             <Pencil className="w-3 h-3 mr-1" />
@@ -115,12 +115,7 @@ export default function RoomCard({ room, beds, onEdit, onToggleActive, toggling 
           <Button
             variant="outline"
             size="sm"
-            className={cn(
-              'h-7 px-2 text-xs rounded-lg',
-              room.isActive
-                ? 'text-red-600 border-red-200 hover:bg-red-50'
-                : 'text-green-600 border-green-200 hover:bg-green-50'
-            )}
+            className="h-7 px-2 text-xs"
             onClick={() => onToggleActive(room._id)}
             disabled={toggling}
           >

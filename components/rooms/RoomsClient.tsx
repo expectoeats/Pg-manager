@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Plus, DoorOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ToggleSwitch } from '@/components/ui/toggle-switch';
 import RoomCard from './RoomCard';
 
 interface BedData {
@@ -158,13 +159,10 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
       {/* Page header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Rooms &amp; Beds</h1>
-          <p className="text-gray-500 mt-1">{roomsWithBeds.length} room{roomsWithBeds.length !== 1 ? 's' : ''} total</p>
+          <h1 className="text-[22px] font-semibold text-[#1C1C1E]">Rooms &amp; Beds</h1>
+          <p className="text-[#8E8E93] mt-1">{roomsWithBeds.length} room{roomsWithBeds.length !== 1 ? 's' : ''} total</p>
         </div>
-        <Button
-          onClick={openAddDialog}
-          className="bg-green-600 hover:bg-green-700 text-white rounded-xl"
-        >
+        <Button onClick={openAddDialog}>
           <Plus className="w-4 h-4 mr-2" />
           Add Room
         </Button>
@@ -175,8 +173,8 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
         <button
           onClick={() => setFilterVacant(false)}
           className={cn(
-            'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
-            !filterVacant ? 'bg-green-100 text-green-700' : 'bg-white text-gray-600 border border-gray-200'
+            'px-3 py-1.5 rounded-xl text-sm font-medium transition-colors border',
+            !filterVacant ? 'bg-[#007AFF]/10 text-[#007AFF] border-[#007AFF]/20' : 'bg-white text-[#8E8E93] border-[#E5E5EA]'
           )}
         >
           All
@@ -184,8 +182,8 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
         <button
           onClick={() => setFilterVacant(true)}
           className={cn(
-            'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
-            filterVacant ? 'bg-green-100 text-green-700' : 'bg-white text-gray-600 border border-gray-200'
+            'px-3 py-1.5 rounded-xl text-sm font-medium transition-colors border',
+            filterVacant ? 'bg-[#007AFF]/10 text-[#007AFF] border-[#007AFF]/20' : 'bg-white text-[#8E8E93] border-[#E5E5EA]'
           )}
         >
           Vacant Only
@@ -196,8 +194,8 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
               key={type}
               onClick={() => setFilterSharing(type)}
               className={cn(
-                'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize',
-                filterSharing === type ? 'bg-blue-100 text-blue-700' : 'bg-white text-gray-600 border border-gray-200'
+                'px-3 py-1.5 rounded-xl text-sm font-medium transition-colors capitalize border',
+                filterSharing === type ? 'bg-[#007AFF]/10 text-[#007AFF] border-[#007AFF]/20' : 'bg-white text-[#8E8E93] border-[#E5E5EA]'
               )}
             >
               {type === 'all' ? 'All Types' : `${type} sharing`}
@@ -209,17 +207,17 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
       {/* Room grid */}
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
-            <DoorOpen className="w-8 h-8 text-gray-400" />
+          <div className="w-16 h-16 bg-[#F2F2F7] rounded-2xl flex items-center justify-center mb-4">
+            <DoorOpen className="w-8 h-8 text-[#8E8E93]" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No rooms found</h3>
-          <p className="text-sm text-gray-500 mb-4">
+          <h3 className="text-lg font-medium text-[#1C1C1E] mb-2">No rooms found</h3>
+          <p className="text-sm text-[#8E8E93] mb-4">
             {roomsWithBeds.length === 0
               ? 'Add your first room to get started.'
               : 'No rooms match the current filters.'}
           </p>
           {roomsWithBeds.length === 0 && (
-            <Button onClick={openAddDialog} className="bg-green-600 hover:bg-green-700 text-white rounded-xl">
+            <Button onClick={openAddDialog}>
               <Plus className="w-4 h-4 mr-2" /> Add Room
             </Button>
           )}
@@ -241,13 +239,13 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
 
       {/* Add/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-xl">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{selectedRoom ? 'Edit Room' : 'Add Room'}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">
+              <div className="bg-[#FF3B30]/10 text-[#FF3B30] px-3 py-2 rounded-lg text-sm">
                 {error}
               </div>
             )}
@@ -255,12 +253,11 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
             <div className="space-y-2">
               <Label>Room Number</Label>
               <Input
-                className="rounded-lg"
                 placeholder="e.g. 101, A1"
                 {...register('roomNumber')}
               />
               {errors.roomNumber && (
-                <p className="text-red-500 text-xs">{errors.roomNumber.message}</p>
+                <p className="text-[#FF3B30] text-xs">{errors.roomNumber.message}</p>
               )}
             </div>
 
@@ -273,7 +270,7 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
                   setValue('totalBeds', v === 'double' ? 2 : 3);
                 }}
               >
-                <SelectTrigger className="rounded-lg">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -284,7 +281,7 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
             </div>
 
             {selectedRoom ? (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
+              <div className="p-3 bg-[#FF9500]/10 border border-[#FF9500]/20 rounded-lg text-sm text-[#FF9500]">
                 Bed count cannot be changed after creation.
               </div>
             ) : (
@@ -294,11 +291,10 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
                   type="number"
                   min={1}
                   max={10}
-                  className="rounded-lg"
                   {...register('totalBeds')}
                 />
                 {errors.totalBeds && (
-                  <p className="text-red-500 text-xs">{errors.totalBeds.message}</p>
+                  <p className="text-[#FF3B30] text-xs">{errors.totalBeds.message}</p>
                 )}
               </div>
             )}
@@ -306,7 +302,6 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
             <div className="space-y-2">
               <Label>Floor (optional)</Label>
               <Input
-                className="rounded-lg"
                 placeholder="e.g. Ground, 1st, 2nd"
                 {...register('floor')}
               />
@@ -314,41 +309,13 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
 
             <div className="flex items-center justify-between">
               <Label>Has Sub-Meter</Label>
-              <button
-                type="button"
-                onClick={() => setValue('hasSubMeter', !hasSubMeter)}
-                className={cn(
-                  'w-11 h-6 rounded-full transition-colors relative',
-                  hasSubMeter ? 'bg-green-500' : 'bg-gray-300'
-                )}
-              >
-                <span
-                  className={cn(
-                    'absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform',
-                    hasSubMeter ? 'translate-x-5' : 'translate-x-0.5'
-                  )}
-                />
-              </button>
+              <ToggleSwitch checked={hasSubMeter} onChange={(v) => setValue('hasSubMeter', v)} color="blue" />
             </div>
 
             {selectedRoom && (
               <div className="flex items-center justify-between">
                 <Label>Active</Label>
-                <button
-                  type="button"
-                  onClick={() => setValue('isActive', !isActive)}
-                  className={cn(
-                    'w-11 h-6 rounded-full transition-colors relative',
-                    isActive ? 'bg-green-500' : 'bg-gray-300'
-                  )}
-                >
-                  <span
-                    className={cn(
-                      'absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform',
-                      isActive ? 'translate-x-5' : 'translate-x-0.5'
-                    )}
-                  />
-                </button>
+                <ToggleSwitch checked={isActive} onChange={(v) => setValue('isActive', v)} color="blue" />
               </div>
             )}
 
@@ -356,14 +323,14 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
               <Button
                 type="button"
                 variant="outline"
-                className="flex-1 rounded-lg"
+                className="flex-1"
                 onClick={() => setDialogOpen(false)}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-lg"
+                className="flex-1"
                 disabled={isPending}
               >
                 {isPending ? 'Saving...' : selectedRoom ? 'Update Room' : 'Add Room'}

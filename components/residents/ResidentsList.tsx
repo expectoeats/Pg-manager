@@ -51,9 +51,9 @@ interface ResidentsListProps {
 }
 
 const STATUS_BADGE: Record<string, string> = {
-  active: 'text-green-600 border-green-200 bg-green-50',
-  notice: 'text-yellow-600 border-yellow-200 bg-yellow-50',
-  left: 'text-gray-500 border-gray-200 bg-gray-50',
+  active: 'bg-[#34C759]/10 text-[#34C759] border-transparent',
+  notice: 'bg-[#FF9500]/10 text-[#FF9500] border-transparent',
+  left: 'bg-[#8E8E93]/10 text-[#8E8E93] border-transparent',
 };
 
 export default function ResidentsList({
@@ -80,15 +80,12 @@ export default function ResidentsList({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-gray-900">Residents</h1>
-          <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50">
+          <h1 className="text-[22px] font-semibold text-[#1C1C1E]">Residents</h1>
+          <Badge variant="outline" className="bg-[#007AFF]/10 text-[#007AFF] border-transparent">
             {residents.length}
           </Badge>
         </div>
-        <Button
-          onClick={() => router.push('/residents/new')}
-          className="bg-green-600 hover:bg-green-700 text-white rounded-xl"
-        >
+        <Button onClick={() => router.push('/residents/new')}>
           <Plus className="w-4 h-4 mr-2" />
           Add Resident
         </Button>
@@ -100,7 +97,7 @@ export default function ResidentsList({
           value={initialFilters.status || 'all'}
           onValueChange={(v) => updateFilter('status', v)}
         >
-          <SelectTrigger className="w-36 rounded-lg bg-white">
+          <SelectTrigger className="w-36">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -115,7 +112,7 @@ export default function ResidentsList({
           value={initialFilters.planId || 'all'}
           onValueChange={(v) => updateFilter('planId', v)}
         >
-          <SelectTrigger className="w-44 rounded-lg bg-white">
+          <SelectTrigger className="w-44">
             <SelectValue placeholder="Plan" />
           </SelectTrigger>
           <SelectContent>
@@ -132,7 +129,7 @@ export default function ResidentsList({
           value={initialFilters.roomId || 'all'}
           onValueChange={(v) => updateFilter('roomId', v)}
         >
-          <SelectTrigger className="w-36 rounded-lg bg-white">
+          <SelectTrigger className="w-36">
             <SelectValue placeholder="Room" />
           </SelectTrigger>
           <SelectContent>
@@ -148,20 +145,17 @@ export default function ResidentsList({
 
       {residents.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
-            <Users className="w-8 h-8 text-gray-400" />
+          <div className="w-16 h-16 bg-[#F2F2F7] rounded-2xl flex items-center justify-center mb-4">
+            <Users className="w-8 h-8 text-[#8E8E93]" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No residents found</h3>
-          <p className="text-sm text-gray-500 mb-4">
+          <h3 className="text-lg font-medium text-[#1C1C1E] mb-2">No residents found</h3>
+          <p className="text-sm text-[#8E8E93] mb-4">
             {Object.values(initialFilters).some(Boolean)
               ? 'No residents match the current filters.'
               : 'Add your first resident to get started.'}
           </p>
           {!Object.values(initialFilters).some(Boolean) && (
-            <Button
-              onClick={() => router.push('/residents/new')}
-              className="bg-green-600 hover:bg-green-700 text-white rounded-xl"
-            >
+            <Button onClick={() => router.push('/residents/new')}>
               <Plus className="w-4 h-4 mr-2" /> Add Resident
             </Button>
           )}
@@ -169,42 +163,42 @@ export default function ResidentsList({
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="hidden md:block bg-white rounded-2xl overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)]">
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="font-semibold text-gray-700">Name</TableHead>
-                  <TableHead className="font-semibold text-gray-700">Mobile</TableHead>
-                  <TableHead className="font-semibold text-gray-700">Room / Bed</TableHead>
-                  <TableHead className="font-semibold text-gray-700">Plan</TableHead>
-                  <TableHead className="font-semibold text-gray-700">Joining</TableHead>
-                  <TableHead className="font-semibold text-gray-700">Status</TableHead>
-                  <TableHead className="font-semibold text-gray-700 text-right">Actions</TableHead>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Mobile</TableHead>
+                  <TableHead>Room / Bed</TableHead>
+                  <TableHead>Plan</TableHead>
+                  <TableHead>Joining</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {residents.map((r) => (
-                  <TableRow key={r._id} className="hover:bg-gray-50">
+                  <TableRow key={r._id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-semibold text-sm flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center text-[#007AFF] font-semibold text-sm flex-shrink-0">
                           {r.name.charAt(0).toUpperCase()}
                         </div>
-                        <span className="font-medium text-gray-900">{r.name}</span>
+                        <span className="font-medium text-[#1C1C1E]">{r.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-600 text-sm">{r.mobile}</TableCell>
-                    <TableCell className="text-sm text-gray-600">
+                    <TableCell className="text-[#1C1C1E] text-sm">{r.mobile}</TableCell>
+                    <TableCell className="text-sm text-[#1C1C1E]">
                       {r.room && r.bed ? (
                         <span>{r.room.roomNumber} / {r.bed.bedLabel}</span>
                       ) : (
-                        <span className="text-gray-400">—</span>
+                        <span className="text-[#8E8E93]">—</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-sm text-gray-600">
-                      {r.currentPlan?.name || <span className="text-gray-400">—</span>}
+                    <TableCell className="text-sm text-[#1C1C1E]">
+                      {r.currentPlan?.name || <span className="text-[#8E8E93]">—</span>}
                     </TableCell>
-                    <TableCell className="text-sm text-gray-600">
+                    <TableCell className="text-sm text-[#1C1C1E]">
                       {new Date(r.joiningDate).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
                     </TableCell>
                     <TableCell>
@@ -214,7 +208,7 @@ export default function ResidentsList({
                     </TableCell>
                     <TableCell className="text-right">
                       <Link href={`/residents/${r._id}`}>
-                        <Button variant="outline" size="sm" className="h-7 px-2 text-xs rounded-lg">
+                        <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
                           <Eye className="w-3 h-3 mr-1" /> View
                         </Button>
                       </Link>
@@ -229,15 +223,15 @@ export default function ResidentsList({
           <div className="md:hidden space-y-3">
             {residents.map((r) => (
               <Link key={r._id} href={`/residents/${r._id}`}>
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                <div className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] border border-[#E5E5EA] p-4">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-semibold">
+                      <div className="w-10 h-10 rounded-full bg-[#007AFF]/10 flex items-center justify-center text-[#007AFF] font-semibold">
                         {r.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900">{r.name}</p>
-                        <p className="text-xs text-gray-500">{r.mobile}</p>
+                        <p className="font-semibold text-[#1C1C1E]">{r.name}</p>
+                        <p className="text-xs text-[#8E8E93]">{r.mobile}</p>
                       </div>
                     </div>
                     <Badge variant="outline" className={cn('text-xs capitalize', STATUS_BADGE[r.status])}>
@@ -246,14 +240,14 @@ export default function ResidentsList({
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
-                      <span className="text-gray-500 text-xs">Room/Bed</span>
-                      <p className="text-gray-800 font-medium">
+                      <span className="text-[#8E8E93] text-xs">Room/Bed</span>
+                      <p className="text-[#1C1C1E] font-medium">
                         {r.room && r.bed ? `${r.room.roomNumber} / ${r.bed.bedLabel}` : '—'}
                       </p>
                     </div>
                     <div>
-                      <span className="text-gray-500 text-xs">Plan</span>
-                      <p className="text-gray-800 font-medium text-xs">{r.currentPlan?.name || '—'}</p>
+                      <span className="text-[#8E8E93] text-xs">Plan</span>
+                      <p className="text-[#1C1C1E] font-medium text-xs">{r.currentPlan?.name || '—'}</p>
                     </div>
                   </div>
                 </div>

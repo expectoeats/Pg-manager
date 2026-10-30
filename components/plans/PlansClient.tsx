@@ -31,8 +31,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Plus, ListCheck, Pencil } from 'lucide-react';
+import { Plus, ListCheck, Pencil, Coffee, Sun, Moon, Utensils } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ToggleSwitch } from '@/components/ui/toggle-switch';
 
 interface PlanData {
   _id: string;
@@ -156,12 +157,12 @@ export default function PlansClient({ plans }: PlansClientProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Plans</h1>
-          <p className="text-gray-500 mt-1">{plans.length} plan{plans.length !== 1 ? 's' : ''} configured</p>
+          <h1 className="text-[22px] font-semibold text-[#1C1C1E]">Plans</h1>
+          <p className="text-[#8E8E93] mt-1">{plans.length} plan{plans.length !== 1 ? 's' : ''} configured</p>
         </div>
         <Button
           onClick={openAddDialog}
-          className="bg-green-600 hover:bg-green-700 text-white rounded-xl"
+          className="rounded-xl"
         >
           <Plus className="w-4 h-4 mr-2" />
           Add Plan
@@ -170,77 +171,77 @@ export default function PlansClient({ plans }: PlansClientProps) {
 
       {plans.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
-            <ListCheck className="w-8 h-8 text-gray-400" />
+          <div className="w-16 h-16 bg-[#F2F2F7] rounded-2xl flex items-center justify-center mb-4">
+            <ListCheck className="w-8 h-8 text-[#8E8E93]" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No plans yet</h3>
-          <p className="text-sm text-gray-500 mb-4">Add your first plan to get started.</p>
-          <Button onClick={openAddDialog} className="bg-green-600 hover:bg-green-700 text-white rounded-xl">
+          <h3 className="text-lg font-medium text-[#1C1C1E] mb-2">No plans yet</h3>
+          <p className="text-sm text-[#8E8E93] mb-4">Add your first plan to get started.</p>
+          <Button onClick={openAddDialog} className="rounded-xl">
             <Plus className="w-4 h-4 mr-2" /> Add Plan
           </Button>
         </div>
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="hidden md:block bg-white rounded-2xl overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)]">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="font-semibold text-gray-700">Name</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Type</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Sharing</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Meals</TableHead>
-                    <TableHead className="font-semibold text-gray-700 text-right">Price</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Status</TableHead>
-                    <TableHead className="font-semibold text-gray-700 text-right">Actions</TableHead>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Sharing</TableHead>
+                    <TableHead>Meals</TableHead>
+                    <TableHead className="text-right">Price</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {plans.map((plan) => (
-                    <TableRow key={plan._id} className="hover:bg-gray-50">
-                      <TableCell className="font-medium text-gray-900">{plan.name}</TableCell>
+                    <TableRow key={plan._id}>
+                      <TableCell className="font-medium text-[#1C1C1E]">{plan.name}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="text-xs text-blue-600 border-blue-200 bg-blue-50">
+                        <Badge variant="outline" className="text-[#007AFF] border-transparent bg-[#007AFF]/10">
                           {TYPE_LABELS[plan.type]}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-sm text-gray-600 capitalize">
+                      <TableCell className="text-sm text-[#8E8E93] capitalize">
                         {plan.sharingType === 'none' ? '—' : plan.sharingType}
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1 flex-wrap">
                           {plan.includesBreakfast && (
-                            <span className="text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 px-1.5 py-0.5 rounded-full">
-                              🍳 B
+                            <span className="inline-flex items-center gap-1 text-xs text-[#FF9500] border border-[#FF9500]/20 bg-[#FF9500]/10 px-1.5 py-0.5 rounded-full">
+                              <Coffee className="w-3 h-3" /> B
                             </span>
                           )}
                           {plan.includesLunch && (
-                            <span className="text-xs bg-orange-50 text-orange-700 border border-orange-200 px-1.5 py-0.5 rounded-full">
-                              🍽 L
+                            <span className="inline-flex items-center gap-1 text-xs text-[#34C759] border border-[#34C759]/20 bg-[#34C759]/10 px-1.5 py-0.5 rounded-full">
+                              <Sun className="w-3 h-3" /> L
                             </span>
                           )}
                           {plan.includesDinner && (
-                            <span className="text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 px-1.5 py-0.5 rounded-full">
-                              🌙 D
+                            <span className="inline-flex items-center gap-1 text-xs text-[#5856D6] border border-[#5856D6]/20 bg-[#5856D6]/10 px-1.5 py-0.5 rounded-full">
+                              <Moon className="w-3 h-3" /> D
                             </span>
                           )}
                           {!plan.includesBreakfast && !plan.includesLunch && !plan.includesDinner && (
-                            <span className="text-gray-400 text-sm">—</span>
+                            <span className="text-[#8E8E93] text-sm">—</span>
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className="text-right font-semibold text-gray-900">
+                      <TableCell className="text-right font-semibold text-[#1C1C1E]">
                         ₹{plan.price.toLocaleString('en-IN')}
                       </TableCell>
                       <TableCell>
                         <Badge
                           variant="outline"
                           className={cn(
-                            'text-xs',
+                            'text-xs border-transparent',
                             plan.isActive
-                              ? 'text-green-600 border-green-200 bg-green-50'
-                              : 'text-gray-500 border-gray-200 bg-gray-50'
+                              ? 'text-[#34C759] bg-[#34C759]/10'
+                              : 'text-[#8E8E93] bg-[#8E8E93]/10'
                           )}
                         >
                           {plan.isActive ? 'Active' : 'Inactive'}
@@ -251,26 +252,17 @@ export default function PlansClient({ plans }: PlansClientProps) {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-7 px-2 text-xs rounded-lg"
+                            className="h-7 px-2 text-xs"
                             onClick={() => openEditDialog(plan)}
                           >
                             <Pencil className="w-3 h-3 mr-1" />
                             Edit
                           </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className={cn(
-                              'h-7 px-2 text-xs rounded-lg',
-                              plan.isActive
-                                ? 'text-red-600 border-red-200 hover:bg-red-50'
-                                : 'text-green-600 border-green-200 hover:bg-green-50'
-                            )}
-                            onClick={() => handleToggleActive(plan._id)}
-                            disabled={isPending}
-                          >
-                            {plan.isActive ? 'Deactivate' : 'Activate'}
-                          </Button>
+                          <ToggleSwitch
+                            checked={plan.isActive}
+                            onChange={() => handleToggleActive(plan._id)}
+                            color="blue"
+                          />
                         </div>
                       </TableCell>
                     </TableRow>
@@ -283,12 +275,12 @@ export default function PlansClient({ plans }: PlansClientProps) {
           {/* Mobile cards */}
           <div className="md:hidden space-y-3">
             {plans.map((plan) => (
-              <div key={plan._id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div key={plan._id} className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] border border-[#E5E5EA] p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <p className="font-semibold text-gray-900">{plan.name}</p>
+                    <p className="font-semibold text-[#1C1C1E]">{plan.name}</p>
                     <div className="flex gap-1.5 mt-1 flex-wrap">
-                      <Badge variant="outline" className="text-xs text-blue-600 border-blue-200 bg-blue-50">
+                      <Badge variant="outline" className="text-xs text-[#007AFF] border-transparent bg-[#007AFF]/10">
                         {TYPE_LABELS[plan.type]}
                       </Badge>
                       {plan.sharingType !== 'none' && (
@@ -299,12 +291,12 @@ export default function PlansClient({ plans }: PlansClientProps) {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-gray-900">₹{plan.price.toLocaleString('en-IN')}</p>
+                    <p className="font-bold text-[#1C1C1E]">₹{plan.price.toLocaleString('en-IN')}</p>
                     <Badge
                       variant="outline"
                       className={cn(
-                        'text-xs mt-1',
-                        plan.isActive ? 'text-green-600 border-green-200 bg-green-50' : 'text-gray-500'
+                        'text-xs mt-1 border-transparent',
+                        plan.isActive ? 'text-[#34C759] bg-[#34C759]/10' : 'text-[#8E8E93] bg-[#8E8E93]/10'
                       )}
                     >
                       {plan.isActive ? 'Active' : 'Inactive'}
@@ -312,23 +304,19 @@ export default function PlansClient({ plans }: PlansClientProps) {
                   </div>
                 </div>
                 <div className="flex gap-1 mb-3">
-                  {plan.includesBreakfast && <span className="text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 px-1.5 py-0.5 rounded-full">🍳 Breakfast</span>}
-                  {plan.includesLunch && <span className="text-xs bg-orange-50 text-orange-700 border border-orange-200 px-1.5 py-0.5 rounded-full">🍽 Lunch</span>}
-                  {plan.includesDinner && <span className="text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 px-1.5 py-0.5 rounded-full">🌙 Dinner</span>}
+                  {plan.includesBreakfast && <span className="inline-flex items-center gap-1 text-xs text-[#FF9500] border border-[#FF9500]/20 bg-[#FF9500]/10 px-1.5 py-0.5 rounded-full"><Coffee className="w-3 h-3" /> Breakfast</span>}
+                  {plan.includesLunch && <span className="inline-flex items-center gap-1 text-xs text-[#34C759] border border-[#34C759]/20 bg-[#34C759]/10 px-1.5 py-0.5 rounded-full"><Sun className="w-3 h-3" /> Lunch</span>}
+                  {plan.includesDinner && <span className="inline-flex items-center gap-1 text-xs text-[#5856D6] border border-[#5856D6]/20 bg-[#5856D6]/10 px-1.5 py-0.5 rounded-full"><Moon className="w-3 h-3" /> Dinner</span>}
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1 text-xs rounded-lg" onClick={() => openEditDialog(plan)}>
+                <div className="flex gap-2 items-center">
+                  <Button variant="outline" size="sm" className="flex-1 text-xs" onClick={() => openEditDialog(plan)}>
                     <Pencil className="w-3 h-3 mr-1" /> Edit
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={cn('flex-1 text-xs rounded-lg', plan.isActive ? 'text-red-600 border-red-200' : 'text-green-600 border-green-200')}
-                    onClick={() => handleToggleActive(plan._id)}
-                    disabled={isPending}
-                  >
-                    {plan.isActive ? 'Deactivate' : 'Activate'}
-                  </Button>
+                  <ToggleSwitch
+                    checked={plan.isActive}
+                    onChange={() => handleToggleActive(plan._id)}
+                    color="blue"
+                  />
                 </div>
               </div>
             ))}
@@ -338,21 +326,21 @@ export default function PlansClient({ plans }: PlansClientProps) {
 
       {/* Add/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-xl">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{selectedPlan ? 'Edit Plan' : 'Add Plan'}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">
+              <div className="bg-[#FF3B30]/10 text-[#FF3B30] px-3 py-2 rounded-xl text-sm">
                 {error}
               </div>
             )}
 
             <div className="space-y-2">
               <Label>Plan Name</Label>
-              <Input className="rounded-lg" placeholder="e.g. Triple Sharing Room Only" {...register('name')} />
-              {errors.name && <p className="text-red-500 text-xs">{errors.name.message}</p>}
+              <Input placeholder="e.g. Triple Sharing Room Only" {...register('name')} />
+              {errors.name && <p className="text-[#FF3B30] text-xs">{errors.name.message}</p>}
             </div>
 
             <div className="space-y-2">
@@ -361,7 +349,7 @@ export default function PlansClient({ plans }: PlansClientProps) {
                 value={planType}
                 onValueChange={(v) => setValue('type', v as 'room' | 'room_food' | 'food_only')}
               >
-                <SelectTrigger className="rounded-lg">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -379,7 +367,7 @@ export default function PlansClient({ plans }: PlansClientProps) {
                   value={sharingType}
                   onValueChange={(v) => setValue('sharingType', v as 'double' | 'triple' | 'none')}
                 >
-                  <SelectTrigger className="rounded-lg">
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -393,8 +381,8 @@ export default function PlansClient({ plans }: PlansClientProps) {
 
             <div className="space-y-2">
               <Label>Price (₹/month)</Label>
-              <Input type="number" min={0} className="rounded-lg" {...register('price')} />
-              {errors.price && <p className="text-red-500 text-xs">{errors.price.message}</p>}
+              <Input type="number" min={0} {...register('price')} />
+              {errors.price && <p className="text-[#FF3B30] text-xs">{errors.price.message}</p>}
             </div>
 
             {(planType === 'room_food' || planType === 'food_only') && (
@@ -402,17 +390,18 @@ export default function PlansClient({ plans }: PlansClientProps) {
                 <Label>Meals Included</Label>
                 <div className="space-y-2">
                   {[
-                    { key: 'includesBreakfast' as const, label: '🍳 Breakfast', value: includesBreakfast },
-                    { key: 'includesLunch' as const, label: '🍽 Lunch', value: includesLunch },
-                    { key: 'includesDinner' as const, label: '🌙 Dinner', value: includesDinner },
-                  ].map(({ key, label, value }) => (
+                    { key: 'includesBreakfast' as const, label: 'Breakfast', icon: Coffee, value: includesBreakfast },
+                    { key: 'includesLunch' as const, label: 'Lunch', icon: Sun, value: includesLunch },
+                    { key: 'includesDinner' as const, label: 'Dinner', icon: Moon, value: includesDinner },
+                  ].map(({ key, label, icon: Icon, value }) => (
                     <label key={key} className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={value}
                         onChange={(e) => setValue(key, e.target.checked)}
-                        className="accent-green-500 w-4 h-4"
+                        className="accent-[#007AFF] w-4 h-4"
                       />
+                      <Icon className="w-4 h-4 text-[#8E8E93]" />
                       <span className="text-sm">{label}</span>
                     </label>
                   ))}
@@ -423,31 +412,22 @@ export default function PlansClient({ plans }: PlansClientProps) {
             {selectedPlan && (
               <div className="flex items-center justify-between">
                 <Label>Active</Label>
-                <button
-                  type="button"
-                  onClick={() => setValue('isActive', !isActive)}
-                  className={cn(
-                    'w-11 h-6 rounded-full transition-colors relative',
-                    isActive ? 'bg-green-500' : 'bg-gray-300'
-                  )}
-                >
-                  <span
-                    className={cn(
-                      'absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform',
-                      isActive ? 'translate-x-5' : 'translate-x-0.5'
-                    )}
-                  />
-                </button>
+                <ToggleSwitch
+                  checked={isActive}
+                  onChange={(v) => setValue('isActive', v)}
+                  color="blue"
+                  size="md"
+                />
               </div>
             )}
 
             <div className="flex gap-3 pt-2">
-              <Button type="button" variant="outline" className="flex-1 rounded-lg" onClick={() => setDialogOpen(false)}>
+              <Button type="button" variant="outline" className="flex-1" onClick={() => setDialogOpen(false)}>
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-lg"
+                className="flex-1 rounded-xl"
                 disabled={isPending}
               >
                 {isPending ? 'Saving...' : selectedPlan ? 'Update Plan' : 'Add Plan'}
