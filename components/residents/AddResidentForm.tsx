@@ -92,16 +92,16 @@ function getMealLabel(plan: PlanData) {
 
 function getMealIcon(plan: PlanData) {
   if (plan.includesBreakfast && plan.includesLunch && plan.includesDinner)
-    return <Utensils className="w-5 h-5" />;
+    return <Utensils className="w-5 h-5 strokeWidth={2}" />;
   if (plan.includesBreakfast && plan.includesDinner)
-    return <UtensilsCrossed className="w-5 h-5" />;
+    return <UtensilsCrossed className="w-5 h-5 strokeWidth={2}" />;
   if (plan.includesBreakfast)
-    return <Coffee className="w-5 h-5" />;
+    return <Coffee className="w-5 h-5 strokeWidth={2}" />;
   if (plan.includesDinner)
-    return <Moon className="w-5 h-5" />;
+    return <Moon className="w-5 h-5 strokeWidth={2}" />;
   if (plan.includesLunch)
-    return <Sun className="w-5 h-5" />;
-  return <UtensilsCrossed className="w-5 h-5" />;
+    return <Sun className="w-5 h-5 strokeWidth={2}" />;
+  return <UtensilsCrossed className="w-5 h-5 strokeWidth={2}" />;
 }
 
 export default function AddResidentForm({ plans, rooms, settings }: AddResidentFormProps) {
@@ -260,15 +260,15 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
               <div className="flex flex-col items-center">
                 <div
                   className={cn(
-                    'w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all',
+                    'w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-200',
                     i < currentStep
-                      ? 'bg-[#007AFF] text-white'
+                      ? 'bg-[#34C759] text-white'
                       : i === currentStep
                       ? 'bg-[#007AFF] text-white ring-4 ring-[#007AFF]/20'
                       : 'bg-[#F2F2F7] text-[#8E8E93]'
                   )}
                 >
-                  {i < currentStep ? <Check className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
+                  {i < currentStep ? <Check className="w-5 h-5 strokeWidth={2}" /> : <Icon className="w-5 h-5 strokeWidth={2}" />}
                 </div>
                 <span
                   className={cn(
@@ -282,7 +282,7 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
               {i < STEPS.length - 1 && (
                 <div
                   className={cn(
-                    'flex-1 h-0.5 mx-2 mb-4 transition-colors',
+                    'flex-1 h-0.5 mx-2 mb-4 transition-all duration-200',
                     i < currentStep ? 'bg-[#007AFF]' : 'bg-[#E5E5EA]'
                   )}
                 />
@@ -293,16 +293,16 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Card className="border-0 shadow-sm rounded-2xl">
+        <Card className="border border-[#E5E5EA] shadow-sm rounded-2xl">
           <CardHeader className="pb-2 pt-6 px-6">
-            <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
-              {(() => { const Icon = STEPS[currentStep].icon; return <Icon className="w-4 h-4 text-[#007AFF]" />; })()}
+            <CardTitle className="text-[17px] font-semibold tracking-[-0.022em] text-[#1C1C1E] flex items-center gap-2">
+              {(() => { const Icon = STEPS[currentStep].icon; return <Icon className="w-5 h-5 strokeWidth={2} text-[#007AFF]" />; })()}
               {STEPS[currentStep].label}
             </CardTitle>
           </CardHeader>
           <CardContent className="px-6 pb-6 space-y-5">
             {submitError && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+              <div className="bg-[#FF3B30]/10 border border-[#FF3B30]/20 text-[#FF3B30] px-4 py-3 rounded-xl text-sm font-medium">
                 {submitError}
               </div>
             )}
@@ -312,36 +312,36 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <Label>Full Name <span className="text-red-500">*</span></Label>
+                    <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Full Name <span className="text-[#FF3B30]">*</span></Label>
                     <Input className="rounded-xl h-10" placeholder="e.g. Rahul Sharma" {...register('name')} />
-                    {errors.name && <p className="text-red-500 text-xs">{errors.name.message}</p>}
+                    {errors.name && <p className="text-[#FF3B30] text-xs">{errors.name.message}</p>}
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Mobile Number <span className="text-red-500">*</span></Label>
+                    <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Mobile Number <span className="text-[#FF3B30]">*</span></Label>
                     <Input className="rounded-xl h-10" placeholder="10-digit mobile" {...register('mobile')} />
-                    {errors.mobile && <p className="text-red-500 text-xs">{errors.mobile.message}</p>}
+                    {errors.mobile && <p className="text-[#FF3B30] text-xs">{errors.mobile.message}</p>}
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <Label>Alternate Mobile <span className="text-gray-400 text-xs">(optional)</span></Label>
+                    <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Alternate Mobile <span className="text-[#8E8E93] text-xs">(optional)</span></Label>
                     <Input className="rounded-xl h-10" placeholder="Optional" {...register('alternateMobile')} />
-                    {errors.alternateMobile && <p className="text-red-500 text-xs">{errors.alternateMobile.message}</p>}
+                    {errors.alternateMobile && <p className="text-[#FF3B30] text-xs">{errors.alternateMobile.message}</p>}
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <Label>Guardian Name</Label>
+                    <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Guardian Name</Label>
                     <Input className="rounded-xl h-10" placeholder="Parent or guardian" {...register('guardianName')} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Guardian Mobile</Label>
+                    <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Guardian Mobile</Label>
                     <Input className="rounded-xl h-10" placeholder="10-digit mobile" {...register('guardianMobile')} />
-                    {errors.guardianMobile && <p className="text-red-500 text-xs">{errors.guardianMobile.message}</p>}
+                    {errors.guardianMobile && <p className="text-[#FF3B30] text-xs">{errors.guardianMobile.message}</p>}
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Notes <span className="text-gray-400 text-xs">(optional)</span></Label>
+                  <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Notes <span className="text-[#8E8E93] text-xs">(optional)</span></Label>
                   <Input className="rounded-xl h-10" placeholder="Any additional notes" {...register('notes')} />
                 </div>
               </div>
@@ -353,7 +353,7 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                 {/* Room + Bed row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <Label>Room <span className="text-red-500">*</span></Label>
+                    <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Room <span className="text-[#FF3B30]">*</span></Label>
                     <Select value={selectedRoom || ''} onValueChange={(v) => setValue('room', v)}>
                       <SelectTrigger className="rounded-xl h-10">
                         <SelectValue placeholder="Select room" />
@@ -362,15 +362,15 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                         {rooms.map((r) => (
                           <SelectItem key={r._id} value={r._id}>
                             Room {r.roomNumber}
-                            <span className="ml-1 text-gray-400 text-xs capitalize">({r.sharingType})</span>
+                            <span className="ml-1 text-[#8E8E93] text-xs capitalize">({r.sharingType})</span>
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    {errors.room && <p className="text-red-500 text-xs">{errors.room.message}</p>}
+                    {errors.room && <p className="text-[#FF3B30] text-xs">{errors.room.message}</p>}
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Bed <span className="text-red-500">*</span></Label>
+                    <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Bed <span className="text-[#FF3B30]">*</span></Label>
                     <Select
                       value={watch('bed') || ''}
                       onValueChange={(v) => setValue('bed', v)}
@@ -390,7 +390,7 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                         ))}
                       </SelectContent>
                     </Select>
-                    {errors.bed && <p className="text-red-500 text-xs">{errors.bed.message}</p>}
+                    {errors.bed && <p className="text-[#FF3B30] text-xs">{errors.bed.message}</p>}
                   </div>
                 </div>
 
@@ -408,32 +408,32 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
 
                 {/* Joining date */}
                 <div className="space-y-1.5">
-                  <Label>Joining Date <span className="text-red-500">*</span></Label>
+                  <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Joining Date <span className="text-[#FF3B30]">*</span></Label>
                   <Input type="date" className="rounded-xl h-10" {...register('joiningDate')} />
-                  {errors.joiningDate && <p className="text-red-500 text-xs">{errors.joiningDate.message}</p>}
+                  {errors.joiningDate && <p className="text-[#FF3B30] text-xs">{errors.joiningDate.message}</p>}
                 </div>
 
                 {/* ── Room Plan (mandatory) ── */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <BedDouble className="w-4 h-4 text-green-600" />
-                    <Label className="text-sm font-semibold text-gray-800">
-                      Room Plan <span className="text-red-500">*</span>
+                    <BedDouble className="w-5 h-5 strokeWidth={2} text-[#34C759]" />
+                    <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">
+                      Room Plan <span className="text-[#FF3B30]">*</span>
                     </Label>
-                    <Badge variant="outline" className="text-xs text-green-700 border-green-200 bg-green-50 ml-auto">
+                    <Badge variant="outline" className="text-xs text-[#34C759] border-[#34C759]/30 bg-[#34C759]/10 ml-auto">
                       Mandatory
                     </Badge>
                   </div>
-                  <p className="text-xs text-gray-500">Room charge is always included.</p>
+                  <p className="text-xs text-[#8E8E93]">Room charge is always included.</p>
 
                   {!selectedRoom && (
-                    <div className="p-3 rounded-xl border border-dashed border-gray-200 text-sm text-gray-400 text-center">
+                    <div className="p-3 rounded-xl border border-dashed border-[#E5E5EA] text-sm text-[#8E8E93] text-center">
                       Select a room above to see available plans
                     </div>
                   )}
 
                   {selectedRoom && roomPlans.length === 0 && (
-                    <div className="p-3 rounded-xl border border-dashed border-amber-200 bg-amber-50 text-sm text-amber-700 text-center">
+                    <div className="p-3 rounded-xl border border-dashed border-[#FF9500]/30 bg-[#FF9500]/10 text-sm text-[#FF9500] text-center">
                       No room plans found for {roomSharingType} sharing
                     </div>
                   )}
@@ -447,66 +447,66 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                           type="button"
                           onClick={() => setValue('currentPlan', plan._id)}
                           className={cn(
-                            'w-full text-left px-4 py-3 rounded-xl border-2 transition-all flex items-center justify-between gap-3',
+                            'w-full text-left px-4 py-3 rounded-xl border-2 transition-all duration-200 flex items-center justify-between gap-3',
                             isSelected
                               ? 'border-[#007AFF] bg-[#007AFF]/5'
-                              : 'border-[#E5E5EA] bg-white hover:border-[#007AFF]/30 hover:bg-[#007AFF]/5'
+                              : 'border-[#E5E5EA] bg-white hover:border-[#007AFF]/40'
                           )}
                         >
                           <div className="flex items-center gap-3">
                             <div className={cn(
-                              'w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0',
-                              isSelected ? 'bg-[#007AFF] text-white' : 'bg-gray-100 text-gray-500'
+                              'w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-200',
+                              isSelected ? 'bg-[#007AFF] text-white' : 'bg-[#F2F2F7] text-[#8E8E93]'
                             )}>
-                              <Building2 className="w-4 h-4" />
+                              <Building2 className="w-5 h-5 strokeWidth={2}" />
                             </div>
                             <div>
-                              <p className={cn('font-medium text-sm', isSelected ? 'text-[#007AFF]' : 'text-gray-800')}>
+                              <p className={cn('font-medium text-[15px] tracking-[-0.016em]', isSelected ? 'text-[#007AFF]' : 'text-[#1C1C1E]')}>
                                 {plan.name}
                               </p>
-                              <p className="text-xs text-gray-500 capitalize">
+                              <p className="text-xs text-[#8E8E93] capitalize">
                                 {plan.sharingType !== 'none' ? `${plan.sharingType} sharing` : 'Any sharing'}
                                 {plan.type === 'room_food' && ' · All meals included'}
                               </p>
                             </div>
                           </div>
                           <div className="text-right flex-shrink-0 flex items-center gap-2">
-                            <span className={cn('font-semibold text-sm', isSelected ? 'text-[#007AFF]' : 'text-gray-700')}>
+                            <span className={cn('font-semibold text-[15px] tracking-[-0.016em]', isSelected ? 'text-[#007AFF]' : 'text-[#1C1C1E]')}>
                               ₹{plan.price.toLocaleString('en-IN')}
-                              <span className="text-xs font-normal text-gray-400">/mo</span>
+                              <span className="text-xs font-normal text-[#8E8E93]">/mo</span>
                             </span>
                             <div className={cn(
-                              'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
-                              isSelected ? 'border-[#007AFF] bg-[#007AFF]' : 'border-gray-300'
+                              'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200',
+                              isSelected ? 'border-[#007AFF] bg-[#007AFF]' : 'border-[#E5E5EA]'
                             )}>
-                              {isSelected && <Check className="w-3 h-3 text-white" />}
+                              {isSelected && <Check className="w-5 h-5 strokeWidth={2} text-white" />}
                             </div>
                           </div>
                         </button>
                       );
                     })}
                   </div>
-                  {errors.currentPlan && <p className="text-red-500 text-xs">{errors.currentPlan.message}</p>}
+                  {errors.currentPlan && <p className="text-[#FF3B30] text-xs">{errors.currentPlan.message}</p>}
                 </div>
 
                 {/* ── Food Plan (optional) ── */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <Utensils className="w-4 h-4 text-orange-500" />
-                    <Label className="text-sm font-semibold text-gray-800">Food Plan</Label>
-                    <Badge variant="outline" className="text-xs text-orange-600 border-orange-200 bg-orange-50 ml-auto">
+                    <Utensils className="w-5 h-5 strokeWidth={2} text-[#FF9500]" />
+                    <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Food Plan</Label>
+                    <Badge variant="outline" className="text-xs text-[#FF9500] border-[#FF9500]/30 bg-[#FF9500]/10 ml-auto">
                       Optional
                     </Badge>
                   </div>
-                  <p className="text-xs text-gray-500">Add meals if the resident wants food service.</p>
+                  <p className="text-xs text-[#8E8E93]">Add meals if the resident wants food service.</p>
 
                   {/* Toggle */}
                   <div
                     className={cn(
-                      'w-full px-4 py-3 rounded-xl border-2 transition-all flex items-center justify-between cursor-pointer',
+                      'w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 flex items-center justify-between cursor-pointer',
                       wantsFood
-                        ? 'border-orange-400 bg-orange-50 text-orange-700'
-                        : 'border-dashed border-[#E5E5EA] text-[#8E8E93] hover:border-orange-300 hover:bg-orange-50/40'
+                        ? 'border-[#FF9500] bg-[#FF9500]/10 text-[#FF9500]'
+                        : 'border-dashed border-[#E5E5EA] text-[#8E8E93] hover:border-[#FF9500]/30 hover:bg-[#FF9500]/5'
                     )}
                     onClick={() => {
                       setWantsFood((prev) => {
@@ -516,7 +516,7 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                     }}
                   >
                     <span className="flex items-center gap-2 font-medium text-sm">
-                      <UtensilsCrossed className="w-4 h-4" />
+                      <UtensilsCrossed className="w-5 h-5 strokeWidth={2}" />
                       {wantsFood ? 'Food plan selected — tap to remove' : 'Add food plan for this resident'}
                     </span>
                     <div onClick={(e) => e.stopPropagation()}>
@@ -542,36 +542,36 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                             type="button"
                             onClick={() => setSelectedFoodPlanId(plan._id)}
                             className={cn(
-                              'w-full text-left px-4 py-3 rounded-xl border-2 transition-all flex items-center justify-between gap-3',
+                              'w-full text-left px-4 py-3 rounded-xl border-2 transition-all duration-200 flex items-center justify-between gap-3',
                               isSelected
-                                ? 'border-orange-400 bg-orange-50'
-                                : 'border-gray-200 bg-white hover:border-orange-200 hover:bg-orange-50/40'
+                                ? 'border-[#FF9500] bg-[#FF9500]/10'
+                                : 'border-[#E5E5EA] bg-white hover:border-[#FF9500]/40'
                             )}
                           >
                             <div className="flex items-center gap-3">
                               <div className={cn(
-                                'w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0',
-                                isSelected ? 'bg-orange-400 text-white' : 'bg-gray-100 text-gray-500'
+                                'w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-200',
+                                isSelected ? 'bg-[#FF9500] text-white' : 'bg-[#F2F2F7] text-[#8E8E93]'
                               )}>
                                 {getMealIcon(plan)}
                               </div>
                               <div>
-                                <p className={cn('font-medium text-sm', isSelected ? 'text-orange-800' : 'text-gray-800')}>
+                                <p className={cn('font-medium text-[15px] tracking-[-0.016em]', isSelected ? 'text-[#FF9500]' : 'text-[#1C1C1E]')}>
                                   {plan.name}
                                 </p>
-                                <p className="text-xs text-gray-500">{getMealLabel(plan)}</p>
+                                <p className="text-xs text-[#8E8E93]">{getMealLabel(plan)}</p>
                               </div>
                             </div>
                             <div className="text-right flex-shrink-0 flex items-center gap-2">
-                              <span className={cn('font-semibold text-sm', isSelected ? 'text-orange-700' : 'text-gray-700')}>
+                              <span className={cn('font-semibold text-[15px] tracking-[-0.016em]', isSelected ? 'text-[#FF9500]' : 'text-[#1C1C1E]')}>
                                 ₹{plan.price.toLocaleString('en-IN')}
-                                <span className="text-xs font-normal text-gray-400">/mo</span>
+                                <span className="text-xs font-normal text-[#8E8E93]">/mo</span>
                               </span>
                               <div className={cn(
-                                'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
-                                isSelected ? 'border-orange-400 bg-orange-400' : 'border-gray-300'
+                                'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200',
+                                isSelected ? 'border-[#FF9500] bg-[#FF9500]' : 'border-[#E5E5EA]'
                               )}>
-                                {isSelected && <Check className="w-3 h-3 text-white" />}
+                                {isSelected && <Check className="w-5 h-5 strokeWidth={2} text-white" />}
                               </div>
                             </div>
                           </button>
@@ -584,25 +584,25 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                 {/* ── Price Summary ── */}
                 {selectedPlanId && (
                   <div className="rounded-xl bg-[#F2F2F7] border border-[#E5E5EA] p-4 space-y-2">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Monthly Summary</p>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Room</span>
-                      <span className="font-medium">₹{roomPlanPrice.toLocaleString('en-IN')}</span>
+                    <p className="text-xs font-semibold text-[#8E8E93] uppercase tracking-wide">Monthly Summary</p>
+                    <div className="flex justify-between text-[15px]">
+                      <span className="text-[#8E8E93]">Room</span>
+                      <span className="font-medium text-[#1C1C1E]">₹{roomPlanPrice.toLocaleString('en-IN')}</span>
                     </div>
                     {wantsFood && selectedFoodPlan && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Food ({selectedFoodPlan.name})</span>
-                        <span className="font-medium">₹{foodPlanPrice.toLocaleString('en-IN')}</span>
+                      <div className="flex justify-between text-[15px]">
+                        <span className="text-[#8E8E93]">Food ({selectedFoodPlan.name})</span>
+                        <span className="font-medium text-[#1C1C1E]">₹{foodPlanPrice.toLocaleString('en-IN')}</span>
                       </div>
                     )}
                     {wantsFood && !selectedFoodPlan && (
-                      <div className="flex justify-between text-sm text-amber-600">
+                      <div className="flex justify-between text-[15px] text-[#FF9500]">
                         <span>Food plan</span>
                         <span>Select a food plan above</span>
                       </div>
                     )}
-                    <div className="border-t border-gray-200 pt-2 flex justify-between">
-                      <span className="font-semibold text-gray-800">Total / month</span>
+                    <div className="border-t border-[#E5E5EA] pt-2 flex justify-between">
+                      <span className="font-semibold text-[#1C1C1E]">Total / month</span>
                       <span className="font-bold text-[#007AFF] text-base">
                         ₹{totalMonthlyPrice.toLocaleString('en-IN')}
                       </span>
@@ -616,7 +616,7 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
             {currentStep === 2 && (
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label>ID Proof Type</Label>
+                  <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">ID Proof Type</Label>
                   <Select value={watch('idProofType') || ''} onValueChange={(v) => setValue('idProofType', v)}>
                     <SelectTrigger className="rounded-xl h-10">
                       <SelectValue placeholder="Select ID type" />
@@ -631,11 +631,11 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>ID Proof Number</Label>
+                  <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">ID Proof Number</Label>
                   <Input className="rounded-xl h-10" placeholder="Enter ID number" {...register('idProofNumber')} />
                 </div>
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700 flex gap-3 items-start">
-                  <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                <div className="p-4 bg-[#007AFF]/10 border border-[#007AFF]/20 rounded-xl text-sm text-[#007AFF] flex gap-3 items-start">
+                  <Info className="w-5 h-5 strokeWidth={2} text-[#007AFF] mt-0.5 flex-shrink-0" />
                   <span>File upload feature coming soon. You can record the ID number for now.</span>
                 </div>
               </div>
@@ -649,10 +649,10 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                 <div className="rounded-xl border border-[#E5E5EA] bg-white p-5 space-y-4">
                   <div className="flex items-center gap-2.5">
                     <div className="w-9 h-9 bg-[#007AFF]/10 rounded-xl flex items-center justify-center">
-                      <Wallet className="w-5 h-5 text-[#007AFF]" />
+                      <Wallet className="w-5 h-5 strokeWidth={2} text-[#007AFF]" />
                     </div>
                     <div>
-                      <p className="font-semibold text-[#1C1C1E] text-base">Payment Summary</p>
+                      <p className="font-semibold text-[#1C1C1E] text-[17px] tracking-[-0.022em]">Payment Summary</p>
                       <p className="text-xs text-[#8E8E93]">Amount to collect on joining</p>
                     </div>
                   </div>
@@ -701,7 +701,7 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                   {selectedPlanId && (
                     <div className="rounded-xl bg-[#007AFF]/5 border border-[#007AFF]/20 p-3">
                       <p className="text-xs text-[#007AFF] flex items-start gap-2">
-                        <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <Info className="w-5 h-5 strokeWidth={2} mt-0.5 flex-shrink-0" />
                         <span>
                           <strong>From next month:</strong> Regular monthly rent of ₹{totalMonthlyPrice.toLocaleString('en-IN')} will be charged.
                           {settings?.prorateFirstMonth && firstMonthRent !== totalMonthlyPrice &&
@@ -717,7 +717,7 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                   <div className="rounded-xl border border-[#E5E5EA] bg-white p-5 space-y-4">
                     <div className="flex items-center justify-between pb-2">
                       <div>
-                        <p className="text-base font-semibold text-[#1C1C1E]">Collect payment now?</p>
+                        <p className="text-[17px] font-semibold tracking-[-0.022em] text-[#1C1C1E]">Collect payment now?</p>
                         <p className="text-xs text-[#8E8E93] mt-0.5">Record payment receipt immediately</p>
                       </div>
                       <ToggleSwitch
@@ -739,21 +739,21 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                       <div className="space-y-4 pt-3 border-t border-[#E5E5EA]">
                         {/* Amount Display (read-only, auto-calculated) */}
                         <div className="space-y-2">
-                          <Label className="text-[#1C1C1E]">Amount to collect (₹)</Label>
+                          <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Amount to collect (₹)</Label>
                           <div className="rounded-xl h-11 bg-[#F9F9FB] border border-[#E5E5EA] px-4 flex items-center">
                             <span className="text-[#1C1C1E] font-semibold text-lg">
                               ₹{(firstMonthRent + (watch('depositAmount') || depositDefault)).toLocaleString('en-IN')}
                             </span>
                           </div>
                           <p className="text-xs text-[#8E8E93] flex items-center gap-1">
-                            <Info className="w-3 h-3" />
+                            <Info className="w-5 h-5 strokeWidth={2}" />
                             This includes security deposit + first month rent
                           </p>
                         </div>
 
                         {/* Payment Method */}
                         <div className="space-y-2">
-                          <Label className="text-[#1C1C1E]">Payment method</Label>
+                          <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">Payment method</Label>
                           <Select 
                             value={firstPaymentMethod || ''} 
                             onValueChange={(v) => {
@@ -768,17 +768,17 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                             <SelectContent>
                               <SelectItem value="cash">
                                 <span className="flex items-center gap-2">
-                                  <Banknote className="w-4 h-4" /> Cash
+                                  <Banknote className="w-5 h-5 strokeWidth={2}" /> Cash
                                 </span>
                               </SelectItem>
                               <SelectItem value="upi">
                                 <span className="flex items-center gap-2">
-                                  <Smartphone className="w-4 h-4" /> UPI
+                                  <Smartphone className="w-5 h-5 strokeWidth={2}" /> UPI
                                 </span>
                               </SelectItem>
                               <SelectItem value="bank">
                                 <span className="flex items-center gap-2">
-                                  <Landmark className="w-4 h-4" /> Bank Transfer / NEFT
+                                  <Landmark className="w-5 h-5 strokeWidth={2}" /> Bank Transfer / NEFT
                                 </span>
                               </SelectItem>
                             </SelectContent>
@@ -788,7 +788,7 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                         {/* Transaction Reference (only for UPI/Bank) */}
                         {(firstPaymentMethod === 'upi' || firstPaymentMethod === 'bank') && (
                           <div className="space-y-2">
-                            <Label className="text-[#1C1C1E]">
+                            <Label className="font-medium text-[15px] text-[#1C1C1E] tracking-[-0.016em]">
                               Transaction reference <span className="text-[#8E8E93] font-normal">(optional)</span>
                             </Label>
                             <Input 
@@ -805,7 +805,7 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                       <div className="pt-3 border-t border-[#E5E5EA]">
                         <div className="rounded-xl bg-[#FF9500]/5 border border-[#FF9500]/20 p-3">
                           <p className="text-xs text-[#FF9500] flex items-start gap-2">
-                            <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <AlertCircle className="w-5 h-5 strokeWidth={2} mt-0.5 flex-shrink-0" />
                             <span>
                               Payment not collected now. You can record it later from the resident's profile or rent section.
                             </span>
@@ -826,33 +826,33 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
           <Button
             type="button"
             variant="outline"
-            className="rounded-xl px-6 h-10"
+            className="rounded-xl px-6 h-11 border-[#E5E5EA] hover:bg-[#F2F2F7] transition-all duration-200"
             onClick={() => {
               if (currentStep === 0) router.push('/residents');
               else setCurrentStep((s) => s - 1);
             }}
           >
-            <ChevronLeft className="w-4 h-4 mr-1" />
+            <ChevronLeft className="w-5 h-5 strokeWidth={2} mr-1" />
             {currentStep === 0 ? 'Cancel' : 'Back'}
           </Button>
 
           {currentStep < STEPS.length - 1 ? (
             <Button
               type="button"
-              className="bg-[#007AFF] hover:bg-[#0071EB] text-white rounded-xl px-6 h-10"
+              className="bg-[#007AFF] hover:bg-[#0071EB] text-white rounded-xl px-6 h-11 transition-all duration-200 shadow-sm"
               onClick={handleNext}
             >
               Next
-              <ChevronRight className="w-4 h-4 ml-1" />
+              <ChevronRight className="w-5 h-5 strokeWidth={2} ml-1" />
             </Button>
           ) : (
             <Button
               type="submit"
-              className="bg-[#007AFF] hover:bg-[#0071EB] text-white rounded-xl px-6 h-10"
+              className="bg-[#007AFF] hover:bg-[#0071EB] text-white rounded-xl px-6 h-11 transition-all duration-200 shadow-sm"
               disabled={isPending}
             >
               {isPending ? 'Checking in…' : 'Complete Check-in'}
-              {!isPending && <Check className="w-4 h-4 ml-1" />}
+              {!isPending && <Check className="w-5 h-5 strokeWidth={2} ml-1" />}
             </Button>
           )}
         </div>

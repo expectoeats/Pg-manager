@@ -44,16 +44,16 @@ export function RoomLayoutPreview({ roomNumber, sharingType, beds, currentElectr
               )}
             >
               <div className="flex items-center justify-between mb-1.5">
-                <span className="font-semibold text-sm text-[#1C1C1E]">Bed {bed.bedLabel}</span>
+                <span className="font-semibold text-[15px] text-[#1C1C1E]">Bed {bed.bedLabel}</span>
                 <div className={cn(
                   'w-2.5 h-2.5 rounded-full',
                   bed.status === 'vacant' ? 'bg-[#34C759]' : 'bg-[#FF3B30]'
                 )} />
               </div>
               {bed.status === 'occupied' && bed.residentName ? (
-                <div className="flex items-center gap-1.5 text-xs text-[#8E8E93]">
-                  <User className="w-3 h-3" />
-                  <span className="truncate">{bed.residentName}</span>
+                <div className="flex items-center gap-1.5">
+                  <User className="w-5 h-5 strokeWidth={2} text-[#8E8E93]" />
+                  <span className="truncate text-[13px] text-[#1C1C1E]">{bed.residentName}</span>
                 </div>
               ) : (
                 <span className="text-xs text-[#34C759] font-medium">Available</span>
@@ -63,9 +63,9 @@ export function RoomLayoutPreview({ roomNumber, sharingType, beds, currentElectr
         </div>
 
         {currentElectricityBill !== undefined && currentElectricityBill > 0 && (
-          <div className="flex items-center justify-between p-3 rounded-xl bg-[#FF9500]/10 border border-[#FF9500]/20">
+          <div className="flex items-center justify-between p-3 rounded-xl bg-[#FF9500]/10 border border-[#FF9500]/20 transition-all duration-200">
             <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-[#FF9500]" />
+              <Zap className="w-5 h-5 strokeWidth={2} text-[#FF9500]" />
               <span className="text-sm text-[#FF9500] font-medium">Current month bill</span>
             </div>
             <span className="font-semibold text-[#FF9500]">
