@@ -33,6 +33,7 @@ interface ResidentData {
   room?: { roomNumber: string } | null;
   bed?: { bedLabel: string } | null;
   currentPlan?: { name: string; price: number } | null;
+  pendingAmount?: number;
 }
 
 interface PlanData {
@@ -174,6 +175,7 @@ export default function ResidentsList({
                   <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Room / Bed</TableHead>
                   <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Plan</TableHead>
                   <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Next Payment</TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide text-right">Pending</TableHead>
                   <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Status</TableHead>
                   <TableHead className="text-right text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Actions</TableHead>
                 </TableRow>
@@ -238,6 +240,15 @@ export default function ResidentsList({
                         </div>
                       ) : (
                         <span className="text-[#8E8E93] text-xs">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {r.pendingAmount && r.pendingAmount > 0 ? (
+                        <span className="text-xs font-bold text-[#FF3B30]">
+                          ₹{r.pendingAmount.toLocaleString('en-IN')}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-[#8E8E93]">—</span>
                       )}
                     </TableCell>
                     <TableCell>
@@ -336,6 +347,14 @@ export default function ResidentsList({
                       <span className="text-[#8E8E93] text-xs">Plan</span>
                       <p className="text-[#1C1C1E] font-medium text-xs">{r.currentPlan?.name || '—'}</p>
                     </div>
+                    {r.pendingAmount && r.pendingAmount > 0 && (
+                      <div className="col-span-2">
+                        <span className="text-[#8E8E93] text-xs">Pending</span>
+                        <p className="text-[#1C1C1E] font-medium text-xs text-[#FF3B30]">
+                          ₹{r.pendingAmount.toLocaleString('en-IN')}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Link>

@@ -26,6 +26,28 @@ export async function getVacantBedsByRoom(roomId: string) {
   }));
 }
 
+export async function getRoomVacantBedCounts() {
+  await connectDB();
+  const rooms = await Room.find({ isActive: true }).lean();
+  
+  const roomsWithCounts = await Promise.all(
+    rooms.map(async (room) => {
+      const vacantCount = await Bed.countDocuments({ 
+        room: room._id, 
+        status: 'vacant' 
+      });
+      
+      return {
+        roomId: room._id.toString(),
+        vacantBeds: vacantCount,
+        totalBeds: room.totalBeds,
+      };
+    })
+  );
+  
+  return roomsWithCounts;
+}
+
 export async function checkInResident(data: unknown) {
   const authSession = await auth();
   if (!authSession?.user) {

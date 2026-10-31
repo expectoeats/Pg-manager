@@ -30,9 +30,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { givePlanChange, giveNotice } from '@/lib/services/residents';
-import { ArrowLeft, LogOut, Home, ClipboardList, Phone, AlertTriangle, Receipt, CreditCard, Zap, Landmark } from 'lucide-react';
+import { givePlanChange, giveNotice, ResidentCalendarData } from '@/lib/services/residents';
+import { ArrowLeft, LogOut, Home, ClipboardList, Phone, AlertTriangle, Receipt, CreditCard, Zap, Landmark, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ResidentCalendar from '@/components/residents/ResidentCalendar';
 
 interface ResidentData {
   _id: string;
@@ -72,6 +73,7 @@ interface ResidentProfileProps {
   planHistory: PlanHistoryData[];
   activePlans: PlanData[];
   noticePeriodDays: number;
+  calendarData: ResidentCalendarData;
 }
 
 const STATUS_BADGE: Record<string, string> = {
@@ -90,6 +92,7 @@ export default function ResidentProfile({
   planHistory,
   activePlans,
   noticePeriodDays,
+  calendarData,
 }: ResidentProfileProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -238,6 +241,7 @@ export default function ResidentProfile({
       <Tabs defaultValue="overview">
         <TabsList className="mb-4 bg-[#F2F2F7] rounded-xl p-1 gap-1 h-auto flex-wrap">
           <TabsTrigger value="overview" className="rounded-lg">Overview</TabsTrigger>
+          <TabsTrigger value="timeline" className="rounded-lg"><Calendar className="w-4 h-4 mr-1.5 inline" strokeWidth={2} />Timeline</TabsTrigger>
           <TabsTrigger value="plan-history" className="rounded-lg">Plan History</TabsTrigger>
           <TabsTrigger value="rent" className="rounded-lg">Rent</TabsTrigger>
           <TabsTrigger value="payments" className="rounded-lg">Payments</TabsTrigger>
@@ -321,6 +325,15 @@ export default function ResidentProfile({
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* Timeline */}
+        <TabsContent value="timeline">
+          <ResidentCalendar 
+            resident={resident} 
+            calendarData={calendarData}
+            planHistory={planHistory}
+          />
         </TabsContent>
 
         {/* Plan History */}

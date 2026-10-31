@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { residentSchema, type ResidentFormData } from '@/lib/validators/resident';
-import { checkInResident, getVacantBedsByRoom } from '@/lib/services/checkin';
+import { checkInResident, getVacantBedsByRoom, getRoomVacantBedCounts } from '@/lib/services/checkin';
 import { getRoomLayoutWithBills } from '@/lib/services/rooms';
 import { RoomLayoutPreview } from '@/components/rooms/RoomLayoutPreview';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ToggleSwitch } from '@/components/ui/toggle-switch';
+import { UpiQrModal } from '@/components/ui/upi-qr-modal';
+import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import {
   ChevronRight,
@@ -106,6 +108,7 @@ function getMealIcon(plan: PlanData) {
 
 export default function AddResidentForm({ plans, rooms, settings }: AddResidentFormProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const [currentStep, setCurrentStep] = useState(0);
   const [submitError, setSubmitError] = useState('');
@@ -114,6 +117,8 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
   const [selectedFoodPlanId, setSelectedFoodPlanId] = useState<string>('');
   const [wantsFood, setWantsFood] = useState(false);
   const [selectedSharing, setSelectedSharing] = useState<'double' | 'triple' | ''>('');
+  const [roomVacantCounts, setRoomVacantCounts] = useState<Record<string, number>>({});
+  const [showUpiQr, setShowUpiQr] = useState(false);
   const [roomLayoutData, setRoomLayoutData] = useState<{
     roomNumber: string;
     sharingType: 'double' | 'triple';
@@ -147,6 +152,7 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
   const recordFirstPayment = watch('recordFirstPayment');
   const firstPaymentMethod = watch('firstPaymentMethod');
   const joiningDate = watch('joiningDate');
+  const selectedBillingMode = watch('billingMode');
 
   // Get selected room's sharing type for filtering plans
   const selectedRoomData = rooms.find((r) => r._id === selectedRoom);
@@ -230,6 +236,29 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
     });
   }, [selectedRoom, setValue]);
 
+  // Load room vacant bed counts on mount
+  useEffect(() => {
+    startTransition(async () => {
+      const counts = await getRoomVacantBedCounts();
+      const countMap: Record<string, number> = {};
+      counts.forEach(({ roomId, vacantBeds }) => {
+        countMap[roomId] = vacantBeds;
+      });
+      setRoomVacantCounts(countMap);
+    });
+  }, []);
+
+  // Recalculate payment amount when billing mode or payment toggle changes
+  useEffect(() => {
+    if (recordFirstPayment && selectedPlanId) {
+      const billingMode = selectedBillingMode || settings?.billingMode || 'joining_cycle';
+      const totalRent = billingMode === 'calendar' && settings?.prorateFirstMonth && daysRemaining < 30
+        ? firstMonthRent + nextMonthRent
+        : firstMonthRent;
+      setValue('firstPaymentAmount', totalRent + (watch('depositAmount') || depositDefault));
+    }
+  }, [selectedBillingMode, recordFirstPayment, selectedPlanId, firstMonthRent, nextMonthRent, daysRemaining, depositDefault, setValue, settings, watch]);
+
   const stepFields: Record<number, (keyof ResidentFormData)[]> = {
     0: ['name', 'mobile'],
     1: ['room', 'bed', 'currentPlan', 'joiningDate'],
@@ -250,7 +279,9 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
       return;
     }
     
+    console.log('Form submission started:', data);
     setSubmitError('');
+    
     // Attach food plan info to notes if selected
     const submissionData = {
       ...data,
@@ -263,12 +294,40 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
         .filter(Boolean)
         .join(' | '),
     };
+    
+    console.log('Starting check-in with data:', submissionData);
+    
     startTransition(async () => {
-      const result = await checkInResident(submissionData);
-      if (result.success && result.residentId) {
-        router.push(`/residents/${result.residentId}`);
-      } else {
-        setSubmitError(result.error || 'Check-in failed. Please try again.');
+      try {
+        const result = await checkInResident(submissionData);
+        console.log('Check-in result:', result);
+        
+        if (result.success && result.residentId) {
+          toast({
+            variant: 'success',
+            title: 'Check-in successful!',
+            description: `${data.name} has been successfully checked in.`,
+          });
+          setTimeout(() => {
+            router.push(`/residents/${result.residentId}`);
+          }, 1500);
+        } else {
+          toast({
+            variant: 'destructive',
+            title: 'Check-in failed',
+            description: result.error || 'An error occurred during check-in. Please try again.',
+          });
+          setSubmitError(result.error || 'Check-in failed. Please try again.');
+          setCurrentStep(0);
+        }
+      } catch (error) {
+        console.error('Check-in error:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Unexpected error',
+          description: 'An unexpected error occurred. Please try again or contact support.',
+        });
+        setSubmitError('An unexpected error occurred. Please try again.');
         setCurrentStep(0);
       }
     });
@@ -332,7 +391,15 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
         })}
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} onKeyDown={handleKeyDown}>
+      <form onSubmit={handleSubmit(onSubmit, (errors) => {
+        console.error('Form validation errors:', errors);
+        toast({
+          variant: 'destructive',
+          title: 'Validation error',
+          description: 'Please fill in all required fields correctly before proceeding.',
+        });
+        setSubmitError('Please fill in all required fields correctly.');
+      })} onKeyDown={handleKeyDown}>
         <Card className="border border-[#E5E5EA] shadow-sm rounded-2xl">
           <CardHeader className="pb-2 pt-6 px-6">
             <CardTitle className="text-[17px] font-semibold tracking-[-0.022em] text-[#1C1C1E] flex items-center gap-2">
@@ -341,12 +408,6 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
             </CardTitle>
           </CardHeader>
           <CardContent className="px-6 pb-6 space-y-5">
-            {submitError && (
-              <div className="bg-[#FF3B30]/10 border border-[#FF3B30]/20 text-[#FF3B30] px-4 py-3 rounded-xl text-sm font-medium">
-                {submitError}
-              </div>
-            )}
-
             {/* ── Step 0: Personal Info ── */}
             {currentStep === 0 && (
               <div className="space-y-4">
@@ -399,12 +460,30 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                         <SelectValue placeholder="Select room" />
                       </SelectTrigger>
                       <SelectContent>
-                        {rooms.map((r) => (
-                          <SelectItem key={r._id} value={r._id}>
-                            Room {r.roomNumber}
-                            <span className="ml-1 text-[#8E8E93] text-xs capitalize">({r.sharingType})</span>
-                          </SelectItem>
-                        ))}
+                        {rooms.map((r) => {
+                          const vacantCount = roomVacantCounts[r._id] ?? 0;
+                          const isFull = vacantCount === 0;
+                          
+                          return (
+                            <SelectItem 
+                              key={r._id} 
+                              value={r._id}
+                              disabled={isFull}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span>Room {r.roomNumber}</span>
+                                <span className="text-[#8E8E93] text-xs capitalize">({r.sharingType})</span>
+                                {isFull ? (
+                                  <span className="ml-auto text-[#FF3B30] font-semibold text-xs">FULL</span>
+                                ) : (
+                                  <span className="ml-auto text-[#34C759] text-xs">
+                                    {vacantCount} {vacantCount === 1 ? 'bed' : 'beds'} free
+                                  </span>
+                                )}
+                              </span>
+                            </SelectItem>
+                          );
+                        })}
                       </SelectContent>
                     </Select>
                     {errors.room && <p className="text-[#FF3B30] text-xs">{errors.room.message}</p>}
@@ -909,8 +988,9 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                           // Also mark deposit as received when payment is being collected
                           setValue('depositReceived', v);
                           if (v) {
-                            // Calculate total based on billing mode
-                            const totalRent = settings?.billingMode === 'calendar' && settings.prorateFirstMonth && daysRemaining < 30
+                            // Calculate total based on SELECTED billing mode (not settings default)
+                            const selectedBillingMode = watch('billingMode') || settings?.billingMode || 'joining_cycle';
+                            const totalRent = selectedBillingMode === 'calendar' && settings?.prorateFirstMonth && daysRemaining < 30
                               ? firstMonthRent + nextMonthRent
                               : firstMonthRent;
                             setValue('firstPaymentAmount', totalRent + (watch('depositAmount') || depositDefault));
@@ -928,7 +1008,8 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                           <div className="rounded-xl h-11 bg-[#F9F9FB] border border-[#E5E5EA] px-4 flex items-center">
                             <span className="text-[#1C1C1E] font-semibold text-lg">
                               ₹{(() => {
-                                const totalRent = settings?.billingMode === 'calendar' && settings.prorateFirstMonth && daysRemaining < 30
+                                const selectedBillingMode = watch('billingMode') || settings?.billingMode || 'joining_cycle';
+                                const totalRent = selectedBillingMode === 'calendar' && settings?.prorateFirstMonth && daysRemaining < 30
                                   ? firstMonthRent + nextMonthRent
                                   : firstMonthRent;
                                 return (totalRent + (watch('depositAmount') || depositDefault)).toLocaleString('en-IN');
@@ -937,11 +1018,16 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                           </div>
                           <p className="text-xs text-[#8E8E93] flex items-center gap-1">
                             <Info className="w-5 h-5 strokeWidth={2}" />
-                            {settings?.billingMode === 'joining_cycle' 
-                              ? 'Includes deposit + 30 days rent from joining date'
-                              : (settings?.prorateFirstMonth && daysRemaining < 30
-                                ? 'Includes deposit + current month partial + next month advance'
-                                : 'Includes deposit + first month rent')}
+                            {(() => {
+                              const selectedBillingMode = watch('billingMode') || settings?.billingMode || 'joining_cycle';
+                              if (selectedBillingMode === 'joining_cycle') {
+                                return 'Includes deposit + 30 days rent from joining date';
+                              } else if (settings?.prorateFirstMonth && daysRemaining < 30) {
+                                return 'Includes deposit + current month partial + next month advance';
+                              } else {
+                                return 'Includes deposit + first month rent';
+                              }
+                            })()}
                           </p>
                         </div>
 
@@ -954,6 +1040,10 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
                               setValue('firstPaymentMethod', v as 'cash' | 'upi' | 'bank');
                               // Also set deposit method to same
                               setValue('depositMethod', v as 'cash' | 'upi' | 'bank');
+                              // Show UPI QR modal when UPI is selected
+                              if (v === 'upi') {
+                                setShowUpiQr(true);
+                              }
                             }}
                           >
                             <SelectTrigger className="rounded-xl h-11">
@@ -1051,6 +1141,20 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
           )}
         </div>
       </form>
+
+      {/* UPI QR Modal */}
+      <UpiQrModal
+        isOpen={showUpiQr}
+        onClose={() => setShowUpiQr(false)}
+        amount={(() => {
+          const selectedBillingMode = watch('billingMode') || settings?.billingMode || 'joining_cycle';
+          const totalRent = selectedBillingMode === 'calendar' && settings?.prorateFirstMonth && daysRemaining < 30
+            ? firstMonthRent + nextMonthRent
+            : firstMonthRent;
+          return totalRent + (watch('depositAmount') || depositDefault);
+        })()}
+        residentName={watch('name')}
+      />
     </div>
   );
 }

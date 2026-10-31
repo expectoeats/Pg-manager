@@ -126,6 +126,16 @@ async function seed() {
       isActive: true,
     },
     {
+      name: 'Double Sharing - Room + All Meals',
+      type: 'room_food',
+      sharingType: 'double',
+      includesBreakfast: true,
+      includesLunch: true,
+      includesDinner: true,
+      price: 8000,
+      isActive: true,
+    },
+    {
       name: 'Triple Sharing - Room + All Meals',
       type: 'room_food',
       sharingType: 'triple',

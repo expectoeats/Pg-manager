@@ -9,7 +9,13 @@ import { settingsSchema } from '@/lib/validators/settings';
 export async function getSettings() {
   await connectDB();
   const settings = await Settings.findOne().lean();
-  return settings;
+  if (!settings) return null;
+  
+  // Convert MongoDB ObjectId to string for client component compatibility
+  return {
+    ...settings,
+    _id: settings._id.toString(),
+  };
 }
 
 export async function updateSettings(formData: unknown) {

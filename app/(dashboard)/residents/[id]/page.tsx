@@ -1,4 +1,4 @@
-import { getResident, getPlanHistory } from '@/lib/services/residents';
+import { getResident, getPlanHistory, getResidentCalendarData } from '@/lib/services/residents';
 import { getPlans } from '@/lib/services/plans';
 import { getSettings } from '@/lib/services/settings';
 import ResidentProfile from '@/components/residents/ResidentProfile';
@@ -10,17 +10,18 @@ export default async function ResidentProfilePage({
 }) {
   const { id } = await params;
 
-  const [resident, planHistory, plans, settings] = await Promise.all([
+  const [resident, planHistory, plans, settings, calendarData] = await Promise.all([
     getResident(id),
     getPlanHistory(id),
     getPlans(),
     getSettings(),
+    getResidentCalendarData(id),
   ]);
 
   const activePlans = plans.filter((p) => p.isActive);
   const noticePeriodDays = settings?.noticePeriodDays ?? 20;
 
-  const data = JSON.parse(JSON.stringify({ resident, planHistory, activePlans, noticePeriodDays }));
+  const data = JSON.parse(JSON.stringify({ resident, planHistory, activePlans, noticePeriodDays, calendarData }));
 
   return <ResidentProfile {...data} />;
 }
