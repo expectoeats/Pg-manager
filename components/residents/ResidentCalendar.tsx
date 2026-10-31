@@ -408,54 +408,54 @@ export default function ResidentCalendar({
       style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, sans-serif' }}
     >
       {/* Compact Summary Stats - Horizontal Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
         {/* Days Stayed */}
-        <div className="p-3 bg-gradient-to-br from-[#007AFF]/10 to-[#007AFF]/5 rounded-xl border border-[#007AFF]/20 transition-all duration-200 hover:scale-[1.02] hover:shadow-md">
-          <div className="text-[10px] text-[#007AFF] font-medium mb-0.5">Days Stayed</div>
-          <div className="text-2xl font-semibold text-[#1C1C1E]">{summaryStats.daysStayed}</div>
+        <div className="p-2 bg-gradient-to-br from-[#007AFF]/10 to-[#007AFF]/5 rounded-lg border border-[#007AFF]/20 transition-all duration-200 hover:scale-[1.02] hover:shadow-md">
+          <div className="text-[9px] text-[#007AFF] font-medium mb-0.5">Days Stayed</div>
+          <div className="text-lg font-semibold text-[#1C1C1E]">{summaryStats.daysStayed}</div>
         </div>
 
         {/* Pending Rent */}
-        <div className="p-3 bg-gradient-to-br from-[#FF3B30]/10 to-[#FF3B30]/5 rounded-xl border border-[#FF3B30]/20 transition-all duration-200 hover:scale-[1.02] hover:shadow-md">
-          <div className="text-[10px] text-[#FF3B30] font-medium mb-0.5">Pending Rent</div>
-          <div className="text-2xl font-semibold text-[#FF3B30]">
+        <div className="p-2 bg-gradient-to-br from-[#FF3B30]/10 to-[#FF3B30]/5 rounded-lg border border-[#FF3B30]/20 transition-all duration-200 hover:scale-[1.02] hover:shadow-md">
+          <div className="text-[9px] text-[#FF3B30] font-medium mb-0.5">Pending Rent</div>
+          <div className="text-lg font-semibold text-[#FF3B30]">
             {summaryStats.totalPendingRent > 0 ? `₹${summaryStats.totalPendingRent.toLocaleString('en-IN')}` : '—'}
           </div>
         </div>
 
         {/* Pending Electricity */}
-        <div className="p-3 bg-gradient-to-br from-[#5856D6]/10 to-[#5856D6]/5 rounded-xl border border-[#5856D6]/20 transition-all duration-200 hover:scale-[1.02] hover:shadow-md">
-          <div className="text-[10px] text-[#5856D6] font-medium mb-0.5">Electricity</div>
-          <div className="text-2xl font-semibold text-[#5856D6]">
+        <div className="p-2 bg-gradient-to-br from-[#5856D6]/10 to-[#5856D6]/5 rounded-lg border border-[#5856D6]/20 transition-all duration-200 hover:scale-[1.02] hover:shadow-md">
+          <div className="text-[9px] text-[#5856D6] font-medium mb-0.5">Electricity</div>
+          <div className="text-lg font-semibold text-[#5856D6]">
             {summaryStats.totalPendingElectricity > 0 ? `₹${summaryStats.totalPendingElectricity.toLocaleString('en-IN')}` : '—'}
           </div>
         </div>
 
         {/* Next Due */}
-        <div className="p-3 bg-gradient-to-br from-[#FF9500]/10 to-[#FF9500]/5 rounded-xl border border-[#FF9500]/20 transition-all duration-200 hover:scale-[1.02] hover:shadow-md">
-          <div className="text-[10px] text-[#FF9500] font-medium mb-0.5">Next Due</div>
-          <div className="text-sm font-semibold text-[#FF9500]">
+        <div className="p-2 bg-gradient-to-br from-[#FF9500]/10 to-[#FF9500]/5 rounded-lg border border-[#FF9500]/20 transition-all duration-200 hover:scale-[1.02] hover:shadow-md">
+          <div className="text-[9px] text-[#FF9500] font-medium mb-0.5">Next Due</div>
+          <div className="text-xs font-semibold text-[#FF9500]">
             {summaryStats.nextDueDate ? formatDateIST(summaryStats.nextDueDate) : 'None'}
           </div>
         </div>
       </div>
 
-      {/* Calendar Card with Glassmorphism */}
+      {/* Calendar Card with Glassmorphism - Compact */}
       <Card className="bg-white/80 backdrop-blur-sm border border-white/60 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.08)]">
-        <CardContent className="pt-4 px-3 pb-3">
-          {/* Calendar Header */}
-          <div className="flex items-center justify-between mb-3">
+        <CardContent className="pt-3 px-2 pb-2">
+          {/* Calendar Header - Compact */}
+          <div className="flex items-center justify-between mb-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={goToPreviousMonth}
-              className="h-8 w-8 p-0 hover:bg-[#F2F2F7] transition-all duration-200"
+              className="h-7 w-7 p-0 hover:bg-[#F2F2F7] transition-all duration-200"
             >
-              <ChevronLeft className="w-5 h-5" strokeWidth={2} />
+              <ChevronLeft className="w-4 h-4" strokeWidth={2} />
             </Button>
             
             <div className="text-center">
-              <h3 className="font-semibold text-[15px] tracking-[-0.022em] text-[#1C1C1E]">
+              <h3 className="font-semibold text-sm tracking-[-0.022em] text-[#1C1C1E]">
                 {formatMonthYear(currentMonth)}
               </h3>
               {!isCurrentMonth && (
@@ -463,7 +463,7 @@ export default function ResidentCalendar({
                   variant="link"
                   size="sm"
                   onClick={goToToday}
-                  className="h-auto p-0 text-[10px] text-[#007AFF]"
+                  className="h-auto p-0 text-[9px] text-[#007AFF]"
                 >
                   Go to today
                 </Button>
@@ -474,20 +474,20 @@ export default function ResidentCalendar({
               variant="ghost"
               size="sm"
               onClick={goToNextMonth}
-              className="h-8 w-8 p-0 hover:bg-[#F2F2F7] transition-all duration-200"
+              className="h-7 w-7 p-0 hover:bg-[#F2F2F7] transition-all duration-200"
             >
-              <ChevronRight className="w-5 h-5" strokeWidth={2} />
+              <ChevronRight className="w-4 h-4" strokeWidth={2} />
             </Button>
           </div>
 
-          {/* Mobile Week/Month Toggle */}
-          <div className="flex items-center justify-center gap-2 mb-3 lg:hidden">
+          {/* Mobile Week/Month Toggle - Compact */}
+          <div className="flex items-center justify-center gap-1.5 mb-2 lg:hidden">
             <Button
               variant={viewMode === 'month' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setViewMode('month')}
               className={cn(
-                "h-7 px-3 text-xs transition-all duration-200",
+                "h-6 px-2.5 text-[10px] transition-all duration-200",
                 viewMode === 'month' 
                   ? "bg-[#007AFF] text-white hover:bg-[#007AFF]/90" 
                   : "bg-white hover:bg-[#F2F2F7]"
@@ -501,7 +501,7 @@ export default function ResidentCalendar({
               size="sm"
               onClick={() => setViewMode('week')}
               className={cn(
-                "h-7 px-3 text-xs transition-all duration-200",
+                "h-6 px-2.5 text-[10px] transition-all duration-200",
                 viewMode === 'week' 
                   ? "bg-[#007AFF] text-white hover:bg-[#007AFF]/90" 
                   : "bg-white hover:bg-[#F2F2F7]"
@@ -512,15 +512,15 @@ export default function ResidentCalendar({
             </Button>
           </div>
 
-          {/* Calendar Grid */}
-          <div className="space-y-1">
+          {/* Calendar Grid - More Compact */}
+          <div className="space-y-0.5">
             {/* Day headers */}
-            <div className="grid grid-cols-7 gap-1 mb-1">
+            <div className="grid grid-cols-7 gap-0.5 mb-0.5">
               {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => (
                 <div
                   key={idx}
                   className={cn(
-                    "text-center text-[10px] font-semibold text-[#8E8E93] uppercase py-1",
+                    "text-center text-[9px] font-semibold text-[#8E8E93] uppercase py-0.5",
                     (idx === 0 || idx === 6) && "text-[#C7C7CC]"
                   )}
                 >
@@ -531,7 +531,7 @@ export default function ResidentCalendar({
 
             {/* Calendar days */}
             <div 
-              className="grid grid-cols-7 gap-1"
+              className="grid grid-cols-7 gap-0.5"
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
@@ -549,11 +549,11 @@ export default function ResidentCalendar({
                   <div
                     key={idx}
                     className={cn(
-                      "relative aspect-square p-1.5 rounded-lg transition-all duration-200 ease-out cursor-pointer",
+                      "relative aspect-square p-1 rounded-md transition-all duration-200 ease-out cursor-pointer",
                       !isCurrentMonthDay && "text-[#C7C7CC]",
                       isCurrentMonthDay && events.length > 0 && "hover:bg-[#F9F9FB] hover:scale-[1.03] hover:shadow-md",
                       isPending && isCurrentMonthDay && "bg-gradient-to-br from-[#FF3B30]/5 to-[#FF9500]/10",
-                      isJoining && "ring-2 ring-[#34C759]/30"
+                      isJoining && "ring-1 ring-[#34C759]/30"
                     )}
                     onMouseEnter={(e) => handleDateHover(date, e)}
                     onMouseLeave={handleDateLeave}
@@ -561,8 +561,8 @@ export default function ResidentCalendar({
                   >
                     {/* Date number */}
                     <div className={cn(
-                      "text-center text-sm font-semibold mb-1",
-                      isToday && "bg-[#007AFF] text-white rounded-full w-6 h-6 flex items-center justify-center mx-auto ring-2 ring-[#007AFF] ring-offset-1 animate-pulse",
+                      "text-center text-xs font-semibold mb-0.5",
+                      isToday && "bg-[#007AFF] text-white rounded-full w-5 h-5 flex items-center justify-center mx-auto ring-1 ring-[#007AFF] ring-offset-1 animate-pulse",
                       !isToday && isCurrentMonthDay && "text-[#1C1C1E]",
                       !isToday && !isCurrentMonthDay && "text-[#C7C7CC]",
                       isWeekend && !isToday && "text-[#8E8E93]"
@@ -570,7 +570,7 @@ export default function ResidentCalendar({
                       {date.getDate()}
                     </div>
 
-                    {/* Event dots (max 3 + overflow) */}
+                    {/* Event dots (max 3 + overflow) - Smaller */}
                     {events.length > 0 && (
                       <div className="flex items-center justify-center gap-0.5 flex-wrap">
                         {events.slice(0, 3).map((event, eventIdx) => {
@@ -578,13 +578,13 @@ export default function ResidentCalendar({
                           return (
                             <div
                               key={eventIdx}
-                              className="w-2 h-2 rounded-full transition-all duration-200"
+                              className="w-1.5 h-1.5 rounded-full transition-all duration-200"
                               style={{ backgroundColor: eventColor }}
                             />
                           );
                         })}
                         {events.length > 3 && (
-                          <span className="text-[9px] text-[#8E8E93] ml-0.5">+{events.length - 3}</span>
+                          <span className="text-[8px] text-[#8E8E93] ml-0.5">+{events.length - 3}</span>
                         )}
                       </div>
                     )}
@@ -596,16 +596,16 @@ export default function ResidentCalendar({
         </CardContent>
       </Card>
 
-      {/* Legend */}
+      {/* Legend - Compact */}
       <Card>
-        <CardContent className="pt-3 pb-3">
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="text-sm font-semibold text-[#1C1C1E]">Legend</h4>
+        <CardContent className="pt-2 pb-2">
+          <div className="flex items-center justify-between mb-1.5">
+            <h4 className="text-xs font-semibold text-[#1C1C1E]">Legend</h4>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowLegend(!showLegend)}
-              className="text-xs h-7 lg:hidden"
+              className="text-[10px] h-6 lg:hidden"
             >
               {showLegend ? 'Hide' : 'Show'}
             </Button>
@@ -613,33 +613,33 @@ export default function ResidentCalendar({
           
           {/* Always visible on lg+, toggle on mobile */}
           <div className={cn(
-            "grid grid-cols-2 md:grid-cols-4 gap-3",
+            "grid grid-cols-2 md:grid-cols-4 gap-2",
             "lg:grid", // Always show on large screens
             showLegend ? "grid" : "hidden" // Toggle on small screens
           )}>
-            <div className="flex items-center gap-2">
-              <Star className="w-4 h-4 flex-shrink-0" style={{ color: '#34C759' }} strokeWidth={2} />
-              <span className="text-xs text-[#1C1C1E]">Joining</span>
+            <div className="flex items-center gap-1.5">
+              <Star className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#34C759' }} strokeWidth={2} />
+              <span className="text-[10px] text-[#1C1C1E]">Joining</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Receipt className="w-4 h-4 flex-shrink-0" style={{ color: '#FF9500' }} strokeWidth={2} />
-              <span className="text-xs text-[#1C1C1E]">Rent Due</span>
+            <div className="flex items-center gap-1.5">
+              <Receipt className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#FF9500' }} strokeWidth={2} />
+              <span className="text-[10px] text-[#1C1C1E]">Rent Due</span>
             </div>
-            <div className="flex items-center gap-2">
-              <CreditCard className="w-4 h-4 flex-shrink-0" style={{ color: '#30D158' }} strokeWidth={2} />
-              <span className="text-xs text-[#1C1C1E]">Payment</span>
+            <div className="flex items-center gap-1.5">
+              <CreditCard className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#30D158' }} strokeWidth={2} />
+              <span className="text-[10px] text-[#1C1C1E]">Payment</span>
             </div>
-            <div className="flex items-center gap-2">
-              <ClipboardList className="w-4 h-4 flex-shrink-0" style={{ color: '#007AFF' }} strokeWidth={2} />
-              <span className="text-xs text-[#1C1C1E]">Plan Change</span>
+            <div className="flex items-center gap-1.5">
+              <ClipboardList className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#007AFF' }} strokeWidth={2} />
+              <span className="text-[10px] text-[#1C1C1E]">Plan Change</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 flex-shrink-0" style={{ color: '#5856D6' }} strokeWidth={2} />
-              <span className="text-xs text-[#1C1C1E]">Electricity</span>
+            <div className="flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#5856D6' }} strokeWidth={2} />
+              <span className="text-[10px] text-[#1C1C1E]">Electricity</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Bell className="w-4 h-4 flex-shrink-0" style={{ color: '#FF9500' }} strokeWidth={2} />
-              <span className="text-xs text-[#1C1C1E]">Notice/Leaving</span>
+            <div className="flex items-center gap-1.5">
+              <Bell className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#FF9500' }} strokeWidth={2} />
+              <span className="text-[10px] text-[#1C1C1E]">Notice/Leaving</span>
             </div>
           </div>
         </CardContent>

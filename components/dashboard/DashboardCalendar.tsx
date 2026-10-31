@@ -313,113 +313,113 @@ export default function DashboardCalendar({ initialData, initialMonth }: Dashboa
 
   return (
     <div 
-      className="space-y-4"
+      className="space-y-2.5"
       style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, sans-serif' }}
     >
-      {/* Top Stats Bar */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {/* Compact Top Stats Bar */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
         <button
           onClick={() => toggleFilter('payments')}
           className={cn(
-            "p-3 rounded-xl border transition-all duration-200 text-left",
+            "p-2 rounded-lg border transition-all duration-200 text-left",
             "hover:scale-[1.02] hover:shadow-md cursor-pointer",
             filters.includes('payments') && !filters.includes('all')
               ? "bg-[#30D158]/10 border-[#30D158]/40"
               : "bg-gradient-to-br from-[#30D158]/10 to-[#30D158]/5 border-[#30D158]/20"
           )}
         >
-          <div className="flex items-center gap-2 mb-1">
-            <CreditCard className="w-4 h-4 text-[#30D158]" strokeWidth={2} />
-            <div className="text-[10px] text-[#30D158] font-medium">Payments</div>
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <CreditCard className="w-3.5 h-3.5 text-[#30D158]" strokeWidth={2} />
+            <div className="text-[9px] text-[#30D158] font-medium">Payments</div>
           </div>
-          <div className="text-xl font-semibold text-[#1C1C1E]">
+          <div className="text-lg font-semibold text-[#1C1C1E]">
             {calendarData.todaySummary.paymentsExpected}
           </div>
-          <div className="text-[10px] text-[#8E8E93]">
-            ₹{calendarData.todaySummary.paymentsAmount.toLocaleString('en-IN')} today
+          <div className="text-[9px] text-[#8E8E93]">
+            ₹{calendarData.todaySummary.paymentsAmount.toLocaleString('en-IN')}
           </div>
         </button>
 
         <button
           onClick={() => toggleFilter('checkins')}
           className={cn(
-            "p-3 rounded-xl border transition-all duration-200 text-left",
+            "p-2 rounded-lg border transition-all duration-200 text-left",
             "hover:scale-[1.02] hover:shadow-md cursor-pointer",
             filters.includes('checkins') && !filters.includes('all')
               ? "bg-[#34C759]/10 border-[#34C759]/40"
               : "bg-gradient-to-br from-[#34C759]/10 to-[#34C759]/5 border-[#34C759]/20"
           )}
         >
-          <div className="flex items-center gap-2 mb-1">
-            <Users className="w-4 h-4 text-[#34C759]" strokeWidth={2} />
-            <div className="text-[10px] text-[#34C759] font-medium">Check-ins</div>
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <Users className="w-3.5 h-3.5 text-[#34C759]" strokeWidth={2} />
+            <div className="text-[9px] text-[#34C759] font-medium">Check-ins</div>
           </div>
-          <div className="text-xl font-semibold text-[#1C1C1E]">
+          <div className="text-lg font-semibold text-[#1C1C1E]">
             {calendarData.todaySummary.checkIns}
           </div>
-          <div className="text-[10px] text-[#8E8E93]">Today</div>
+          <div className="text-[9px] text-[#8E8E93]">Today</div>
         </button>
 
         <button
           onClick={() => toggleFilter('checkouts')}
           className={cn(
-            "p-3 rounded-xl border transition-all duration-200 text-left",
+            "p-2 rounded-lg border transition-all duration-200 text-left",
             "hover:scale-[1.02] hover:shadow-md cursor-pointer",
             filters.includes('checkouts') && !filters.includes('all')
               ? "bg-[#FF9500]/10 border-[#FF9500]/40"
               : "bg-gradient-to-br from-[#FF9500]/10 to-[#FF9500]/5 border-[#FF9500]/20"
           )}
         >
-          <div className="flex items-center gap-2 mb-1">
-            <DoorOpen className="w-4 h-4 text-[#FF9500]" strokeWidth={2} />
-            <div className="text-[10px] text-[#FF9500] font-medium">Check-outs</div>
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <DoorOpen className="w-3.5 h-3.5 text-[#FF9500]" strokeWidth={2} />
+            <div className="text-[9px] text-[#FF9500] font-medium">Check-outs</div>
           </div>
-          <div className="text-xl font-semibold text-[#1C1C1E]">
+          <div className="text-lg font-semibold text-[#1C1C1E]">
             {calendarData.todaySummary.checkOuts}
           </div>
-          <div className="text-[10px] text-[#8E8E93]">Today</div>
+          <div className="text-[9px] text-[#8E8E93]">Today</div>
         </button>
 
         <button
           onClick={() => toggleFilter('all')}
           className={cn(
-            "p-3 rounded-xl border transition-all duration-200 text-left",
+            "p-2 rounded-lg border transition-all duration-200 text-left",
             "hover:scale-[1.02] hover:shadow-md cursor-pointer",
             filters.includes('all')
               ? "bg-[#FF3B30]/10 border-[#FF3B30]/40"
               : "bg-gradient-to-br from-[#FF3B30]/10 to-[#FF3B30]/5 border-[#FF3B30]/20"
           )}
         >
-          <div className="flex items-center gap-2 mb-1">
-            <Receipt className="w-4 h-4 text-[#FF3B30]" strokeWidth={2} />
-            <div className="text-[10px] text-[#FF3B30] font-medium">Rent Dues</div>
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <Receipt className="w-3.5 h-3.5 text-[#FF3B30]" strokeWidth={2} />
+            <div className="text-[9px] text-[#FF3B30] font-medium">Rent Dues</div>
           </div>
-          <div className="text-xl font-semibold text-[#1C1C1E]">
+          <div className="text-lg font-semibold text-[#1C1C1E]">
             {calendarData.todaySummary.rentDues}
           </div>
-          <div className="text-[10px] text-[#8E8E93]">
+          <div className="text-[9px] text-[#8E8E93]">
             ₹{calendarData.todaySummary.rentDuesAmount.toLocaleString('en-IN')} today
           </div>
         </button>
       </div>
 
-      {/* Calendar Card */}
+      {/* Calendar Card - More Compact */}
       <Card className="bg-white/80 backdrop-blur-sm border border-white/60 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.08)]">
-        <CardContent className="pt-4 px-3 pb-3">
-          {/* Calendar Header */}
-          <div className="flex items-center justify-between mb-3">
+        <CardContent className="pt-2.5 px-2 pb-2">
+          {/* Calendar Header - Smaller */}
+          <div className="flex items-center justify-between mb-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={goToPreviousMonth}
               disabled={isPending}
-              className="h-8 w-8 p-0 hover:bg-[#F2F2F7] transition-all duration-200"
+              className="h-6 w-6 p-0 hover:bg-[#F2F2F7] transition-all duration-200"
             >
-              <ChevronLeft className="w-5 h-5" strokeWidth={2} />
+              <ChevronLeft className="w-4 h-4" strokeWidth={2} />
             </Button>
             
             <div className="text-center">
-              <h3 className="font-semibold text-[15px] tracking-[-0.022em] text-[#1C1C1E]">
+              <h3 className="font-semibold text-xs tracking-[-0.022em] text-[#1C1C1E]">
                 {formatMonthYear(currentMonth)}
               </h3>
             </div>
@@ -429,9 +429,9 @@ export default function DashboardCalendar({ initialData, initialMonth }: Dashboa
               size="sm"
               onClick={goToNextMonth}
               disabled={isPending}
-              className="h-8 w-8 p-0 hover:bg-[#F2F2F7] transition-all duration-200"
+              className="h-6 w-6 p-0 hover:bg-[#F2F2F7] transition-all duration-200"
             >
-              <ChevronRight className="w-5 h-5" strokeWidth={2} />
+              <ChevronRight className="w-4 h-4" strokeWidth={2} />
             </Button>
           </div>
 
@@ -498,14 +498,14 @@ export default function DashboardCalendar({ initialData, initialMonth }: Dashboa
 
           {/* Calendar Views */}
           {viewMode === 'grid' && (
-            <div className="space-y-1">
-              {/* Day headers */}
-              <div className="grid grid-cols-7 gap-1 mb-1">
+            <div className="space-y-0.5">
+              {/* Day headers - Smaller */}
+              <div className="grid grid-cols-7 gap-0.5 mb-0.5">
                 {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => (
                   <div
                     key={idx}
                     className={cn(
-                      "text-center text-[10px] font-semibold text-[#8E8E93] uppercase py-1",
+                      "text-center text-[8px] font-semibold text-[#8E8E93] uppercase py-0.5",
                       (idx === 0 || idx === 6) && "text-[#C7C7CC]"
                     )}
                   >
@@ -514,8 +514,8 @@ export default function DashboardCalendar({ initialData, initialMonth }: Dashboa
                 ))}
               </div>
 
-              {/* Calendar days */}
-              <div className="grid grid-cols-7 gap-1">
+              {/* Calendar days - More Compact */}
+              <div className="grid grid-cols-7 gap-0.5">
                 {calendarDays.map((date, idx) => {
                   const isCurrentMonthDay = date.getMonth() === (currentMonthNum - 1);
                   const isToday = getDateKey(date) === getDateKey(today);
@@ -527,7 +527,7 @@ export default function DashboardCalendar({ initialData, initialMonth }: Dashboa
                     <div
                       key={idx}
                       className={cn(
-                        "relative aspect-square p-1.5 rounded-lg transition-all duration-200 ease-out cursor-pointer",
+                        "relative aspect-square p-1 rounded-md transition-all duration-200 ease-out cursor-pointer",
                         !isCurrentMonthDay && "text-[#C7C7CC]",
                         isCurrentMonthDay && events.length > 0 && "hover:bg-[#F9F9FB] hover:scale-[1.03] hover:shadow-md"
                       )}
@@ -535,10 +535,10 @@ export default function DashboardCalendar({ initialData, initialMonth }: Dashboa
                       onMouseLeave={handleDateLeave}
                       onClick={() => handleDateClick(date)}
                     >
-                      {/* Date number */}
+                      {/* Date number - Smaller */}
                       <div className={cn(
-                        "text-center text-sm font-semibold mb-1",
-                        isToday && "bg-[#007AFF] text-white rounded-full w-6 h-6 flex items-center justify-center mx-auto ring-2 ring-[#007AFF] ring-offset-1 animate-pulse",
+                        "text-center text-[10px] font-semibold mb-0.5",
+                        isToday && "bg-[#007AFF] text-white rounded-full w-4 h-4 flex items-center justify-center mx-auto ring-1 ring-[#007AFF] ring-offset-1 animate-pulse",
                         !isToday && isCurrentMonthDay && "text-[#1C1C1E]",
                         !isToday && !isCurrentMonthDay && "text-[#C7C7CC]",
                         isWeekend && !isToday && "text-[#8E8E93]"
@@ -546,18 +546,18 @@ export default function DashboardCalendar({ initialData, initialMonth }: Dashboa
                         {date.getDate()}
                       </div>
 
-                      {/* Event dots */}
+                      {/* Event dots - Smaller */}
                       {events.length > 0 && (
                         <div className="flex items-center justify-center gap-0.5 flex-wrap">
-                          {events.slice(0, 4).map((event, eventIdx) => (
+                          {events.slice(0, 3).map((event, eventIdx) => (
                             <div
                               key={eventIdx}
-                              className="w-2 h-2 rounded-full transition-all duration-200"
+                              className="w-1 h-1 rounded-full transition-all duration-200"
                               style={{ backgroundColor: event.color }}
                             />
                           ))}
-                          {events.length > 4 && (
-                            <span className="text-[9px] text-[#8E8E93] ml-0.5">+{events.length - 4}</span>
+                          {events.length > 3 && (
+                            <span className="text-[7px] text-[#8E8E93] ml-0.5">+{events.length - 3}</span>
                           )}
                         </div>
                       )}
