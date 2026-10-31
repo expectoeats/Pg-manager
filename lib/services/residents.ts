@@ -3,6 +3,8 @@
 import { auth } from '@/lib/auth';
 import connectDB from '@/lib/db';
 import Resident from '@/models/Resident';
+import Room from '@/models/Room';
+import Bed from '@/models/Bed';
 import Plan from '@/models/Plan';
 import RentRecord from '@/models/RentRecord';
 import PlanHistory from '@/models/PlanHistory';
@@ -11,10 +13,12 @@ import Settings from '@/models/Settings';
 import { revalidatePath } from 'next/cache';
 import { notFound } from 'next/navigation';
 
-// Ensure the Plan model is registered with Mongoose before populate() is used.
-// The import is referenced here to prevent tree-shaking by Turbopack, since
-// Plan is only needed indirectly via .populate('currentPlan') and never used
-// as a direct variable in this file.
+// Ensure models are registered with Mongoose before populate() is used.
+// The imports are referenced here to prevent tree-shaking by Turbopack, since
+// these models are only needed indirectly via .populate() and never used
+// as direct variables in this file.
+void Room;
+void Bed;
 void Plan;
 
 export async function getResidents(filters?: {
