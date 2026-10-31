@@ -1,0 +1,42 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "severity": "BLOCKING",
+      "description": "Server action returns raw arrays (rentRecords, payments, electricityShares) instead of the planned CalendarEvent discriminated union. This forces the client to duplicate event construction logic and breaks the type contract. Refactor getResidentCalendarData to return { events: CalendarEvent[], pendingRentRanges, totalPendingAmount, nextDueDate, daysStayed, rentDueDay } as specified in the plan."
+    },
+    {
+      "severity": "BLOCKING",
+      "description": "Pending rent range visualization is missing. The plan requires pendingRentRanges with startDate/endDate so multiple calendar cells are tinted red/orange for the duration of a pending rent period. The implementation only creates a single-point rent_pending event on the due date. Implement range calculation server-side and update isDatePending client-side to check if a date falls within any range."
+    },
+    {
+      "severity": "BLOCKING",
+      "description": "Electricity bill date uses first of month instead of finalizedAt. The plan explicitly states 'Uses the createdAt timestamp of the ElectricityBill document, not the bill's month field.' The server sends finalizedAt, but the client parses share.month and constructs new Date(year, month - 1, 1). Use the finalizedAt field directly."
+    },
+    {
+      "severity": "BLOCKING",
+      "description": "Type safety compromised by any assertions in server action. Multiple map/forEach callbacks use (r: any), (p: any), (bill: any), (s: any) instead of proper Mongoose lean document types. This bypasses compile-time checks and allows typos to pass at compile time. Add explicit types or cast to Mongoose LeanDocument<T> shapes."
+    },
+    {
+      "severity": "BLOCKING",
+      "description": "Legend mobile toggle is broken. The expression (showLegend || window.innerWidth >= 1024) reads window.innerWidth at module evaluation time (SSR or build), not at runtime or on resize. This will always use the initial window width at mount. Use Tailwind responsive classes (hidden lg:grid with showLegend toggle) or a useEffect with resize listener."
+    },
+    {
+      "severity": "NON_BLOCKING",
+      "description": "Tooltip positioning does not handle viewport edges. The tooltip always renders centered above the cell (transform: translate(-50%, -100%)). Near the top of the viewport, it clips off-screen. Near left/right edges, it also clips. Implement bounds checking and flip the tooltip to below the cell or align left/right when necessary."
+    },
+    {
+      "severity": "NON_BLOCKING",
+      "description": "Plan change exclusion logic is fragile. It excludes plan changes where dateKey !== joiningDateKey, relying on exact date match. If a plan is created with a timestamp a few seconds after joining, the keys won't match and the first plan change will appear as an event. Use a server-side isInitial flag or compare calendar days in IST with a tolerance window."
+    },
+    {
+      "severity": "NON_BLOCKING",
+      "description": "Missing null check on electricityBill.createdAt. The server uses a fallback new Date().toISOString() when createdAt is missing, but this should never happen for finalized bills. Add an assertion or log a warning instead of silently using today's date."
+    },
+    {
+      "severity": "NON_BLOCKING",
+      "description": "ResidentProfile calendarData prop type is correct but could be more explicit. The interface includes calendarData: ResidentCalendarData, which is imported from the server action. Consider a shared types file if more components need this type, to decouple from the server action implementation."
+    }
+  ],
+  "reviewDoc": "c:\\Users\\Adarsh\\Desktop\\agency\\demo-demand\\PG\\.agents\\tasks\\calendar-review.md"
+}

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, ChevronRight, Star, Receipt, CreditCard, ClipboardList, Zap, Bell, Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { ResidentCalendarData } from '@/lib/services/residents';
+import type { ResidentCalendarData, CalendarEvent } from '@/lib/services/residents';
 
 interface ResidentData {
   _id: string;
@@ -32,10 +32,11 @@ interface ResidentCalendarProps {
   planHistory: PlanHistoryData[];
 }
 
-interface CalendarEvent {
-  type: 'joining' | 'rent_pending' | 'rent_due' | 'payment' | 'notice' | 'leaving' | 'plan_change' | 'electricity';
+// Transform server CalendarEvent (with ISO date strings) to client CalendarEvent (with Date objects)
+interface ClientCalendarEvent {
+  type: CalendarEvent['type'];
   date: Date;
-  data?: any;
+  data: CalendarEvent['data'];
 }
 
 const EVENT_COLORS = {
@@ -99,11 +100,12 @@ export default function ResidentCalendar({
   const [hoveredPosition, setHoveredPosition] = useState<{ x: number; y: number } | null>(null);
   const [showLegend, setShowLegend] = useState(true);
 
-  // Build event map
+  // Build event map from server-provided events
   const eventsByDate = useMemo(() => {
-    const map = new Map<string, CalendarEvent[]>();
+    const map = new Map<string, ClientCalendarEvent[]>();
 
-    const addEvent = (date: Date, event: CalendarEvent) => {
+    const addEvent = (dateStr: string, event: ClientCalendarEvent) => {
+      const date = new Date(dateStr);
       const key = getDateKey(date);
       if (!map.has(key)) {
         map.set(key, []);
@@ -111,113 +113,25 @@ export default function ResidentCalendar({
       map.get(key)!.push(event);
     };
 
-    // Joining date
-    if (resident.joiningDate) {
-      addEvent(new Date(resident.joiningDate), {
-        type: 'joining',
-        date: new Date(resident.joiningDate),
-        data: { label: 'Joined' }
-      });
-    }
-
-    // Rent records
-    calendarData.rentRecords.forEach(rent => {
-      const dueDate = new Date(rent.dueDate);
-      
-      // Rent due event
-      addEvent(dueDate, {
-        type: 'rent_due',
-        date: dueDate,
-        data: {
-          amount: rent.amountDue,
-          status: rent.status,
-          month: rent.month,
-          planName: rent.planSnapshot.name
-        }
-      });
-
-      // Pending rent visualization
-      if (rent.status === 'pending' || rent.status === 'partial') {
-        const pendingAmount = rent.amountDue - rent.amountPaid;
-        addEvent(dueDate, {
-          type: 'rent_pending',
-          date: dueDate,
-          data: {
-            amount: pendingAmount,
-            month: rent.month
-          }
-        });
+    // Convert server events (ISO strings) to client events (Date objects)
+    // Filter out initial plan changes on the client side
+    calendarData.events.forEach(serverEvent => {
+      // Skip initial plan changes (marked by server)
+      if (serverEvent.type === 'plan_change' && serverEvent.data.isInitial) {
+        return;
       }
-    });
 
-    // Payments
-    calendarData.payments.forEach(payment => {
-      addEvent(new Date(payment.paymentDate), {
-        type: 'payment',
-        date: new Date(payment.paymentDate),
-        data: {
-          amount: payment.amount,
-          method: payment.method,
-          type: payment.type,
-          receiptNumber: payment.receiptNumber
-        }
-      });
-    });
+      const clientEvent: ClientCalendarEvent = {
+        type: serverEvent.type,
+        date: new Date(serverEvent.date),
+        data: serverEvent.data
+      };
 
-    // Electricity shares
-    calendarData.electricityShares.forEach(share => {
-      // Use first day of the month for electricity
-      const [year, month] = share.month.split('-');
-      const date = new Date(parseInt(year), parseInt(month) - 1, 1);
-      addEvent(date, {
-        type: 'electricity',
-        date,
-        data: {
-          amount: share.amount,
-          status: share.status,
-          month: share.month
-        }
-      });
-    });
-
-    // Notice dates
-    if (resident.noticeDate) {
-      addEvent(new Date(resident.noticeDate), {
-        type: 'notice',
-        date: new Date(resident.noticeDate),
-        data: { label: 'Notice given' }
-      });
-    }
-
-    if (resident.expectedLeavingDate) {
-      addEvent(new Date(resident.expectedLeavingDate), {
-        type: 'leaving',
-        date: new Date(resident.expectedLeavingDate),
-        data: { label: 'Expected leaving' }
-      });
-    }
-
-    // Plan changes (exclude first plan at joining)
-    const joiningDateKey = resident.joiningDate ? getDateKey(new Date(resident.joiningDate)) : null;
-    planHistory.forEach(ph => {
-      const effectiveDate = new Date(ph.effectiveFrom);
-      const dateKey = getDateKey(effectiveDate);
-      
-      // Skip if this is the joining date (initial plan)
-      if (dateKey !== joiningDateKey) {
-        addEvent(effectiveDate, {
-          type: 'plan_change',
-          date: effectiveDate,
-          data: {
-            planName: ph.plan?.name || 'Unknown',
-            price: ph.plan?.price || 0
-          }
-        });
-      }
+      addEvent(serverEvent.date, clientEvent);
     });
 
     return map;
-  }, [resident, calendarData, planHistory]);
+  }, [calendarData.events]);
 
   // Calculate calendar grid
   const calendarDays = useMemo(() => {
@@ -243,38 +157,22 @@ export default function ResidentCalendar({
     return days;
   }, [currentMonth]);
 
-  // Calculate summary stats
-  const summaryStats = useMemo(() => {
-    const joiningDate = new Date(resident.joiningDate);
-    const endDate = resident.leavingDate ? new Date(resident.leavingDate) : new Date();
-    const daysStayed = Math.floor((endDate.getTime() - joiningDate.getTime()) / (1000 * 60 * 60 * 24));
+  // Use server-provided summary stats
+  const summaryStats = useMemo(() => ({
+    daysStayed: calendarData.daysStayed,
+    totalPendingRent: calendarData.totalPendingAmount,
+    totalPendingElectricity: calendarData.totalPendingElectricity,
+    nextDueDate: calendarData.nextDueDate,
+  }), [calendarData]);
 
-    const totalPendingRent = calendarData.rentRecords
-      .filter(r => r.status === 'pending' || r.status === 'partial')
-      .reduce((sum, r) => sum + (r.amountDue - r.amountPaid), 0);
-
-    const totalPendingElectricity = calendarData.electricityShares
-      .filter(s => s.status === 'pending')
-      .reduce((sum, s) => sum + (s.amount - s.amountPaid), 0);
-
-    const pendingRents = calendarData.rentRecords.filter(r => r.status === 'pending' || r.status === 'partial');
-    const nextDueDate = pendingRents.length > 0 
-      ? pendingRents.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0].dueDate
-      : null;
-
-    return {
-      daysStayed,
-      totalPendingRent,
-      totalPendingElectricity,
-      nextDueDate,
-    };
-  }, [resident, calendarData]);
-
-  // Check if date is in pending rent range
+  // Check if date falls within any pending rent range
   const isDatePending = (date: Date): boolean => {
-    const dateKey = getDateKey(date);
-    const events = eventsByDate.get(dateKey) || [];
-    return events.some(e => e.type === 'rent_pending');
+    const dateTime = date.getTime();
+    return calendarData.pendingRentRanges.some(range => {
+      const startTime = new Date(range.startDate).getTime();
+      const endTime = new Date(range.endDate).getTime();
+      return dateTime >= startTime && dateTime <= endTime;
+    });
   };
 
   const today = new Date();
@@ -351,33 +249,37 @@ export default function ResidentCalendar({
                   {event.type === 'joining' && (
                     <span className="font-medium text-[#1C1C1E]">Joined PG</span>
                   )}
-                  {event.type === 'rent_due' && (
+                  {event.type === 'rent_due' && 'amount' in event.data && (
                     <div>
                       <span className="font-medium text-[#1C1C1E]">Rent Due: </span>
                       <span className="text-[#8E8E93]">₹{event.data.amount.toLocaleString('en-IN')}</span>
-                      <div className="text-[10px] text-[#8E8E93]">{event.data.planName}</div>
+                      {'planName' in event.data && (
+                        <div className="text-[10px] text-[#8E8E93]">{event.data.planName}</div>
+                      )}
                     </div>
                   )}
-                  {event.type === 'rent_pending' && (
+                  {event.type === 'rent_pending' && 'amount' in event.data && (
                     <div>
                       <span className="font-medium text-[#FF3B30]">Pending: </span>
                       <span className="text-[#FF3B30]">₹{event.data.amount.toLocaleString('en-IN')}</span>
                     </div>
                   )}
-                  {event.type === 'payment' && (
+                  {event.type === 'payment' && 'amount' in event.data && (
                     <div>
                       <span className="font-medium text-[#1C1C1E]">Payment: </span>
                       <span className="text-[#8E8E93]">₹{event.data.amount.toLocaleString('en-IN')}</span>
-                      <div className="text-[10px] text-[#8E8E93] capitalize">{event.data.method} • {event.data.type}</div>
+                      {'method' in event.data && 'type' in event.data && (
+                        <div className="text-[10px] text-[#8E8E93] capitalize">{event.data.method} • {event.data.type}</div>
+                      )}
                     </div>
                   )}
-                  {event.type === 'plan_change' && (
+                  {event.type === 'plan_change' && 'planName' in event.data && (
                     <div>
                       <span className="font-medium text-[#1C1C1E]">Plan Changed</span>
                       <div className="text-[10px] text-[#8E8E93]">{event.data.planName}</div>
                     </div>
                   )}
-                  {event.type === 'electricity' && (
+                  {event.type === 'electricity' && 'amount' in event.data && (
                     <div>
                       <span className="font-medium text-[#1C1C1E]">Electricity: </span>
                       <span className="text-[#8E8E93]">₹{event.data.amount.toLocaleString('en-IN')}</span>
@@ -404,7 +306,7 @@ export default function ResidentCalendar({
   };
 
   // Empty state
-  if (calendarData.rentRecords.length === 0 && calendarData.payments.length === 0 && calendarData.electricityShares.length === 0) {
+  if (calendarData.events.length === 0) {
     return (
       <Card>
         <CardContent className="pt-12 pb-12 flex flex-col items-center text-center">
@@ -626,21 +528,24 @@ export default function ResidentCalendar({
             </Button>
           </div>
           
-          {(showLegend || window.innerWidth >= 1024) && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {Object.entries(EVENT_COLORS).map(([type, color]) => {
-                const Icon = EVENT_ICONS[type as keyof typeof EVENT_ICONS];
-                const label = type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                
-                return (
-                  <div key={type} className="flex items-center gap-2">
-                    <Icon className="w-4 h-4 flex-shrink-0" style={{ color }} strokeWidth={2} />
-                    <span className="text-xs text-[#1C1C1E] capitalize">{label}</span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          {/* Always visible on lg+, toggle on mobile */}
+          <div className={cn(
+            "grid grid-cols-2 md:grid-cols-4 gap-3",
+            "lg:grid", // Always show on large screens
+            showLegend ? "grid" : "hidden" // Toggle on small screens
+          )}>
+            {Object.entries(EVENT_COLORS).map(([type, color]) => {
+              const Icon = EVENT_ICONS[type as keyof typeof EVENT_ICONS];
+              const label = type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+              
+              return (
+                <div key={type} className="flex items-center gap-2">
+                  <Icon className="w-4 h-4 flex-shrink-0" style={{ color }} strokeWidth={2} />
+                  <span className="text-xs text-[#1C1C1E] capitalize">{label}</span>
+                </div>
+              );
+            })}
+          </div>
         </CardContent>
       </Card>
 

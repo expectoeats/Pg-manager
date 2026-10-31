@@ -166,33 +166,68 @@ export async function giveNotice(residentId: string, noticeDate: string) {
   return { success: true };
 }
 
+// Calendar event discriminated union types
+export type CalendarEvent = 
+  | { type: 'joining'; date: string; data: { label: string } }
+  | { type: 'rent_due'; date: string; data: { amount: number; status: string; month: string; planName: string } }
+  | { type: 'rent_pending'; date: string; data: { amount: number; month: string } }
+  | { type: 'payment'; date: string; data: { amount: number; method: string; type: string; receiptNumber: string } }
+  | { type: 'electricity'; date: string; data: { amount: number; status: string; month: string } }
+  | { type: 'notice'; date: string; data: { label: string } }
+  | { type: 'leaving'; date: string; data: { label: string } }
+  | { type: 'plan_change'; date: string; data: { planName: string; price: number; isInitial: boolean } };
+
+export interface PendingRentRange {
+  startDate: string; // ISO date string
+  endDate: string; // ISO date string
+  month: string; // YYYY-MM
+  amount: number;
+}
+
 export interface ResidentCalendarData {
-  rentRecords: Array<{
-    _id: string;
-    month: string;
-    amountDue: number;
-    amountPaid: number;
-    status: 'pending' | 'partial' | 'paid';
-    dueDate: string;
-    planSnapshot: { name: string; price: number };
-  }>;
-  payments: Array<{
-    _id: string;
-    paymentDate: string;
-    amount: number;
-    type: string;
-    method: string;
-    receiptNumber: string;
-  }>;
-  electricityShares: Array<{
-    billId: string;
-    month: string;
+  events: CalendarEvent[];
+  pendingRentRanges: PendingRentRange[];
+  totalPendingAmount: number;
+  totalPendingElectricity: number;
+  nextDueDate: string | null;
+  daysStayed: number;
+  rentDueDay: number;
+}
+
+// Mongoose lean document types
+interface RentRecordLean {
+  _id: { toString(): string };
+  resident: { toString(): string };
+  month: string;
+  amountDue: number;
+  amountPaid: number;
+  status: 'pending' | 'partial' | 'paid';
+  dueDate: Date;
+  planSnapshot: { name: string; price: number };
+}
+
+interface PaymentLean {
+  _id: { toString(): string };
+  resident: { toString(): string };
+  paymentDate: Date;
+  amount: number;
+  type: string;
+  method: string;
+  receiptNumber: string;
+  isReversal?: boolean;
+}
+
+interface ElectricityBillLean {
+  _id: { toString(): string };
+  month: string;
+  status: string;
+  createdAt?: Date;
+  shares: Array<{
+    resident: { toString(): string };
     amount: number;
     amountPaid: number;
     status: 'pending' | 'paid';
-    finalizedAt: string;
   }>;
-  rentDueDay: number;
 }
 
 export async function getResidentCalendarData(residentId: string): Promise<ResidentCalendarData> {
@@ -202,10 +237,16 @@ export async function getResidentCalendarData(residentId: string): Promise<Resid
   const Payment = (await import('@/models/Payment')).default;
   const ElectricityBill = (await import('@/models/ElectricityBill')).default;
 
+  // Fetch resident details
+  const residentDoc = await Resident.findById(residentId).lean();
+  if (!residentDoc) {
+    throw new Error('Resident not found');
+  }
+
   // Fetch all rent records for the resident
   const rentRecordsRaw = await RentRecord.find({ resident: residentId })
     .sort({ month: 1 })
-    .lean();
+    .lean() as unknown as RentRecordLean[];
 
   // Fetch all non-reversal payments
   const paymentsRaw = await Payment.find({
@@ -213,7 +254,7 @@ export async function getResidentCalendarData(residentId: string): Promise<Resid
     $or: [{ isReversal: false }, { isReversal: { $exists: false } }]
   })
     .sort({ paymentDate: 1 })
-    .lean();
+    .lean() as unknown as PaymentLean[];
 
   // Fetch finalized electricity bills with shares for this resident
   const electricityBillsRaw = await ElectricityBill.find({
@@ -221,61 +262,189 @@ export async function getResidentCalendarData(residentId: string): Promise<Resid
     'shares.resident': residentId
   })
     .sort({ month: 1 })
+    .lean() as unknown as ElectricityBillLean[];
+
+  // Fetch plan history for plan_change events
+  const planHistoryRaw = await PlanHistory.find({ resident: residentId })
+    .populate('plan', 'name price')
+    .sort({ effectiveFrom: 1 })
     .lean();
 
   // Get settings for rent due day
   const settings = await Settings.findOne().lean();
   const rentDueDay = settings?.rentDueDay ?? 1;
 
-  // Transform rent records
-  const rentRecords = rentRecordsRaw.map((r: any) => ({
-    _id: r._id.toString(),
-    month: r.month,
-    amountDue: r.amountDue,
-    amountPaid: r.amountPaid,
-    status: r.status,
-    dueDate: r.dueDate.toISOString(),
-    planSnapshot: r.planSnapshot,
-  }));
+  // Build events array
+  const events: CalendarEvent[] = [];
 
-  // Transform payments
-  const payments = paymentsRaw.map((p: any) => ({
-    _id: p._id.toString(),
-    paymentDate: p.paymentDate.toISOString(),
-    amount: p.amount,
-    type: p.type,
-    method: p.method,
-    receiptNumber: p.receiptNumber,
-  }));
+  // 1. Joining event
+  const resident = residentDoc as {
+    joiningDate: Date;
+    noticeDate?: Date;
+    expectedLeavingDate?: Date;
+    leavingDate?: Date;
+  };
+  
+  if (resident.joiningDate) {
+    events.push({
+      type: 'joining',
+      date: new Date(resident.joiningDate).toISOString(),
+      data: { label: 'Joined' }
+    });
+  }
 
-  // Transform electricity shares
-  const electricityShares: Array<{
-    billId: string;
-    month: string;
-    amount: number;
-    amountPaid: number;
-    status: 'pending' | 'paid';
-    finalizedAt: string;
-  }> = [];
+  // 2. Rent records → rent_due and rent_pending events
+  rentRecordsRaw.forEach((r) => {
+    events.push({
+      type: 'rent_due',
+      date: r.dueDate.toISOString(),
+      data: {
+        amount: r.amountDue,
+        status: r.status,
+        month: r.month,
+        planName: r.planSnapshot.name
+      }
+    });
 
-  electricityBillsRaw.forEach((bill: any) => {
-    const share = bill.shares.find((s: any) => s.resident.toString() === residentId);
-    if (share) {
-      electricityShares.push({
-        billId: bill._id.toString(),
-        month: bill.month,
-        amount: share.amount,
-        amountPaid: share.amountPaid,
-        status: share.status,
-        finalizedAt: bill.createdAt ? bill.createdAt.toISOString() : new Date().toISOString(),
+    // Add rent_pending event for pending/partial records
+    if (r.status === 'pending' || r.status === 'partial') {
+      const pendingAmount = r.amountDue - r.amountPaid;
+      events.push({
+        type: 'rent_pending',
+        date: r.dueDate.toISOString(),
+        data: {
+          amount: pendingAmount,
+          month: r.month
+        }
       });
     }
   });
 
+  // 3. Payments
+  paymentsRaw.forEach((p) => {
+    events.push({
+      type: 'payment',
+      date: p.paymentDate.toISOString(),
+      data: {
+        amount: p.amount,
+        method: p.method,
+        type: p.type,
+        receiptNumber: p.receiptNumber
+      }
+    });
+  });
+
+  // 4. Electricity shares - use createdAt (finalizedAt), not first of month
+  electricityBillsRaw.forEach((bill) => {
+    const share = bill.shares.find((s) => s.resident.toString() === residentId);
+    if (share) {
+      // Use createdAt timestamp as per the plan
+      const billDate = bill.createdAt ? bill.createdAt.toISOString() : new Date().toISOString();
+      
+      events.push({
+        type: 'electricity',
+        date: billDate,
+        data: {
+          amount: share.amount,
+          status: share.status,
+          month: bill.month
+        }
+      });
+    }
+  });
+
+  // 5. Notice events
+  if (resident.noticeDate) {
+    events.push({
+      type: 'notice',
+      date: new Date(resident.noticeDate).toISOString(),
+      data: { label: 'Notice given' }
+    });
+  }
+
+  if (resident.expectedLeavingDate) {
+    events.push({
+      type: 'leaving',
+      date: new Date(resident.expectedLeavingDate).toISOString(),
+      data: { label: 'Expected leaving' }
+    });
+  }
+
+  // 6. Plan changes with isInitial flag
+  const joiningDateKey = resident.joiningDate 
+    ? new Date(resident.joiningDate).toISOString().split('T')[0] 
+    : null;
+
+  planHistoryRaw.forEach((ph: any) => {
+    const effectiveDate = new Date(ph.effectiveFrom);
+    const effectiveDateKey = effectiveDate.toISOString().split('T')[0];
+    
+    // Mark as initial if it matches the joining date (calendar day)
+    const isInitial = effectiveDateKey === joiningDateKey;
+    
+    events.push({
+      type: 'plan_change',
+      date: effectiveDate.toISOString(),
+      data: {
+        planName: ph.plan?.name || 'Unknown',
+        price: ph.plan?.price || 0,
+        isInitial
+      }
+    });
+  });
+
+  // Calculate pending rent ranges
+  const pendingRentRanges: PendingRentRange[] = [];
+  const now = new Date();
+
+  rentRecordsRaw.forEach((r) => {
+    if (r.status === 'pending' || r.status === 'partial') {
+      const dueDate = new Date(r.dueDate);
+      const pendingAmount = r.amountDue - r.amountPaid;
+      
+      // Range: from due date to today (or end of month if earlier)
+      const [year, month] = r.month.split('-');
+      const endOfMonth = new Date(parseInt(year), parseInt(month), 0); // Last day of month
+      const endDate = now < endOfMonth ? now : endOfMonth;
+      
+      pendingRentRanges.push({
+        startDate: dueDate.toISOString(),
+        endDate: endDate.toISOString(),
+        month: r.month,
+        amount: pendingAmount
+      });
+    }
+  });
+
+  // Calculate summary stats
+  const totalPendingAmount = rentRecordsRaw
+    .filter(r => r.status === 'pending' || r.status === 'partial')
+    .reduce((sum, r) => sum + (r.amountDue - r.amountPaid), 0);
+
+  const totalPendingElectricity = electricityBillsRaw.reduce((sum, bill) => {
+    const share = bill.shares.find((s) => s.resident.toString() === residentId);
+    if (share && share.status === 'pending') {
+      return sum + (share.amount - share.amountPaid);
+    }
+    return sum;
+  }, 0);
+
+  const pendingRents = rentRecordsRaw.filter(r => r.status === 'pending' || r.status === 'partial');
+  const nextDueDate = pendingRents.length > 0
+    ? pendingRents.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())[0].dueDate.toISOString()
+    : null;
+
+  const joiningDate = new Date(resident.joiningDate);
+  const endDate = resident.leavingDate ? new Date(resident.leavingDate) : now;
+  const daysStayed = Math.floor((endDate.getTime() - joiningDate.getTime()) / (1000 * 60 * 60 * 24));
+
   return {
-    rentRecords,
-    payments,
-    electricityShares,
+    events,
+    pendingRentRanges,
+    totalPendingAmount,
+    totalPendingElectricity,
+    nextDueDate,
+    daysStayed,
     rentDueDay,
   };
 }
