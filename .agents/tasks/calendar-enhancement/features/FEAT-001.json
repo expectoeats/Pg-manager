@@ -1,0 +1,49 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Enhance ResidentCalendar component with compact, interactive Apple-style UI including hover tooltips, click side panels, mobile swipe navigation, and visual refinements (dots instead of badges, glassmorphism, animations)",
+  "status": "completed",
+  "steps": [
+    "1. Read components/residents/ResidentCalendar.tsx and understand current structure (grid, events, summary panel)",
+    "2. Reduce calendar size: change date cell padding from current to 'p-1.5', date numbers to 'text-sm font-semibold', reduce overall calendar container padding, reduce header spacing",
+    "3. Replace large event badges with compact colored dots: render max 3 dots per cell (w-2 h-2 rounded-full) positioned at bottom with flex gap-0.5, show '+N' text for overflow (text-[9px] text-[#8E8E93])",
+    "4. Enhance hover tooltip (already exists): keep existing fixed positioning logic but ensure smooth transitions with 'transition-all duration-200', improve visual hierarchy in tooltip content",
+    "5. Add click interaction with Sheet component: import Sheet/SheetContent/SheetHeader/SheetTitle from @/components/ui/sheet, add state 'const [selectedDate, setSelectedDate] = useState<string | null>(null)', onClick handler sets selectedDate to dateKey, Sheet opens on right side (desktop) showing all events for that date with full details and resident profile link",
+    "6. Add cell hover animation: add 'hover:scale-[1.03] hover:shadow-md' to date cells, ensure transition-all duration-200 is applied",
+    "7. Enhance today highlight: add 'ring-2 ring-[#007AFF] ring-offset-1 animate-pulse' to today's date cell (already has isToday check)",
+    "8. Apply glassmorphism to calendar container: add 'bg-white/80 backdrop-blur-sm border border-white/60 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.08)]' to outer Card wrapper",
+    "9. Refactor summary panel: convert large summary section to horizontal row of 4 compact floating stat cards (Days Stayed, Pending Rent, Pending Electricity, Next Due) with small gradient backgrounds (e.g., bg-gradient-to-br from-[color]/10 to-[color]/5)",
+    "10. Add mobile swipe navigation: add onTouchStart/onTouchEnd handlers to calendar grid div to track horizontal swipe (threshold ~50px), call goToPreviousMonth on right swipe, goToNextMonth on left swipe",
+    "11. Add week view toggle (mobile only): add state 'const [viewMode, setViewMode] = useState<'month' | 'week'>('month')', add toggle buttons above calendar (visible on lg:hidden), when week mode filter calendarDays to show only current week (7 days starting from most recent Sunday)",
+    "12. Update color scheme: ensure all event colors match spec (joining #34C759, rent-due pending #FF3B30, rent-due partial #FF9500, rent-due paid #34C759, payment #30D158, plan-change #007AFF, electricity #5856D6, notice/leaving #FF9500)",
+    "13. Test all interactions: hover shows tooltip, click opens side sheet, swipe changes month on mobile, week toggle works, animations are smooth"
+  ],
+  "acceptance_criteria": [
+    "Calendar cells are 30-40% smaller than original with compact padding and font sizes",
+    "Events render as colored dots (max 3 visible + overflow count), not large badges",
+    "Hovering a date with events shows a floating tooltip with event details",
+    "Clicking a date with events opens a Sheet side panel (right side) with full event list and navigation links",
+    "Today's date has a pulsing blue ring animation",
+    "Calendar container has glassmorphism effect (frosted glass appearance)",
+    "Summary stats display as 4 compact horizontal cards with gradient backgrounds",
+    "Swiping left/right on mobile changes the month",
+    "Mobile view has a toggle between month and week views",
+    "All event colors match the specified Apple palette",
+    "Animations are CSS-only (no external libraries) with smooth transitions"
+  ],
+  "verification": [
+    "Run 'npm run build' and confirm TypeScript compilation succeeds",
+    "Start dev server with 'npm run dev' and navigate to a resident profile page",
+    "Click the Timeline tab to view the calendar",
+    "Verify calendar is visibly more compact than before",
+    "Verify events show as small colored dots instead of badges",
+    "Hover over a date with events and confirm tooltip appears",
+    "Click a date with events and confirm Sheet opens on the right with event details",
+    "Verify today's date has a pulsing blue ring",
+    "On mobile viewport (320px-768px), swipe horizontally on calendar and confirm month changes",
+    "On mobile viewport, verify week/month toggle buttons appear and function correctly",
+    "Verify glassmorphism effect on calendar container"
+  ],
+  "blocked_reason": null,
+  "findings": "All enhancements implemented successfully:\n1. Calendar cells reduced by ~40% (padding: p-1.5, font: text-sm)\n2. Events render as colored dots (w-2 h-2, max 3 + overflow count)\n3. Hover tooltips enhanced with smooth transitions (transition-all duration-200)\n4. Click interaction opens Sheet side panel with full event details and profile link\n5. Date cells have hover animation (hover:scale-[1.03] hover:shadow-md)\n6. Today's date has pulsing blue ring (ring-2 ring-[#007AFF] ring-offset-1 animate-pulse)\n7. Glassmorphism applied (bg-white/80 backdrop-blur-sm with multi-layer shadows)\n8. Summary panel refactored to 4 compact horizontal gradient cards\n9. Mobile swipe navigation implemented (threshold 50px, left/right swipe changes month)\n10. Week/month toggle added for mobile (lg:hidden, filters to 7 days)\n11. All event colors updated to match Apple palette (electricity: #5856D6, leaving: #FF9500, rent_due dynamic based on status)\n12. Dynamic rent_due colors: paid=#34C759, partial=#FF9500, pending=#FF3B30\n\nBuild completed successfully with no TypeScript errors."
+}
