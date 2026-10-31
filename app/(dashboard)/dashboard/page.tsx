@@ -21,19 +21,26 @@ import {
   getPlanDistribution,
   getOccupancyTrend,
 } from '@/lib/services/dashboard';
+import { getDashboardCalendarData } from '@/lib/services/dashboard-calendar';
 import { IncomeExpenseChart } from '@/components/dashboard/IncomeExpenseChart';
 import { PlanDistributionChart } from '@/components/dashboard/PlanDistributionChart';
+import DashboardCalendar from '@/components/dashboard/DashboardCalendar';
 
 export default async function DashboardPage() {
   const session = await auth();
   
-  const [stats, recentPayments, pendingDues, incomeExpenseData, planDistribution, occupancy] = await Promise.all([
+  // Get current month for calendar
+  const now = new Date();
+  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  
+  const [stats, recentPayments, pendingDues, incomeExpenseData, planDistribution, occupancy, calendarData] = await Promise.all([
     getDashboardStats(),
     getRecentPayments(5),
     getPendingDues(5),
     getIncomeExpenseData(),
     getPlanDistribution(),
     getOccupancyTrend(),
+    getDashboardCalendarData(currentMonth),
   ]);
 
   const statCards = [
@@ -84,6 +91,9 @@ export default async function DashboardPage() {
           Here&apos;s an overview of your PG
         </p>
       </div>
+
+      {/* Dashboard Calendar */}
+      <DashboardCalendar initialData={calendarData} initialMonth={currentMonth} />
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
