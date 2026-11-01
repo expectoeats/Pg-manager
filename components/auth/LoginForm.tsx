@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -22,6 +21,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginForm() {
   const router = useRouter();
   const [error, setError] = useState('');
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const {
     register,
@@ -43,6 +43,7 @@ export default function LoginForm() {
       if (result?.error) {
         setError('Invalid email or password');
       } else {
+        setIsRedirecting(true);
         router.push('/dashboard');
         router.refresh();
       }
@@ -50,6 +51,8 @@ export default function LoginForm() {
       setError('Something went wrong. Please try again.');
     }
   };
+
+  const isBusy = isSubmitting || isRedirecting;
 
   return (
     <Card className="rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.08)] border-0 p-8">
@@ -70,6 +73,7 @@ export default function LoginForm() {
               id="email"
               type="email"
               placeholder="admin@pg.com"
+              disabled={isBusy}
               {...register('email')}
             />
             {errors.email && (
@@ -82,6 +86,7 @@ export default function LoginForm() {
               id="password"
               type="password"
               placeholder="••••••••"
+              disabled={isBusy}
               {...register('password')}
             />
             {errors.password && (
@@ -90,16 +95,11 @@ export default function LoginForm() {
           </div>
           <Button
             type="submit"
-            className="w-full h-[44px] rounded-xl"
-            disabled={isSubmitting}
+            className="w-full h-[44px] rounded-xl font-semibold"
+            isLoading={isBusy}
+            loadingText={isRedirecting ? 'Opening Dashboard...' : 'Signing in...'}
           >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" strokeWidth={2} /> Signing in...
-              </>
-            ) : (
-              'Sign in'
-            )}
+            Sign in
           </Button>
         </form>
       </CardContent>

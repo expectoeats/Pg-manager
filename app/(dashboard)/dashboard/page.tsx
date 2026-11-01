@@ -108,7 +108,7 @@ export default async function DashboardPage() {
               ? '/rent'
               : '/reports';
           return (
-            <Link href={cardHref} key={card.title}>
+            <Link href={cardHref} key={card.title} prefetch={false}>
               <Card
                 className="border border-[#E5E5EA] shadow-xs rounded-2xl hover:shadow-md transition-all duration-200 cursor-pointer h-full"
               >
@@ -202,6 +202,7 @@ export default async function DashboardPage() {
               </div>
               <Link 
                 href="/payments" 
+                prefetch={false}
                 className="text-[#007AFF] text-[13px] font-semibold hover:text-[#0071EB] transition-colors flex items-center gap-1"
               >
                 View All
@@ -256,6 +257,7 @@ export default async function DashboardPage() {
               </div>
               <Link 
                 href="/rent" 
+                prefetch={false}
                 className="text-[#007AFF] text-[13px] font-semibold hover:text-[#0071EB] transition-colors flex items-center gap-1"
               >
                 View All
@@ -270,6 +272,7 @@ export default async function DashboardPage() {
                   <Link
                     key={due._id}
                     href={`/residents/${due.residentId}`}
+                    prefetch={false}
                     className="block"
                   >
                     <div

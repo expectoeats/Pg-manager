@@ -29,6 +29,7 @@ import {
   Search,
   Building2,
   Sparkles,
+  Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -163,6 +164,7 @@ export default function MobileMenuSheet({
 }: MobileMenuSheetProps) {
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   const filteredSections = ALL_MENU_SECTIONS.map((section) => ({
     ...section,
@@ -248,6 +250,7 @@ export default function MobileMenuSheet({
                     <Link
                       key={item.href}
                       href={item.href}
+                      prefetch={false}
                       onClick={() => onOpenChange(false)}
                       className={cn(
                         'flex items-center gap-3.5 px-4 py-3 transition-colors active:bg-[#F2F2F7]',
@@ -292,11 +295,24 @@ export default function MobileMenuSheet({
           {/* Quick Sign Out Action */}
           <div className="pt-2 pb-6 px-1">
             <button
-              onClick={() => signOut({ callbackUrl: '/login' })}
-              className="w-full flex items-center justify-center gap-2 h-11 rounded-2xl bg-white text-[#FF3B30] font-semibold text-[14px] border border-[#FF3B30]/20 shadow-sm active:scale-[0.99] transition-all"
+              onClick={async () => {
+                setIsSigningOut(true);
+                await signOut({ callbackUrl: '/login' });
+              }}
+              disabled={isSigningOut}
+              className="w-full flex items-center justify-center gap-2 h-11 rounded-2xl bg-white text-[#FF3B30] font-semibold text-[14px] border border-[#FF3B30]/20 shadow-sm active:scale-[0.99] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <LogOut className="w-4 h-4" />
-              Sign Out from PG Manager
+              {isSigningOut ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-[#FF3B30]" />
+                  <span>Signing out...</span>
+                </>
+              ) : (
+                <>
+                  <LogOut className="w-4 h-4" />
+                  <span>Sign Out from PG Manager</span>
+                </>
+              )}
             </button>
             <p className="text-center text-[10px] text-[#8E8E93] mt-2">
               Signed in as {userName} ({userEmail || 'Owner'})

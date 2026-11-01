@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ToggleSwitch } from '@/components/ui/toggle-switch';
-import { Loader2, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface SettingsFormProps {
@@ -363,17 +363,11 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
               <Button
                 className="h-11"
                 type="submit"
-                disabled={pwSaving}
+                isLoading={pwSaving}
+                loadingText="Changing Password..."
                 variant="destructive"
               >
-                {pwSaving ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin strokeWidth={2}" />{' '}
-                    Changing...
-                  </>
-                ) : (
-                  'Change Password'
-                )}
+                Change Password
               </Button>
             </form>
           </CardContent>
@@ -407,15 +401,10 @@ function SaveButton({
       <Button
         className="h-11"
         type="submit"
-        disabled={saving}
+        isLoading={saving}
+        loadingText="Saving Settings..."
       >
-        {saving ? (
-          <>
-            <Loader2 className="mr-2 h-5 w-5 animate-spin strokeWidth={2}" /> Saving...
-          </>
-        ) : (
-          'Save Settings'
-        )}
+        Save Settings
       </Button>
     </div>
   );

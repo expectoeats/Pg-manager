@@ -14,7 +14,7 @@ export default async function CheckoutPage({
 
   return (
     <div>
-      <Link href={`/residents/${id}`} className="inline-flex items-center gap-1 text-[15px] text-[#8E8E93] hover:text-[#1C1C1E] mb-4 transition-colors">
+      <Link href={`/residents/${id}`} prefetch={false} className="inline-flex items-center gap-1 text-[15px] text-[#8E8E93] hover:text-[#1C1C1E] mb-4 transition-colors">
         <ArrowLeft className="w-5 h-5" strokeWidth={2} /> Back to Profile
       </Link>
       <div className="mb-6">
@@ -30,7 +30,7 @@ export default async function CheckoutPage({
           <p className="text-[15px] text-[#8E8E93] max-w-xs mb-6">
             The check-out wizard will handle notice period verification, dues settlement, deposit refund calculation, and final settlement PDF generation.
           </p>
-          <Link href={`/residents/${id}`}>
+          <Link href={`/residents/${id}`} prefetch={false}>
             <Button variant="outline" className="rounded-xl h-11">
               <ArrowLeft className="w-5 h-5 mr-2" strokeWidth={2} />
               Back to Profile

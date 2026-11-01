@@ -55,7 +55,7 @@ export default function TopBar({
             <Menu className="w-5 h-5 stroke-[2.2]" />
           </button>
 
-          <Link href="/dashboard" className="flex items-center gap-2 min-w-0">
+          <Link href="/dashboard" prefetch={false} className="flex items-center gap-2 min-w-0">
             <Image
               src="/logo.png"
               width={28}
@@ -104,6 +104,7 @@ export default function TopBar({
           {/* Quick Settings Shortcut */}
           <Link
             href="/settings"
+            prefetch={false}
             className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-xl text-[#8E8E93] hover:text-[#1C1C1E] hover:bg-[#F2F2F7] active:scale-95 transition-all"
             aria-label="Settings"
           >
@@ -113,6 +114,7 @@ export default function TopBar({
           {/* Avatar Initial */}
           <Link
             href="/settings"
+            prefetch={false}
             className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-[#007AFF] to-[#0055CC] text-white flex items-center justify-center text-xs font-bold shadow-xs active:scale-95 transition-all"
           >
             {userName.charAt(0).toUpperCase()}

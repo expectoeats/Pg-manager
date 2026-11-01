@@ -339,9 +339,10 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
               <Button
                 type="submit"
                 className="flex-1 h-11 rounded-xl"
-                disabled={isPending}
+                isLoading={isPending}
+                loadingText={selectedRoom ? 'Updating Room...' : 'Adding Room...'}
               >
-                {isPending ? 'Saving...' : selectedRoom ? 'Update Room' : 'Add Room'}
+                {selectedRoom ? 'Update Room' : 'Add Room'}
               </Button>
             </div>
           </form>

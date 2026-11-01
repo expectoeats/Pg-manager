@@ -428,9 +428,10 @@ export default function PlansClient({ plans }: PlansClientProps) {
               <Button
                 type="submit"
                 className="flex-1 h-11 rounded-xl"
-                disabled={isPending}
+                isLoading={isPending}
+                loadingText={selectedPlan ? 'Updating Plan...' : 'Adding Plan...'}
               >
-                {isPending ? 'Saving...' : selectedPlan ? 'Update Plan' : 'Add Plan'}
+                {selectedPlan ? 'Update Plan' : 'Add Plan'}
               </Button>
             </div>
           </form>

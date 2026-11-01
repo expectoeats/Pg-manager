@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -18,6 +19,7 @@ import {
   Settings,
   Clock,
   LogOut,
+  Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -43,6 +45,7 @@ interface SidebarProps {
 
 export default function Sidebar({ userName, userEmail }: SidebarProps) {
   const pathname = usePathname();
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   // Section groups (display only — link hrefs unchanged)
   const managementItems = navItems.slice(0, 4);
@@ -58,6 +61,7 @@ export default function Sidebar({ userName, userEmail }: SidebarProps) {
       <Link
         key={item.href}
         href={item.href}
+        prefetch={false}
         className={cn(
           'flex items-center gap-3 px-3 py-2.5 rounded-lg mb-0.5 text-[15px] font-medium transition-all duration-200',
           isActive
@@ -113,11 +117,24 @@ export default function Sidebar({ userName, userEmail }: SidebarProps) {
           </div>
         </div>
         <button
-          onClick={() => signOut({ callbackUrl: '/login' })}
-          className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-[15px] font-medium text-[#1C1C1E] hover:bg-[#FF3B30]/10 hover:text-[#FF3B30] transition-all duration-200"
+          onClick={() => {
+            setIsSigningOut(true);
+            signOut({ callbackUrl: '/login' });
+          }}
+          disabled={isSigningOut}
+          className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-lg text-[15px] font-medium text-[#1C1C1E] hover:bg-[#FF3B30]/10 hover:text-[#FF3B30] transition-all duration-200 disabled:opacity-50"
         >
-          <LogOut className="w-5 h-5" strokeWidth={2} />
-          Sign out
+          {isSigningOut ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Signing out...</span>
+            </>
+          ) : (
+            <>
+              <LogOut className="w-5 h-5" strokeWidth={2} />
+              <span>Sign out</span>
+            </>
+          )}
         </button>
       </div>
     </aside>

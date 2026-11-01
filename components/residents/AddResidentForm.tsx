@@ -1133,9 +1133,10 @@ export default function AddResidentForm({ plans, rooms, settings }: AddResidentF
             <Button
               type="submit"
               className="bg-[#007AFF] hover:bg-[#0071EB] text-white rounded-xl px-6 h-11 transition-all duration-200 shadow-sm"
-              disabled={isPending}
+              isLoading={isPending}
+              loadingText="Checking in..."
             >
-              {isPending ? 'Checking in…' : 'Complete Check-in'}
+              Complete Check-in
               {!isPending && <Check className="w-5 h-5 strokeWidth={2} ml-1" />}
             </Button>
           )}

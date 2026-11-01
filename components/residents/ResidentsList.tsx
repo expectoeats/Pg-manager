@@ -341,7 +341,7 @@ export default function ResidentsList({
 
                       {/* Actions */}
                       <TableCell className="text-right">
-                        <Link href={`/residents/${r._id}`}>
+                        <Link href={`/residents/${r._id}`} prefetch={false}>
                           <Button
                             variant="outline"
                             size="sm"
@@ -374,7 +374,7 @@ export default function ResidentsList({
                   : null;
 
               return (
-                <Link key={r._id} href={`/residents/${r._id}`}>
+                <Link key={r._id} href={`/residents/${r._id}`} prefetch={false}>
                   <div className="bg-white rounded-2xl shadow-sm border border-[#E5E5EA] p-4 active:scale-[0.99] transition-all">
                     {/* Header: Name, Mobile, Status */}
                     <div className="flex items-start justify-between mb-3">

@@ -157,7 +157,7 @@ export default function ResidentProfile({
   return (
     <div>
       {/* Back link */}
-      <Link href="/residents" className="inline-flex items-center gap-1 text-sm text-[#8E8E93] hover:text-[#1C1C1E] mb-4">
+      <Link href="/residents" prefetch={false} className="inline-flex items-center gap-1 text-sm text-[#8E8E93] hover:text-[#1C1C1E] mb-4">
         <ArrowLeft className="w-5 h-5" strokeWidth={2} /> Back to Residents
       </Link>
 
@@ -214,7 +214,7 @@ export default function ResidentProfile({
                 </Button>
               )}
               {(resident.status === 'notice' || resident.status === 'active') && (
-                <Link href={`/residents/${resident._id}/checkout`}>
+                <Link href={`/residents/${resident._id}/checkout`} prefetch={false}>
                   <Button
                     variant="outline"
                     size="sm"
@@ -476,9 +476,10 @@ export default function ResidentProfile({
               <Button
                 className="flex-1"
                 onClick={handleChangePlan}
-                disabled={isPending}
+                isLoading={isPending}
+                loadingText="Updating Plan..."
               >
-                {isPending ? 'Saving...' : 'Change Plan'}
+                Change Plan
               </Button>
             </div>
           </div>
@@ -516,9 +517,10 @@ export default function ResidentProfile({
               <Button
                 className="flex-1 bg-[#FF9500] hover:bg-[#E68B00] text-white"
                 onClick={handleGiveNotice}
-                disabled={isPending}
+                isLoading={isPending}
+                loadingText="Recording Notice..."
               >
-                {isPending ? 'Recording...' : 'Record Notice'}
+                Record Notice
               </Button>
             </div>
           </div>

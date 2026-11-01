@@ -579,6 +579,7 @@ export default function DashboardCalendar({ initialData, initialMonth }: Dashboa
                       </span>
                       <Link
                         href={`/residents/${r.residentId}`}
+                        prefetch={false}
                         className="inline-flex items-center gap-1 text-[#007AFF] font-medium hover:underline"
                       >
                         Collect / View <ArrowUpRight className="w-3.5 h-3.5" />
@@ -688,6 +689,7 @@ export default function DashboardCalendar({ initialData, initialMonth }: Dashboa
 
                       <Link
                         href={`/residents/${c.residentId}`}
+                        prefetch={false}
                         className="inline-flex items-center gap-1 text-[#007AFF] font-medium hover:underline ml-auto"
                       >
                         Profile <ArrowUpRight className="w-3.5 h-3.5" />
@@ -747,6 +749,7 @@ export default function DashboardCalendar({ initialData, initialMonth }: Dashboa
                     <div className="mt-3 pt-2.5 border-t border-[#F2F2F7] flex justify-end">
                       <Link
                         href={`/residents/${p.residentId}`}
+                        prefetch={false}
                         className="inline-flex items-center gap-1 text-xs text-[#007AFF] font-medium hover:underline"
                       >
                         Receipt & Details <ArrowUpRight className="w-3.5 h-3.5" />
@@ -800,6 +803,7 @@ export default function DashboardCalendar({ initialData, initialMonth }: Dashboa
                     <div className="mt-3 pt-2.5 border-t border-[#F2F2F7] flex justify-end">
                       <Link
                         href={`/residents/${co.residentId}/checkout`}
+                        prefetch={false}
                         className="inline-flex items-center gap-1 text-xs text-[#007AFF] font-medium hover:underline"
                       >
                         Settlement Wizard <ArrowUpRight className="w-3.5 h-3.5" />
