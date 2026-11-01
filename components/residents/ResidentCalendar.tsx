@@ -360,7 +360,7 @@ export default function ResidentCalendar({ resident, calendarData, planHistory }
       {/* ── Event Detail Sheet ── */}
       <Sheet open={!!selectedDate} onOpenChange={(open) => !open && setSelectedDate(null)}>
         <SheetContent
-          className="w-[94vw] sm:max-w-md overflow-y-auto p-0 flex flex-col bg-[#F2F2F7]/95 backdrop-blur-2xl border-l border-[#E5E5EA]"
+          className="w-full sm:max-w-md overflow-y-auto p-0 flex flex-col bg-[#F2F2F7] border-l border-[#E5E5EA]"
           style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif' }}
         >
           <div className="p-5 bg-white border-b border-[#E5E5EA]">

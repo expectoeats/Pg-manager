@@ -34,14 +34,12 @@ export default function TopBar({
   return (
     <>
       <header
-        className="sticky top-0 z-30 h-14 md:h-[60px] border-b transition-all flex items-center px-3.5 sm:px-4 md:px-6 gap-2.5 sm:gap-3"
+        className="sticky top-0 z-30 h-14 md:h-[60px] pt-[env(safe-area-inset-top)] border-b transition-all flex items-center px-3.5 sm:px-4 md:px-6 gap-2.5 sm:gap-3"
         style={{
-          background: 'rgba(255, 255, 255, 0.85)',
-          backdropFilter: 'blur(20px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          background: 'rgba(255, 255, 255, 0.88)',
+          backdropFilter: 'blur(20px) saturate(190%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(190%)',
           borderColor: 'rgba(0, 0, 0, 0.08)',
-          fontFamily:
-            '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif',
         }}
       >
         {/* Left: Mobile Menu Trigger + Logo + PG Name */}

@@ -1,3 +1,5 @@
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -40,7 +42,7 @@
     /* Apple Blue Ring */
     --ring: 211 100% 50%;
 
-    --radius: 12px;
+    --radius: 14px;
 
     /* Apple Multi-layer Shadow System */
     --apple-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.03), 0 4px 16px rgba(0, 0, 0, 0.02);
@@ -54,23 +56,33 @@
   * {
     @apply border-border;
     transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 
   body {
     @apply bg-background text-foreground;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', system-ui, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'SF Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    letter-spacing: -0.016em;
-    line-height: 1.5;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.014em;
+    line-height: 1.45;
     font-size: 15px;
+    overscroll-behavior-y: none;
   }
 
-  /* Apple Typography System */
+  /* Apple iOS Typography System */
   h1, h2, h3, h4, h5, h6 {
-    letter-spacing: -0.022em;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', 'Helvetica Neue', sans-serif;
+    letter-spacing: -0.024em;
     line-height: 1.2;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   h1 {

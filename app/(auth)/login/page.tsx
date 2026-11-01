@@ -1,6 +1,12 @@
-import LoginForm from '@/components/auth/LoginForm';
+import { redirect } from 'next/navigation';
+// import LoginForm from '@/components/auth/LoginForm';
 
 export default function LoginPage() {
+  // DEMO MODE: Direct redirect to dashboard without login
+  redirect('/dashboard');
+
+  /*
+  // Original login UI preserved for future use:
   return (
     <div className="min-h-screen bg-[#F2F2F7] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -15,4 +21,5 @@ export default function LoginPage() {
       </div>
     </div>
   );
+  */
 }

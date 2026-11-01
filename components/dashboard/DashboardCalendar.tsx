@@ -436,7 +436,7 @@ export default function DashboardCalendar({ initialData, initialMonth }: Dashboa
       <Sheet open={!!selectedDate} onOpenChange={(open) => !open && setSelectedDate(null)}>
         <SheetContent
           side="right"
-          className="w-[94vw] sm:max-w-lg lg:max-w-xl p-0 flex flex-col overflow-hidden bg-[#F2F2F7]/95 backdrop-blur-2xl border-l border-[#E5E5EA]"
+          className="w-full sm:max-w-lg lg:max-w-xl p-0 flex flex-col overflow-hidden bg-[#F2F2F7] border-l border-[#E5E5EA]"
           style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif' }}
         >
           {/* Sheet Header */}

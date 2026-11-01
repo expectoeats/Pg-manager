@@ -45,15 +45,13 @@ export default function BottomNav({
   return (
     <>
       <nav
-        className="fixed bottom-0 left-0 right-0 z-40 md:hidden flex items-center justify-around h-16 px-1 border-t transition-all"
+        className="fixed bottom-0 left-0 right-0 z-40 md:hidden flex items-center justify-around h-[calc(3.85rem+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] px-1 border-t transition-all select-none"
         style={{
           background: 'rgba(255, 255, 255, 0.88)',
-          backdropFilter: 'blur(25px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(25px) saturate(180%)',
+          backdropFilter: 'blur(25px) saturate(190%)',
+          WebkitBackdropFilter: 'blur(25px) saturate(190%)',
           borderColor: 'rgba(0, 0, 0, 0.08)',
           boxShadow: '0 -1px 4px rgba(0, 0, 0, 0.02)',
-          fontFamily:
-            '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif',
         }}
       >
         {/* Main 4 Navigation Tabs */}

@@ -1,4 +1,3 @@
-import { auth } from '@/lib/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -27,7 +26,8 @@ import { PlanDistributionChart } from '@/components/dashboard/PlanDistributionCh
 import DashboardCalendar from '@/components/dashboard/DashboardCalendar';
 
 export default async function DashboardPage() {
-  const session = await auth();
+  // Demo mode — hardcoded name. Restore session?.user?.name when auth is re-enabled.
+  const displayName = 'Owner';
   
   // Get current month for calendar
   const now = new Date();
@@ -85,7 +85,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <div>
         <h1 className="font-bold text-2xl sm:text-[28px] tracking-tight text-[#1C1C1E]">
-          Welcome back, {session?.user?.name?.split(' ')[0] || 'Owner'}
+          Welcome back, {displayName}
         </h1>
         <p className="text-[#8E8E93] text-xs sm:text-[15px] mt-0.5 sm:mt-1">
           Here&apos;s an overview of your PG
