@@ -81,13 +81,13 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
-        <h1 className="font-semibold text-[28px] tracking-[-0.024em] text-[#1C1C1E]">
+        <h1 className="font-bold text-2xl sm:text-[28px] tracking-tight text-[#1C1C1E]">
           Welcome back, {session?.user?.name?.split(' ')[0] || 'Owner'}
         </h1>
-        <p className="text-[#8E8E93] text-[15px] mt-1 tracking-[-0.016em]">
+        <p className="text-[#8E8E93] text-xs sm:text-[15px] mt-0.5 sm:mt-1">
           Here&apos;s an overview of your PG
         </p>
       </div>
@@ -95,8 +95,8 @@ export default async function DashboardPage() {
       {/* Dashboard Calendar */}
       <DashboardCalendar initialData={calendarData} initialMonth={currentMonth} />
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Stat Cards - 2x2 on mobile for quick glance */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {statCards.map((card) => {
           const Icon = card.icon;
           const cardHref =
@@ -110,19 +110,19 @@ export default async function DashboardPage() {
           return (
             <Link href={cardHref} key={card.title}>
               <Card
-                className="border border-[#E5E5EA] shadow-sm rounded-2xl hover:shadow-md transition-all duration-200 cursor-pointer"
+                className="border border-[#E5E5EA] shadow-xs rounded-2xl hover:shadow-md transition-all duration-200 cursor-pointer h-full"
               >
-                <CardContent className="pt-6">
-                <div className="flex items-start justify-between mb-4">
+                <CardContent className="p-3.5 sm:p-5 flex flex-col justify-between h-full">
+                <div className="flex items-start justify-between mb-2 sm:mb-4">
                   <div
-                    className={`w-12 h-12 rounded-xl ${card.bg} flex items-center justify-center flex-shrink-0`}
+                    className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl ${card.bg} flex items-center justify-center flex-shrink-0`}
                   >
-                    <Icon className={`w-6 h-6 ${card.color}`} strokeWidth={2} />
+                    <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${card.color}`} strokeWidth={2.2} />
                   </div>
                   {card.change && (
                     <Badge 
                       variant="secondary" 
-                      className={`text-xs font-medium px-2 py-0.5 ${
+                      className={`text-[10px] sm:text-xs font-medium px-1.5 py-0.5 ${
                         card.change === 'positive' 
                           ? 'bg-[#34C759]/10 text-[#34C759]' 
                           : card.change === 'negative'
@@ -134,13 +134,15 @@ export default async function DashboardPage() {
                     </Badge>
                   )}
                 </div>
-                <h3 className="text-[28px] font-bold text-[#1C1C1E] tracking-[-0.024em] mb-1">
-                  {card.value}
-                </h3>
-                <p className="text-[13px] text-[#8E8E93] font-medium">{card.title}</p>
-                {card.subtitle && (
-                  <p className="text-[12px] text-[#8E8E93] mt-1">{card.subtitle}</p>
-                )}
+                <div>
+                  <h3 className="text-xl sm:text-2xl lg:text-[28px] font-bold text-[#1C1C1E] tracking-tight mb-0.5">
+                    {card.value}
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-[#8E8E93] font-medium leading-tight">{card.title}</p>
+                  {card.subtitle && (
+                    <p className="text-[11px] text-[#8E8E93] mt-0.5 hidden sm:block">{card.subtitle}</p>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </Link>

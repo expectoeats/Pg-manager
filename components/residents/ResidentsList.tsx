@@ -19,7 +19,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Users, Plus, Eye, Clock, Calendar } from 'lucide-react';
+import {
+  Users,
+  Plus,
+  Eye,
+  Clock,
+  Calendar,
+  AlertCircle,
+  AlertTriangle,
+  CheckCircle2,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { calculateNextRentDue } from '@/lib/utils/rentCalculations';
 
@@ -34,6 +43,9 @@ interface ResidentData {
   bed?: { bedLabel: string } | null;
   currentPlan?: { name: string; price: number } | null;
   pendingAmount?: number;
+  oldestDueDate?: string | null;
+  oldestMonth?: string | null;
+  unpaidCount?: number;
 }
 
 interface PlanData {
@@ -81,26 +93,34 @@ export default function ResidentsList({
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <h1 className="font-semibold text-[22px] tracking-[-0.022em] text-[#1C1C1E]">Residents</h1>
-          <Badge variant="outline" className="rounded-full bg-[#007AFF]/10 text-[#007AFF] border-transparent">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <h1 className="font-semibold text-xl sm:text-[22px] tracking-tight text-[#1C1C1E]">
+            Residents
+          </h1>
+          <Badge
+            variant="outline"
+            className="rounded-full bg-[#007AFF]/10 text-[#007AFF] border-transparent text-xs"
+          >
             {residents.length}
           </Badge>
         </div>
-        <Button onClick={() => router.push('/residents/new')} className="h-11">
-          <Plus className="w-5 h-5 mr-2" strokeWidth={2} />
+        <Button
+          onClick={() => router.push('/residents/new')}
+          className="h-9 sm:h-11 px-3 sm:px-4 rounded-xl text-xs sm:text-sm"
+        >
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" strokeWidth={2} />
           Add Resident
         </Button>
       </div>
 
-      {/* Filters */}
-      <div className="flex gap-3 mb-6 flex-wrap">
+      {/* Filters - responsive 3 cols on mobile, flex on desktop */}
+      <div className="grid grid-cols-3 gap-1.5 sm:gap-3 mb-4 sm:mb-6 sm:flex sm:flex-wrap">
         <Select
           value={initialFilters.status || 'all'}
           onValueChange={(v) => updateFilter('status', v)}
         >
-          <SelectTrigger className="w-36 h-11 rounded-xl border-[#E5E5EA]">
+          <SelectTrigger className="w-full sm:w-36 h-9 sm:h-11 rounded-xl border-[#E5E5EA] text-xs sm:text-sm px-2.5 sm:px-3">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -115,7 +135,7 @@ export default function ResidentsList({
           value={initialFilters.planId || 'all'}
           onValueChange={(v) => updateFilter('planId', v)}
         >
-          <SelectTrigger className="w-44 h-11 rounded-xl border-[#E5E5EA]">
+          <SelectTrigger className="w-full sm:w-44 h-9 sm:h-11 rounded-xl border-[#E5E5EA] text-xs sm:text-sm px-2.5 sm:px-3">
             <SelectValue placeholder="Plan" />
           </SelectTrigger>
           <SelectContent>
@@ -132,7 +152,7 @@ export default function ResidentsList({
           value={initialFilters.roomId || 'all'}
           onValueChange={(v) => updateFilter('roomId', v)}
         >
-          <SelectTrigger className="w-36 h-11 rounded-xl border-[#E5E5EA]">
+          <SelectTrigger className="w-full sm:w-36 h-9 sm:h-11 rounded-xl border-[#E5E5EA] text-xs sm:text-sm px-2.5 sm:px-3">
             <SelectValue placeholder="Room" />
           </SelectTrigger>
           <SelectContent>
@@ -170,100 +190,168 @@ export default function ResidentsList({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Name</TableHead>
-                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Mobile</TableHead>
-                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Room / Bed</TableHead>
-                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Plan</TableHead>
-                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Next Payment</TableHead>
-                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide text-right">Pending</TableHead>
-                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Status</TableHead>
-                  <TableHead className="text-right text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">Actions</TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">
+                    Name
+                  </TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">
+                    Mobile
+                  </TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">
+                    Room / Bed
+                  </TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">
+                    Plan
+                  </TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">
+                    Rent Status & Cycle
+                  </TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide text-right">
+                    Pending Dues
+                  </TableHead>
+                  <TableHead className="text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">
+                    Status
+                  </TableHead>
+                  <TableHead className="text-right text-[#8E8E93] text-xs font-semibold uppercase tracking-wide">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {residents.map((r) => {
-                  // Calculate next payment info for active/notice residents
-                  const paymentInfo = (r.status === 'active' || r.status === 'notice')
-                    ? calculateNextRentDue(
-                        r.joiningDate,
-                        r.billingMode || 'joining_cycle',
-                        r.currentPlan?.price || 7000
-                      )
-                    : null;
+                  const hasDue = (r.pendingAmount || 0) > 0;
+                  const paymentInfo =
+                    r.status === 'active' || r.status === 'notice'
+                      ? calculateNextRentDue(
+                          r.joiningDate,
+                          r.billingMode || 'joining_cycle',
+                          r.currentPlan?.price || 7000,
+                          r.pendingAmount || 0,
+                          r.oldestDueDate
+                        )
+                      : null;
 
                   return (
-                  <TableRow key={r._id} className="hover:bg-[#F9F9FB]">
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center text-[#007AFF] font-semibold text-sm flex-shrink-0">
-                          {r.name.charAt(0).toUpperCase()}
+                    <TableRow key={r._id} className="hover:bg-[#F9F9FB]">
+                      {/* Name */}
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center text-[#007AFF] font-semibold text-sm flex-shrink-0">
+                            {r.name.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="font-semibold text-[#1C1C1E]">{r.name}</span>
                         </div>
-                        <span className="font-medium text-[#1C1C1E]">{r.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-[#1C1C1E] text-sm">{r.mobile}</TableCell>
-                    <TableCell className="text-sm text-[#1C1C1E]">
-                      {r.room && r.bed ? (
-                        <span>{r.room.roomNumber} / {r.bed.bedLabel}</span>
-                      ) : (
-                        <span className="text-[#8E8E93]">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-sm text-[#1C1C1E]">
-                      {r.currentPlan?.name || <span className="text-[#8E8E93]">—</span>}
-                    </TableCell>
-                    <TableCell>
-                      {paymentInfo ? (
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={cn(
-                              'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
-                              paymentInfo.isOverdue && 'animate-pulse'
-                            )}
-                            style={{
-                              backgroundColor: paymentInfo.bgColor,
-                              color: paymentInfo.textColor,
-                            }}
-                          >
+                      </TableCell>
+
+                      {/* Mobile */}
+                      <TableCell className="text-[#1C1C1E] text-sm">{r.mobile}</TableCell>
+
+                      {/* Room / Bed */}
+                      <TableCell className="text-sm text-[#1C1C1E]">
+                        {r.room && r.bed ? (
+                          <span className="font-medium">
+                            {r.room.roomNumber} / {r.bed.bedLabel}
+                          </span>
+                        ) : (
+                          <span className="text-[#8E8E93]">—</span>
+                        )}
+                      </TableCell>
+
+                      {/* Plan */}
+                      <TableCell className="text-sm text-[#1C1C1E]">
+                        {r.currentPlan?.name || <span className="text-[#8E8E93]">—</span>}
+                      </TableCell>
+
+                      {/* Next Payment / Overdue status */}
+                      <TableCell>
+                        {paymentInfo ? (
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={cn(
+                                'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border',
+                                paymentInfo.isOverdue && 'animate-pulse'
+                              )}
+                              style={{
+                                backgroundColor: paymentInfo.bgColor,
+                                color: paymentInfo.textColor,
+                                borderColor: paymentInfo.isOverdue
+                                  ? 'rgba(255, 59, 48, 0.3)'
+                                  : 'rgba(52, 199, 89, 0.3)',
+                              }}
+                            >
+                              {paymentInfo.isOverdue ? (
+                                <AlertTriangle className="w-4 h-4" strokeWidth={2.5} />
+                              ) : paymentInfo.daysLeft <= 5 ? (
+                                <Clock className="w-4 h-4" strokeWidth={2.5} />
+                              ) : (
+                                <Calendar className="w-4 h-4" strokeWidth={2} />
+                              )}
+                              <span>{paymentInfo.label}</span>
+                            </div>
+
                             {paymentInfo.isOverdue ? (
-                              <Clock className="w-4 h-4" strokeWidth={2.5} />
-                            ) : paymentInfo.daysLeft <= 5 ? (
-                              <Clock className="w-4 h-4" strokeWidth={2.5} />
+                              <span className="text-xs font-bold text-[#FF3B30]">
+                                (₹{(r.pendingAmount || paymentInfo.amount).toLocaleString('en-IN')})
+                              </span>
                             ) : (
-                              <Calendar className="w-4 h-4" strokeWidth={2} />
+                              <span className="text-xs text-[#8E8E93]">
+                                ₹{paymentInfo.amount.toLocaleString('en-IN')}
+                              </span>
                             )}
-                            <span>{paymentInfo.label}</span>
                           </div>
-                          <div className="text-xs text-[#8E8E93]">
-                            ₹{paymentInfo.amount.toLocaleString('en-IN')}
-                          </div>
+                        ) : (
+                          <span className="text-[#8E8E93] text-xs">—</span>
+                        )}
+                      </TableCell>
+
+                      {/* Pending Dues Highlight */}
+                      <TableCell className="text-right">
+                        {hasDue ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-[#FF3B30]/10 text-[#FF3B30] border border-[#FF3B30]/30 shadow-2xs">
+                            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                            ₹{r.pendingAmount!.toLocaleString('en-IN')} Due
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-[#34C759]/10 text-[#34C759] border border-[#34C759]/20">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Paid
+                          </span>
+                        )}
+                      </TableCell>
+
+                      {/* Status */}
+                      <TableCell>
+                        <div className="flex items-center gap-1.5">
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              'rounded-full text-xs capitalize',
+                              STATUS_BADGE[r.status]
+                            )}
+                          >
+                            {r.status === 'notice' ? 'On Notice' : r.status}
+                          </Badge>
+                          {hasDue && (
+                            <span
+                              className="w-2 h-2 rounded-full bg-[#FF3B30] animate-pulse"
+                              title="Rent Due"
+                            />
+                          )}
                         </div>
-                      ) : (
-                        <span className="text-[#8E8E93] text-xs">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {r.pendingAmount && r.pendingAmount > 0 ? (
-                        <span className="text-xs font-bold text-[#FF3B30]">
-                          ₹{r.pendingAmount.toLocaleString('en-IN')}
-                        </span>
-                      ) : (
-                        <span className="text-xs text-[#8E8E93]">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={cn('rounded-full text-xs capitalize', STATUS_BADGE[r.status])}>
-                        {r.status === 'notice' ? 'On Notice' : r.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Link href={`/residents/${r._id}`}>
-                        <Button variant="outline" size="sm" className="h-7 px-2 text-xs rounded-lg hover:bg-[#F2F2F7]">
-                          <Eye className="w-5 h-5 mr-1" strokeWidth={2} /> View
-                        </Button>
-                      </Link>
-                    </TableCell>
-                  </TableRow>
+                      </TableCell>
+
+                      {/* Actions */}
+                      <TableCell className="text-right">
+                        <Link href={`/residents/${r._id}`}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-2.5 text-xs rounded-lg hover:bg-[#F2F2F7]"
+                          >
+                            <Eye className="w-4 h-4 mr-1" strokeWidth={2} /> View
+                          </Button>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
                   );
                 })}
               </TableBody>
@@ -273,91 +361,138 @@ export default function ResidentsList({
           {/* Mobile cards */}
           <div className="md:hidden space-y-3">
             {residents.map((r) => {
-              // Calculate next payment info for active/notice residents
-              const paymentInfo = (r.status === 'active' || r.status === 'notice')
-                ? calculateNextRentDue(
-                    r.joiningDate,
-                    r.billingMode || 'joining_cycle',
-                    r.currentPlan?.price || 7000
-                  )
-                : null;
+              const hasDue = (r.pendingAmount || 0) > 0;
+              const paymentInfo =
+                r.status === 'active' || r.status === 'notice'
+                  ? calculateNextRentDue(
+                      r.joiningDate,
+                      r.billingMode || 'joining_cycle',
+                      r.currentPlan?.price || 7000,
+                      r.pendingAmount || 0,
+                      r.oldestDueDate
+                    )
+                  : null;
 
               return (
-              <Link key={r._id} href={`/residents/${r._id}`}>
-                <div className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] border border-[#E5E5EA] p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#007AFF]/10 flex items-center justify-center text-[#007AFF] font-semibold">
-                        {r.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-[#1C1C1E]">{r.name}</p>
-                        <p className="text-xs text-[#8E8E93]">{r.mobile}</p>
-                      </div>
-                    </div>
-                    <Badge variant="outline" className={cn('rounded-full text-xs capitalize', STATUS_BADGE[r.status])}>
-                      {r.status === 'notice' ? 'On Notice' : r.status}
-                    </Badge>
-                  </div>
-
-                  {/* Next Payment Countdown */}
-                  {paymentInfo && (
-                    <div
-                      className={cn(
-                        'mb-3 p-3 rounded-xl flex items-center justify-between transition-all',
-                        paymentInfo.isOverdue && 'animate-pulse'
-                      )}
-                      style={{ backgroundColor: paymentInfo.bgColor }}
-                    >
-                      <div className="flex items-center gap-2">
-                        {paymentInfo.isOverdue || paymentInfo.daysLeft <= 5 ? (
-                          <Clock className="w-5 h-5" strokeWidth={2.5} style={{ color: paymentInfo.textColor }} />
-                        ) : (
-                          <Calendar className="w-5 h-5" strokeWidth={2} style={{ color: paymentInfo.textColor }} />
-                        )}
+                <Link key={r._id} href={`/residents/${r._id}`}>
+                  <div className="bg-white rounded-2xl shadow-sm border border-[#E5E5EA] p-4 active:scale-[0.99] transition-all">
+                    {/* Header: Name, Mobile, Status */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#007AFF]/10 flex items-center justify-center text-[#007AFF] font-bold text-sm">
+                          {r.name.charAt(0).toUpperCase()}
+                        </div>
                         <div>
-                          <p className="text-xs font-semibold" style={{ color: paymentInfo.textColor }}>
-                            {paymentInfo.label}
-                          </p>
-                          <p className="text-[10px]" style={{ color: paymentInfo.textColor, opacity: 0.8 }}>
-                            {paymentInfo.nextDueDate.toLocaleDateString('en-IN', { 
-                              day: 'numeric',
-                              month: 'short',
-                              timeZone: 'Asia/Kolkata' 
-                            })}
-                          </p>
+                          <p className="font-bold text-[15px] text-[#1C1C1E]">{r.name}</p>
+                          <p className="text-xs text-[#8E8E93]">{r.mobile}</p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm font-bold" style={{ color: paymentInfo.textColor }}>
-                          ₹{paymentInfo.amount.toLocaleString('en-IN')}
-                        </p>
-                      </div>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          'rounded-full text-xs capitalize',
+                          STATUS_BADGE[r.status]
+                        )}
+                      >
+                        {r.status === 'notice' ? 'On Notice' : r.status}
+                      </Badge>
                     </div>
-                  )}
 
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="text-[#8E8E93] text-xs">Room/Bed</span>
-                      <p className="text-[#1C1C1E] font-medium">
-                        {r.room && r.bed ? `${r.room.roomNumber} / ${r.bed.bedLabel}` : '—'}
-                      </p>
-                    </div>
-                    <div>
-                      <span className="text-[#8E8E93] text-xs">Plan</span>
-                      <p className="text-[#1C1C1E] font-medium text-xs">{r.currentPlan?.name || '—'}</p>
-                    </div>
-                    {r.pendingAmount && r.pendingAmount > 0 && (
-                      <div className="col-span-2">
-                        <span className="text-[#8E8E93] text-xs">Pending</span>
-                        <p className="text-[#1C1C1E] font-medium text-xs text-[#FF3B30]">
-                          ₹{r.pendingAmount.toLocaleString('en-IN')}
-                        </p>
+                    {/* Rent Status Banner on Mobile */}
+                    {paymentInfo && (
+                      <div
+                        className={cn(
+                          'mb-3 p-3 rounded-xl flex items-center justify-between transition-all border',
+                          paymentInfo.isOverdue
+                            ? 'bg-[#FF3B30]/10 border-[#FF3B30]/30 animate-pulse'
+                            : 'bg-[#34C759]/10 border-[#34C759]/20'
+                        )}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          {paymentInfo.isOverdue ? (
+                            <AlertCircle className="w-5 h-5 text-[#FF3B30] flex-shrink-0" />
+                          ) : (
+                            <CheckCircle2 className="w-5 h-5 text-[#34C759] flex-shrink-0" />
+                          )}
+                          <div className="min-w-0">
+                            <p
+                              className={cn(
+                                'text-xs font-bold truncate',
+                                paymentInfo.isOverdue ? 'text-[#FF3B30]' : 'text-[#34C759]'
+                              )}
+                            >
+                              {paymentInfo.isOverdue
+                                ? `Rent Due: ₹${(r.pendingAmount || paymentInfo.amount).toLocaleString('en-IN')}`
+                                : `Rent Clear: Next in ${paymentInfo.daysLeft} days`}
+                            </p>
+                            <p
+                              className={cn(
+                                'text-[11px] font-medium truncate',
+                                paymentInfo.isOverdue ? 'text-[#FF3B30]/85' : 'text-[#34C759]/85'
+                              )}
+                            >
+                              {paymentInfo.isOverdue
+                                ? `Month cycle: ${paymentInfo.label}`
+                                : `Due on ${paymentInfo.nextDueDate.toLocaleDateString('en-IN', {
+                                    day: 'numeric',
+                                    month: 'short',
+                                  })}`}
+                            </p>
+                          </div>
+                        </div>
+
+                        <Badge
+                          className={cn(
+                            'text-[10px] px-2 py-0.5 flex-shrink-0 font-semibold',
+                            paymentInfo.isOverdue
+                              ? 'bg-[#FF3B30] text-white border-transparent'
+                              : 'bg-[#34C759] text-white border-transparent'
+                          )}
+                        >
+                          {paymentInfo.isOverdue ? 'Overdue' : 'Clear'}
+                        </Badge>
                       </div>
                     )}
+
+                    {/* Metadata Grid */}
+                    <div className="grid grid-cols-2 gap-2 text-sm pt-2 border-t border-[#F2F2F7]">
+                      <div>
+                        <span className="text-[#8E8E93] text-xs">Room / Bed</span>
+                        <p className="text-[#1C1C1E] font-medium text-xs mt-0.5">
+                          {r.room && r.bed
+                            ? `Room ${r.room.roomNumber} • Bed ${r.bed.bedLabel}`
+                            : '—'}
+                        </p>
+                      </div>
+
+                      <div>
+                        <span className="text-[#8E8E93] text-xs">Plan</span>
+                        <p className="text-[#1C1C1E] font-medium text-xs mt-0.5 truncate">
+                          {r.currentPlan?.name || '—'}
+                        </p>
+                      </div>
+
+                      <div className="col-span-2 pt-1 flex items-center justify-between">
+                        <div>
+                          <span className="text-[#8E8E93] text-xs">Pending Dues: </span>
+                          <span
+                            className={cn(
+                              'font-bold text-xs',
+                              hasDue ? 'text-[#FF3B30]' : 'text-[#34C759]'
+                            )}
+                          >
+                            {hasDue
+                              ? `₹${r.pendingAmount!.toLocaleString('en-IN')} (Unpaid)`
+                              : '₹0 (Clear)'}
+                          </span>
+                        </div>
+                        <span className="text-xs font-semibold text-[#007AFF] flex items-center gap-1">
+                          Profile <Eye className="w-3.5 h-3.5" />
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
               );
             })}
           </div>

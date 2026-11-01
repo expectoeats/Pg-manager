@@ -107,13 +107,15 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
 
   return (
     <Tabs defaultValue="pg-details">
-      <TabsList className="mb-6">
-        <TabsTrigger value="pg-details">PG Details</TabsTrigger>
-        <TabsTrigger value="billing">Billing</TabsTrigger>
-        <TabsTrigger value="electricity">Electricity</TabsTrigger>
-        <TabsTrigger value="receipt">Receipt</TabsTrigger>
-        <TabsTrigger value="security">Security</TabsTrigger>
-      </TabsList>
+      <div className="overflow-x-auto pb-1 mb-5 sm:mb-6 -mx-1 px-1">
+        <TabsList className="bg-[#E5E5EA]/70 p-1 rounded-xl gap-1 h-auto inline-flex flex-nowrap w-max sm:w-auto">
+          <TabsTrigger value="pg-details" className="rounded-lg text-xs sm:text-sm py-1.5 px-3">PG Details</TabsTrigger>
+          <TabsTrigger value="billing" className="rounded-lg text-xs sm:text-sm py-1.5 px-3">Billing</TabsTrigger>
+          <TabsTrigger value="electricity" className="rounded-lg text-xs sm:text-sm py-1.5 px-3">Electricity</TabsTrigger>
+          <TabsTrigger value="receipt" className="rounded-lg text-xs sm:text-sm py-1.5 px-3">Receipt</TabsTrigger>
+          <TabsTrigger value="security" className="rounded-lg text-xs sm:text-sm py-1.5 px-3">Security</TabsTrigger>
+        </TabsList>
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <TabsContent value="pg-details">

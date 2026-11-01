@@ -155,16 +155,16 @@ export default function PlansClient({ plans }: PlansClientProps) {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div>
-          <h1 className="text-[22px] font-semibold text-[#1C1C1E] tracking-[-0.022em]">Plans</h1>
-          <p className="text-[#8E8E93] mt-1">{plans.length} plan{plans.length !== 1 ? 's' : ''} configured</p>
+          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1C1E] tracking-tight">Plans</h1>
+          <p className="text-xs sm:text-sm text-[#8E8E93] mt-0.5">{plans.length} plan{plans.length !== 1 ? 's' : ''} configured</p>
         </div>
         <Button
           onClick={openAddDialog}
-          className="h-11 rounded-xl"
+          className="h-9 sm:h-11 px-3 sm:px-4 rounded-xl text-xs sm:text-sm"
         >
-          <Plus className="w-5 h-5 mr-2" strokeWidth={2} />
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5" strokeWidth={2} />
           Add Plan
         </Button>
       </div>

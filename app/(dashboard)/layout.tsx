@@ -25,26 +25,27 @@ export default async function DashboardLayout({
     // Use default
   }
 
+  const userName = session.user.name ?? 'Owner';
+  const userEmail = session.user.email ?? '';
+
   return (
-    <div className="min-h-screen bg-[#F2F2F7] font-sans">
+    <div className="min-h-screen bg-[#F2F2F7] font-sans antialiased overflow-x-hidden">
       {/* Desktop Sidebar */}
       <div className="hidden md:block">
-        <Sidebar
-          userName={session.user.name ?? ''}
-          userEmail={session.user.email ?? ''}
-        />
+        <Sidebar userName={userName} userEmail={userEmail} />
       </div>
 
-      {/* Main content */}
+      {/* Main Content Area */}
       <div className="md:ml-60 flex flex-col min-h-screen">
-        <TopBar pgName={pgName} />
-        <main className="flex-1 p-4 md:p-6 pb-20 md:pb-6 overflow-auto">
+        <TopBar pgName={pgName} userName={userName} userEmail={userEmail} />
+        {/* pb-24 ensures comfortable clearance above mobile bottom bar */}
+        <main className="flex-1 p-3.5 sm:p-5 md:p-6 pb-24 md:pb-8 max-w-full overflow-x-hidden">
           {children}
         </main>
       </div>
 
-      {/* Mobile Bottom Nav */}
-      <BottomNav />
+      {/* Mobile Bottom Tab Bar with Menu Drawer */}
+      <BottomNav pgName={pgName} userName={userName} userEmail={userEmail} />
     </div>
   );
 }

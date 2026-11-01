@@ -1,9 +1,9 @@
 /**
  * Rent calculation utilities for PG management
- * Handles countdown, color gradients, and next payment calculations
+ * Handles countdown, color gradients, overdue tracking, and payment calculations
  */
 
-interface NextPaymentInfo {
+export interface NextPaymentInfo {
   daysLeft: number;
   nextDueDate: Date;
   amount: number;
@@ -12,103 +12,144 @@ interface NextPaymentInfo {
   textColor: string;
   isOverdue: boolean;
   label: string;
+  daysLate: number;
+  hasPendingRent: boolean;
 }
 
 /**
- * Calculate days remaining until next rent payment
- * Returns color-coded countdown with gradient: Green → Yellow → Orange → Red
+ * Calculate days remaining or days late for rent payment
+ * If resident has pending/unpaid rent, highlights exactly how many days late it is.
  */
 export function calculateNextRentDue(
   joiningDate: Date | string,
   billingMode: 'calendar' | 'joining_cycle' = 'joining_cycle',
   monthlyRent: number = 7000,
-  lastPaidDate?: Date | string
+  pendingAmount: number = 0,
+  oldestDueDate?: Date | string | null
 ): NextPaymentInfo {
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Reset to start of day for accurate comparison
+  today.setHours(0, 0, 0, 0);
 
   const joining = new Date(joiningDate);
+  joining.setHours(0, 0, 0, 0);
+
+  const hasPendingRent = pendingAmount > 0;
+
+  // 1. If resident has pending rent, target the oldest unpaid due date
+  if (hasPendingRent) {
+    let targetDueDate: Date;
+
+    if (oldestDueDate) {
+      targetDueDate = new Date(oldestDueDate);
+      targetDueDate.setHours(0, 0, 0, 0);
+    } else if (billingMode === 'calendar') {
+      // Calendar mode: First month due on 1st of next month, or joining month 1st
+      targetDueDate = new Date(joining.getFullYear(), joining.getMonth(), 1);
+      if (today > targetDueDate) {
+        // If passed, target was on joining month
+      }
+    } else {
+      // Joining cycle: Target due on joining day
+      targetDueDate = new Date(joining);
+    }
+
+    const msPerDay = 1000 * 60 * 60 * 24;
+    const diffDays = Math.floor((today.getTime() - targetDueDate.getTime()) / msPerDay);
+
+    if (diffDays > 0) {
+      // Overdue / Late by X days
+      return {
+        daysLeft: 0,
+        daysLate: diffDays,
+        nextDueDate: targetDueDate,
+        amount: pendingAmount,
+        color: '#FF3B30',
+        bgColor: 'rgba(255, 59, 48, 0.15)',
+        textColor: '#FF3B30',
+        isOverdue: true,
+        label: `${diffDays} ${diffDays === 1 ? 'day' : 'days'} late`,
+        hasPendingRent: true,
+      };
+    } else if (diffDays === 0) {
+      // Due today!
+      return {
+        daysLeft: 0,
+        daysLate: 0,
+        nextDueDate: targetDueDate,
+        amount: pendingAmount,
+        color: '#FF3B30',
+        bgColor: 'rgba(255, 59, 48, 0.15)',
+        textColor: '#FF3B30',
+        isOverdue: true,
+        label: 'Due today!',
+        hasPendingRent: true,
+      };
+    } else {
+      // Due in future
+      const daysLeft = Math.abs(diffDays);
+      return {
+        daysLeft,
+        daysLate: 0,
+        nextDueDate: targetDueDate,
+        amount: pendingAmount,
+        color: daysLeft <= 3 ? '#FF3B30' : '#FF9500',
+        bgColor: daysLeft <= 3 ? 'rgba(255, 59, 48, 0.12)' : 'rgba(255, 149, 0, 0.12)',
+        textColor: daysLeft <= 3 ? '#FF3B30' : '#FF9500',
+        isOverdue: false,
+        label: `${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`,
+        hasPendingRent: true,
+      };
+    }
+  }
+
+  // 2. If NO pending rent (All previous rents are fully cleared)
   let nextDueDate: Date;
 
   if (billingMode === 'calendar') {
-    // Calendar mode: Due on 1st of next month
-    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-    nextDueDate = nextMonth;
+    // Due on 1st of next month
+    nextDueDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
   } else {
-    // Joining cycle: Due every 30 days from joining date
+    // Due on next 30-day cycle from joining date
     const daysSinceJoining = Math.floor((today.getTime() - joining.getTime()) / (1000 * 60 * 60 * 24));
-    const cyclesPassed = Math.floor(daysSinceJoining / 30);
+    const cyclesPassed = Math.max(0, Math.floor(daysSinceJoining / 30));
     const nextCycleNumber = cyclesPassed + 1;
-    
+
     nextDueDate = new Date(joining);
-    nextDueDate.setDate(nextDueDate.getDate() + (nextCycleNumber * 30));
+    nextDueDate.setDate(nextDueDate.getDate() + nextCycleNumber * 30);
   }
 
-  // Calculate days left
   const msPerDay = 1000 * 60 * 60 * 24;
-  const daysLeft = Math.floor((nextDueDate.getTime() - today.getTime()) / msPerDay);
+  const daysLeft = Math.max(0, Math.floor((nextDueDate.getTime() - today.getTime()) / msPerDay));
 
-  // Determine color based on days left
-  let color: string;
-  let bgColor: string;
-  let textColor: string;
-  let label: string;
-  let isOverdue = false;
+  let color = '#34C759';
+  let bgColor = 'rgba(52, 199, 89, 0.1)';
+  let textColor = '#34C759';
 
-  if (daysLeft < 0) {
-    // Overdue
-    color = '#FF3B30';
-    bgColor = 'rgba(255, 59, 48, 0.15)';
-    textColor = '#FF3B30';
-    label = `${Math.abs(daysLeft)} days overdue`;
-    isOverdue = true;
-  } else if (daysLeft === 0) {
-    // Due today
-    color = '#FF3B30';
-    bgColor = 'rgba(255, 59, 48, 0.15)';
-    textColor = '#FF3B30';
-    label = 'Due today!';
-  } else if (daysLeft <= 2) {
-    // 1-2 days: Red
+  if (daysLeft <= 3) {
     color = '#FF3B30';
     bgColor = 'rgba(255, 59, 48, 0.1)';
     textColor = '#FF3B30';
-    label = `${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`;
-  } else if (daysLeft <= 5) {
-    // 3-5 days: Orange
+  } else if (daysLeft <= 7) {
     color = '#FF9500';
     bgColor = 'rgba(255, 149, 0, 0.1)';
     textColor = '#FF9500';
-    label = `${daysLeft} days left`;
-  } else if (daysLeft <= 10) {
-    // 6-10 days: Yellow
+  } else if (daysLeft <= 14) {
     color = '#FFCC00';
     bgColor = 'rgba(255, 204, 0, 0.1)';
-    textColor = '#FFCC00';
-    label = `${daysLeft} days left`;
-  } else if (daysLeft <= 20) {
-    // 11-20 days: Yellow-Green
-    color = '#8BC34A';
-    bgColor = 'rgba(139, 195, 74, 0.1)';
-    textColor = '#689F38';
-    label = `${daysLeft} days left`;
-  } else {
-    // 21+ days: Green
-    color = '#34C759';
-    bgColor = 'rgba(52, 199, 89, 0.1)';
-    textColor = '#34C759';
-    label = `${daysLeft} days left`;
+    textColor = '#B28900';
   }
 
   return {
     daysLeft,
+    daysLate: 0,
     nextDueDate,
     amount: monthlyRent,
     color,
     bgColor,
     textColor,
-    isOverdue,
-    label,
+    isOverdue: false,
+    label: `${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`,
+    hasPendingRent: false,
   };
 }
 

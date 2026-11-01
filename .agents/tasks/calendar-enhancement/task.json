@@ -1,0 +1,7 @@
+{
+  "task_id": "calendar-enhancement",
+  "task_description": "Enhance resident calendar UI to be compact and interactive with Apple-style design, and add a new interactive dashboard calendar showing PG-wide events",
+  "status": "pending",
+  "feature_order": ["FEAT-001", "FEAT-002"],
+  "blocked_reason": null
+}

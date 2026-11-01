@@ -237,17 +237,19 @@ export default function ResidentProfile({
         </CardContent>
       </Card>
 
-      {/* Tabs */}
+      {/* Tabs - horizontally scrollable for mobile */}
       <Tabs defaultValue="overview">
-        <TabsList className="mb-4 bg-[#F2F2F7] rounded-xl p-1 gap-1 h-auto flex-wrap">
-          <TabsTrigger value="overview" className="rounded-lg">Overview</TabsTrigger>
-          <TabsTrigger value="timeline" className="rounded-lg"><Calendar className="w-4 h-4 mr-1.5 inline" strokeWidth={2} />Timeline</TabsTrigger>
-          <TabsTrigger value="plan-history" className="rounded-lg">Plan History</TabsTrigger>
-          <TabsTrigger value="rent" className="rounded-lg">Rent</TabsTrigger>
-          <TabsTrigger value="payments" className="rounded-lg">Payments</TabsTrigger>
-          <TabsTrigger value="electricity" className="rounded-lg">Electricity</TabsTrigger>
-          <TabsTrigger value="deposit" className="rounded-lg">Deposit</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto pb-1 mb-4 -mx-1 px-1">
+          <TabsList className="bg-[#E5E5EA]/70 p-1 rounded-xl gap-1 h-auto inline-flex flex-nowrap w-max sm:w-auto">
+            <TabsTrigger value="overview" className="rounded-lg text-xs sm:text-sm py-1.5 px-3">Overview</TabsTrigger>
+            <TabsTrigger value="timeline" className="rounded-lg text-xs sm:text-sm py-1.5 px-3"><Calendar className="w-3.5 h-3.5 mr-1 inline" strokeWidth={2} />Timeline</TabsTrigger>
+            <TabsTrigger value="plan-history" className="rounded-lg text-xs sm:text-sm py-1.5 px-3">Plan History</TabsTrigger>
+            <TabsTrigger value="rent" className="rounded-lg text-xs sm:text-sm py-1.5 px-3">Rent</TabsTrigger>
+            <TabsTrigger value="payments" className="rounded-lg text-xs sm:text-sm py-1.5 px-3">Payments</TabsTrigger>
+            <TabsTrigger value="electricity" className="rounded-lg text-xs sm:text-sm py-1.5 px-3">Electricity</TabsTrigger>
+            <TabsTrigger value="deposit" className="rounded-lg text-xs sm:text-sm py-1.5 px-3">Deposit</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Overview */}
         <TabsContent value="overview">

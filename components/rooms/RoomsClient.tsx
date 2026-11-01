@@ -157,25 +157,25 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
   return (
     <div>
       {/* Page header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div>
-          <h1 className="text-[22px] font-semibold text-[#1C1C1E] tracking-[-0.022em]">Rooms &amp; Beds</h1>
-          <p className="text-[#8E8E93] mt-1">{roomsWithBeds.length} room{roomsWithBeds.length !== 1 ? 's' : ''} total</p>
+          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1C1E] tracking-tight">Rooms &amp; Beds</h1>
+          <p className="text-xs sm:text-sm text-[#8E8E93] mt-0.5">{roomsWithBeds.length} room{roomsWithBeds.length !== 1 ? 's' : ''} total</p>
         </div>
-        <Button onClick={openAddDialog} className="h-11 rounded-xl">
-          <Plus className="w-5 h-5 mr-2" strokeWidth={2} />
+        <Button onClick={openAddDialog} className="h-9 sm:h-11 px-3 sm:px-4 rounded-xl text-xs sm:text-sm">
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5" strokeWidth={2} />
           Add Room
         </Button>
       </div>
 
-      {/* Filters */}
-      <div className="flex gap-2 mb-6 flex-wrap">
+      {/* Filters - horizontally scrollable for mobile */}
+      <div className="flex items-center gap-1.5 sm:gap-2 mb-5 sm:mb-6 overflow-x-auto pb-1">
         <button
           onClick={() => setFilterVacant(false)}
           className={cn(
-            'h-9 px-3.5 rounded-xl text-sm font-medium transition-all duration-200 border',
+            'h-8 sm:h-9 px-3 sm:px-3.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 border whitespace-nowrap',
             !filterVacant 
-              ? 'bg-[#007AFF] text-white border-[#007AFF] shadow-sm' 
+              ? 'bg-[#007AFF] text-white border-[#007AFF] shadow-xs' 
               : 'bg-white text-[#8E8E93] border-[#E5E5EA] hover:border-[#007AFF]/30'
           )}
         >
@@ -184,30 +184,29 @@ export default function RoomsClient({ roomsWithBeds }: RoomsClientProps) {
         <button
           onClick={() => setFilterVacant(true)}
           className={cn(
-            'h-9 px-3.5 rounded-xl text-sm font-medium transition-all duration-200 border',
+            'h-8 sm:h-9 px-3 sm:px-3.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 border whitespace-nowrap',
             filterVacant 
-              ? 'bg-[#007AFF] text-white border-[#007AFF] shadow-sm' 
+              ? 'bg-[#007AFF] text-white border-[#007AFF] shadow-xs' 
               : 'bg-white text-[#8E8E93] border-[#E5E5EA] hover:border-[#007AFF]/30'
           )}
         >
           Vacant Only
         </button>
-        <div className="flex gap-2 ml-2">
-          {(['all', 'double', 'triple'] as const).map((type) => (
-            <button
-              key={type}
-              onClick={() => setFilterSharing(type)}
-              className={cn(
-                'h-9 px-3.5 rounded-xl text-sm font-medium transition-all duration-200 capitalize border',
-                filterSharing === type 
-                  ? 'bg-[#007AFF] text-white border-[#007AFF] shadow-sm' 
-                  : 'bg-white text-[#8E8E93] border-[#E5E5EA] hover:border-[#007AFF]/30'
-              )}
-            >
-              {type === 'all' ? 'All Types' : `${type} sharing`}
-            </button>
-          ))}
-        </div>
+        <span className="w-[1px] h-5 bg-[#E5E5EA] mx-0.5 flex-shrink-0" />
+        {(['all', 'double', 'triple'] as const).map((type) => (
+          <button
+            key={type}
+            onClick={() => setFilterSharing(type)}
+            className={cn(
+              'h-8 sm:h-9 px-3 sm:px-3.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 capitalize border whitespace-nowrap',
+              filterSharing === type 
+                ? 'bg-[#007AFF] text-white border-[#007AFF] shadow-xs' 
+                : 'bg-white text-[#8E8E93] border-[#E5E5EA] hover:border-[#007AFF]/30'
+            )}
+          >
+            {type === 'all' ? 'All Types' : `${type} sharing`}
+          </button>
+        ))}
       </div>
 
       {/* Room grid */}

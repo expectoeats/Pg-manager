@@ -1,0 +1,29 @@
+{
+  "project_type": "Next.js 16.4.3 App Router + TypeScript + MongoDB/Mongoose PG Management System",
+  "language": "TypeScript",
+  "build_system": "Next.js with Turbopack (npm scripts)",
+  "test_framework": "None identified (no explicit test framework configured)",
+  "build_command": "npm run build",
+  "test_command": "npm run lint (no test suite found)",
+  "verification_instructions": "Run 'npm run build' to compile and verify TypeScript. Start dev server with 'npm run dev' on port 3001 and manually test calendar interactions in browser.",
+  "snapshot_or_generated_files": "null (no generated files to check in)",
+  "environment_constraints": "Dev server runs on http://localhost:3001. MongoDB models must be imported at file top with 'void Model;' pattern to prevent Turbopack tree-shaking (see dashboard.ts and residents.ts examples). Never use framer-motion (not installed) - CSS transitions only.",
+  "contribution_requirements": "Apple-style design with specific color palette (#007AFF, #34C759, #FF3B30, #FF9500, #8E8E93, etc.). Use existing shadcn/ui components (Card, Badge, Dialog, Sheet). Mobile-first responsive design (320px+). All money in integer rupees, all dates in IST. Never hard-delete data. Follow existing TypeScript strict patterns (no 'any').",
+  "key_patterns": "Server actions in lib/services/*.ts use 'use server' directive and connectDB(). Models follow mongoose.models.X || mongoose.model pattern. Components use Apple font stack (-apple-system, SF Pro Display). Calendar events use discriminated union types. Populates require explicit model imports with 'void Model;' to prevent MissingSchemaError. UI uses rounded-2xl, shadow-sm, tracking-[-0.022em], text-[#1C1C1E] patterns consistently.",
+  "relevant_files": [
+    "components/residents/ResidentCalendar.tsx (existing calendar to enhance)",
+    "lib/services/residents.ts (getResidentCalendarData server action, event types)",
+    "app/(dashboard)/dashboard/page.tsx (dashboard page to add calendar to)",
+    "lib/services/dashboard.ts (dashboard server actions, model import pattern)",
+    "components/ui/sheet.tsx (shadcn Sheet component for side panels)",
+    "components/ui/dialog.tsx (shadcn Dialog for modals)",
+    "tailwind.config.js (Apple design tokens and animations)",
+    "models/RentRecord.ts (example model export pattern)",
+    "models/Payment.ts (referenced in residents.ts)",
+    "models/ElectricityBill.ts (referenced in residents.ts)",
+    "models/Deposit.ts (needed for dashboard calendar)",
+    "models/Room.ts (needed for dashboard calendar)",
+    "models/Bed.ts (needed for dashboard calendar)"
+  ],
+  "directory_structure": "app/(dashboard)/* for pages, components/* for reusable UI, lib/services/* for server actions, models/* for Mongoose schemas, components/ui/* for shadcn primitives"
+}
