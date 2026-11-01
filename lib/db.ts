@@ -30,6 +30,11 @@ async function connectDB() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 5000,   // fail fast if MongoDB unreachable
+      socketTimeoutMS: 45000,           // socket timeout
+      family: 4,                        // force IPv4 (faster on Vercel serverless)
+      maxPoolSize: 10,
+      minPoolSize: 0,
     };
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((m) => {
       return m;
